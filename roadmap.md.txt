@@ -1,0 +1,1649 @@
+You are a senior full-stack engineer, product designer, UX designer, and data-architecture expert.
+
+I want you to build a complete WEB-BASED PERSONAL STUDY & PRODUCTIVITY MANAGEMENT SYSTEM for me.
+
+This should be significantly better than a normal Excel productivity tracker.
+
+The application should feel like a polished combination of:
+- Notion
+- Google Calendar
+- Habit tracker
+- Study planner
+- Gamification system
+- Personal analytics dashboard
+- Task manager
+
+The application is primarily for my personal use.
+
+==================================================
+1. CORE GOAL
+==================================================
+
+Build a local-first productivity web application where I can:
+
+- Create and edit my daily schedule
+- Track college classes
+- Track study sessions
+- Track coding/project work
+- Track girlfriend/relationship time
+- Track sleep
+- Track exercise
+- Track social media/distraction time
+- Complete tasks
+- Track habits
+- Track productivity
+- Earn XP
+- Maintain streaks
+- Level up
+- View analytics
+- View charts
+- Review previous days/weeks/months
+- Edit my schedule whenever required
+- Automatically save every change
+- Store my complete data in a JSON file on my computer
+- Import/export my data
+- Never lose my data
+
+The application must be highly usable on desktop and mobile.
+
+==================================================
+2. IMPORTANT: DATA STORAGE
+==================================================
+
+I specifically want my data saved as a JSON file in my computer's file manager.
+
+Example:
+
+Documents/
+└── Study Productivity/
+    └── productivity-data.json
+
+Use the browser File System Access API where supported.
+
+The application should provide:
+
+[Create Data File]
+[Open Existing Data File]
+[Save]
+[Save As]
+
+When I first open the application:
+
+1. Ask me to create/select my productivity JSON file.
+2. Store a reference to the selected file handle when possible.
+3. Load all existing data.
+4. Automatically save changes to the JSON file.
+
+IMPORTANT:
+
+Whenever I:
+- complete a task
+- edit a task
+- change a schedule
+- update study hours
+- update sleep
+- update habits
+- add a note
+- change XP
+- change a streak
+- modify any tracked value
+
+the application should automatically save the updated state.
+
+Do NOT require me to manually press Save after every change.
+
+Use a safe debounced autosave mechanism, for example:
+- update state immediately
+- mark data as dirty
+- save after a short debounce
+- show "Saving..."
+- then show "Saved ✓"
+
+Prevent race conditions and accidental data loss.
+
+==================================================
+3. DATA STORAGE FALLBACK
+==================================================
+
+File System Access API is not supported in every browser.
+
+Therefore implement:
+
+PRIMARY:
+File System Access API
+
+SECONDARY:
+IndexedDB/localStorage temporary persistence
+
+ALSO PROVIDE:
+Import JSON
+Export JSON
+Download Backup
+
+The application must never silently lose data.
+
+If the JSON file cannot be accessed, clearly show:
+
+"Local file disconnected"
+
+and provide:
+
+[Reconnect File]
+
+==================================================
+4. JSON DATA ARCHITECTURE
+==================================================
+
+Create a clean versioned JSON structure.
+
+Example:
+
+{
+  "version": 1,
+  "profile": {},
+  "settings": {},
+  "schedule": {},
+  "tasks": [],
+  "habits": [],
+  "dailyLogs": [],
+  "studySessions": [],
+  "xp": {},
+  "streaks": {},
+  "achievements": [],
+  "goals": [],
+  "analytics": {},
+  "notes": [],
+  "lastUpdated": ""
+}
+
+Design the actual schema properly.
+
+Use ISO date/time formats where appropriate.
+
+The schema should be easy to migrate in the future.
+
+Do not store unnecessary duplicated data.
+
+==================================================
+5. MY COLLEGE TIMETABLE
+==================================================
+
+My college is:
+
+AMITY INSTITUTE OF INFORMATION TECHNOLOGY,
+AMITY UNIVERSITY PATNA
+
+Course:
+BCA-V (A)
+2024-2028
+
+Class Teacher:
+Dr. Priyadarshani
+
+Room:
+201
+
+Travel:
+Home → College = approximately 1 hour
+College → Home = approximately 1 hour
+
+Therefore daily college travel is approximately 2 hours.
+
+My timetable:
+
+MONDAY
+
+08:30-09:15
+STAT311 - Time Series Analysis
+Dr. Priyadarshni
+LAB-3
+
+09:20-10:05
+CSIT379 - Data Science-An Introduction
+Mr. Ranjit Choudhary
+LAB-2
+
+10:10-10:55
+CSIT394 - Analytical Data Visualization
+Ms. Khushboo
+
+11:00-11:45
+CSIT394 - Analytical Data Visualization
+Ms. Khushboo
+LAB-3
+
+11:50-12:35
+FREN316 - Communicative French
+Dr. Sushant Kumar Dubey
+
+01:00-01:45
+CSIT379 - Data Science-An Introduction
+Mr. Ranjit Choudhary
+LAB
+
+
+TUESDAY
+
+08:30-09:15
+QAM303 - Computational Quantitative Techniques
+Mr. Suman Kumar Mishra
+
+09:20-10:05
+CSIT379 - Data Science-An Introduction
+Mr. Ranjit Choudhary
+
+10:10-10:55
+STAT311 - Time Series Analysis
+Dr. Priyadarshni
+
+11:00-11:45
+CSIT394 - Analytical Data Visualization
+Ms. Khushboo
+LAB-3
+
+11:50-12:35
+STAT311 - Time Series Analysis
+Dr. Priyadarshni
+
+01:00-01:45
+CSIT379 - Data Science-An Introduction
+Mr. Ranjit Choudhary
+LAB-2
+
+
+WEDNESDAY
+
+08:30-09:15
+STAT311 - Time Series Analysis
+Dr. Priyadarshni
+
+09:20-10:05
+FREN316 - Communicative French
+Dr. Sushant Kumar Dubey
+
+10:10-10:55
+BC308 - Campus to Corporate
+Dr. Abhijeet Ghosh
+
+11:00-11:45
+CSIT394 - Analytical Data Visualization
+Ms. Khushboo
+LAB-3
+
+11:50-12:35
+CSIT379 - Data Science-An Introduction
+Mr. Ranjit Choudhary
+
+
+THURSDAY
+
+08:30-09:15
+QAM303 - Computational Quantitative Techniques
+Mr. Suman Kumar Mishra
+
+09:20-10:05
+STAT311 - Time Series Analysis
+Dr. Priyadarshni
+LAB-3
+
+10:10-10:55
+CSIT394 - Analytical Data Visualization
+Ms. Khushboo
+
+11:00-11:45
+CSIT394 - Analytical Data Visualization
+Ms. Khushboo
+LAB-3
+
+11:50-12:35
+BC308 - Campus to Corporate
+Dr. Abhijeet Ghosh
+
+
+FRIDAY
+
+08:30-09:15
+CSIT379 - Data Science-An Introduction
+Mr. Ranjit Choudhary
+LAB-2
+
+09:20-10:05
+STAT311 - Time Series Analysis
+Dr. Priyadarshni
+LAB-3
+
+10:10-10:55
+CSIT394 - Analytical Data Visualization
+Ms. Khushboo
+
+11:00-11:45
+CSIT379 - Data Science-An Introduction
+Mr. Ranjit Choudhary
+
+11:50-12:35
+STAT311 - Time Series Analysis
+Dr. Priyadarshni
+LAB-2
+
+
+College ends:
+Monday/Tuesday → 1:45 PM
+Wednesday/Thursday/Friday → 12:35 PM
+
+IMPORTANT:
+The timetable must NOT be hardcoded permanently.
+
+I must be able to:
+- edit class
+- change subject
+- change teacher
+- change room
+- change time
+- add class
+- delete class
+- move class
+- add Saturday/Sunday schedule
+- create different schedules for different semesters
+
+==================================================
+6. MY PERSONAL ROUTINE
+==================================================
+
+Current sleep schedule:
+
+Sleep:
+12:00 AM
+
+Wake:
+5:00 AM
+
+However, the application should NOT force this schedule.
+
+I want to be able to change:
+- wake time
+- sleep time
+- study target
+- coding target
+- relationship target
+- exercise target
+
+The system should intelligently analyze my sleep and show warnings if I consistently sleep too little.
+
+Do not make medical claims.
+
+Example:
+
+"Your average sleep this week is 5h 12m."
+
+"Your planned routine gives you very little recovery time."
+
+Keep this as productivity feedback rather than medical advice.
+
+==================================================
+7. DAILY PLANNER
+==================================================
+
+Create a beautiful daily planner.
+
+Example:
+
+TODAY
+
+05:00
+Wake Up
+
+05:15 - 06:30
+Deep Study
+
+07:00 - 08:00
+Travel to College
+
+08:30 - College
+Classes
+
+College → Home
+1 hour
+
+After college:
+Study
+Coding
+Relationship
+Dinner
+Revision
+Sleep
+
+BUT:
+
+This is only a starting template.
+
+I MUST be able to edit everything.
+
+Support:
+
+- drag and drop timeline
+- resize time blocks
+- add task
+- edit task
+- delete task
+- duplicate task
+- move task
+- mark complete
+- mark skipped
+- postpone
+- recurring tasks
+- recurring schedules
+
+==================================================
+8. TASK SYSTEM
+==================================================
+
+Create a powerful task manager.
+
+Each task should support:
+
+- title
+- description
+- date
+- start time
+- end time
+- category
+- subject
+- priority
+- difficulty
+- estimated duration
+- actual duration
+- status
+- recurring
+- XP reward
+- notes
+
+Statuses:
+
+TODO
+IN PROGRESS
+COMPLETED
+SKIPPED
+POSTPONED
+
+Categories:
+
+Study
+College
+Coding
+Project
+Assignment
+Exercise
+Personal
+Relationship
+Other
+
+Priorities:
+
+Low
+Medium
+High
+Critical
+
+When I complete a task:
+
+1. Mark it completed
+2. Automatically calculate XP
+3. Update daily progress
+4. Update streak
+5. Update achievements
+6. Update analytics
+7. Autosave JSON
+
+==================================================
+9. STUDY TRACKER
+==================================================
+
+Create a study tracking system.
+
+Track:
+
+- subject
+- topic
+- start time
+- end time
+- duration
+- study method
+- concentration
+- difficulty
+- notes
+
+Study methods:
+
+Reading
+Practice
+Revision
+Problem Solving
+Watching Lecture
+Coding
+Mock Test
+Flashcards
+
+Show:
+
+Today's study time
+Weekly study time
+Monthly study time
+Subject-wise study time
+Study consistency
+Study target completion
+
+==================================================
+10. POMODORO
+==================================================
+
+Add an integrated Pomodoro timer.
+
+Default:
+
+25 min focus
+5 min break
+
+But allow customization:
+
+15/5
+25/5
+45/10
+50/10
+60/15
+
+When a Pomodoro is completed:
+
+- log study session
+- award XP
+- update statistics
+- update streak
+- autosave
+
+Show today's Pomodoros.
+
+==================================================
+11. HABIT TRACKER
+==================================================
+
+Create customizable habits.
+
+Examples:
+
+Study
+Wake up early
+Sleep on time
+Exercise
+Read
+Code
+Revision
+No excessive social media
+Drink water
+
+Each habit should support:
+
+- daily
+- weekly
+- custom frequency
+
+Show:
+
+🔥 Current streak
+🏆 Best streak
+Completion %
+Calendar heatmap
+
+==================================================
+12. STREAK SYSTEM
+==================================================
+
+Build a proper streak system.
+
+Examples:
+
+Study Streak 🔥
+Coding Streak 💻
+Exercise Streak 🏃
+Early Wake Streak 🌅
+Task Completion Streak ✅
+
+A streak increases when the required condition is fulfilled.
+
+Example:
+
+Daily Study Goal:
+3 hours
+
+If completed:
+streak +1
+
+If missed:
+streak resets according to the selected streak rules.
+
+Allow "streak freeze" as a controlled feature.
+
+Example:
+1 free streak freeze per week.
+
+Show:
+
+Current streak
+Best streak
+Total successful days
+
+==================================================
+13. XP SYSTEM
+==================================================
+
+Create a gamification system.
+
+Every meaningful action can award XP.
+
+Example:
+
+Complete task:
++10 XP
+
+Complete difficult task:
++20 XP
+
+Complete study session:
++10 XP
+
+Complete Pomodoro:
++15 XP
+
+Complete daily study goal:
++50 XP
+
+Complete all planned tasks:
++50 XP
+
+Exercise:
++15 XP
+
+Maintain daily habit:
++10 XP
+
+Weekly goal:
++100 XP
+
+Do NOT make XP exploitable.
+
+Prevent repeatedly completing/uncompleting the same task to farm XP.
+
+XP should be awarded based on actual state transitions.
+
+==================================================
+14. LEVEL SYSTEM
+==================================================
+
+Create levels.
+
+Example:
+
+Level 1 → 0 XP
+Level 2 → 100 XP
+Level 3 → 250 XP
+Level 4 → 450 XP
+Level 5 → 700 XP
+
+Use a sensible XP curve.
+
+Display:
+
+LEVEL 12
+██████████████░░░
+1,240 / 1,500 XP
+
+When leveling up:
+
+show a beautiful animation:
+
+"LEVEL UP! 🎉"
+
+==================================================
+15. ACHIEVEMENTS
+==================================================
+
+Create achievements.
+
+Examples:
+
+🔥 First 3-Day Streak
+🔥 7-Day Streak
+🔥 30-Day Streak
+📚 10 Hours Studied
+📚 50 Hours Studied
+💻 10 Hours Coding
+💻 50 Hours Coding
+🎯 100 Tasks Completed
+🌅 Wake Early 7 Days
+🏆 Perfect Week
+
+Achievements should automatically unlock.
+
+==================================================
+16. PRODUCTIVITY SCORE
+==================================================
+
+Create a daily productivity score from 0-100.
+
+Do NOT make it arbitrary.
+
+Use weighted factors such as:
+
+Study completion
+Task completion
+Coding progress
+Habit completion
+Sleep consistency
+Exercise
+Distraction/social media
+Schedule adherence
+
+Display:
+
+Today's Productivity
+
+82 / 100
+
+Excellent
+
+And explain:
+
+Study: +30
+Tasks: +25
+Habits: +15
+Coding: +10
+Sleep: +8
+Distraction: -6
+
+This makes the score understandable.
+
+==================================================
+17. ANALYTICS DASHBOARD
+==================================================
+
+Create a premium analytics dashboard.
+
+Show:
+
+TODAY
+
+Study hours
+Coding hours
+Tasks completed
+Tasks remaining
+Productivity score
+XP earned
+Current streak
+Sleep duration
+
+THIS WEEK
+
+Study hours
+Coding hours
+Task completion
+Average productivity
+Average sleep
+Exercise
+Social media
+Relationship time
+
+THIS MONTH
+
+Study trend
+Coding trend
+Productivity trend
+Study consistency
+Subject performance
+
+Charts:
+
+1. Study hours over time
+2. Coding hours over time
+3. Productivity score
+4. Sleep trend
+5. Task completion
+6. Subject-wise study distribution
+7. Time allocation
+8. Habit completion
+9. XP progression
+10. Streak history
+
+Use beautiful interactive charts.
+
+Allow:
+
+7D
+30D
+90D
+6M
+1Y
+ALL
+
+==================================================
+18. HEATMAP
+==================================================
+
+Create a GitHub-style productivity heatmap.
+
+Each day should show productivity/activity intensity.
+
+Allow switching:
+
+Study
+Tasks
+Coding
+Habits
+XP
+
+==================================================
+19. CALENDAR
+==================================================
+
+Create:
+
+Month calendar
+Week calendar
+Day timeline
+
+Calendar should show:
+
+Classes
+Tasks
+Study
+Coding
+Habits
+Events
+
+Clicking an item should open an edit panel.
+
+Allow drag-and-drop scheduling.
+
+==================================================
+20. RELATIONSHIP / PERSONAL TIME
+==================================================
+
+I want to track relationship time separately.
+
+Track:
+
+Girlfriend Day Time
+Girlfriend Night Time
+
+But keep this section neutral and private.
+
+Show only time spent.
+
+Do NOT judge this metric.
+
+Allow me to set a personal target if I want.
+
+==================================================
+21. TIME MANAGEMENT
+==================================================
+
+Show how I spend my 24 hours.
+
+Example:
+
+Sleep
+College
+Travel
+Study
+Coding
+Relationship
+Exercise
+Entertainment
+Social Media
+Other
+
+Create a 24-hour visualization.
+
+Identify unused/free time.
+
+Example:
+
+"You have approximately 1h 20m of unplanned time today."
+
+Allow me to convert free time into tasks.
+
+==================================================
+22. SMART INSIGHTS
+==================================================
+
+Generate rule-based insights from my data.
+
+Examples:
+
+"You study most consistently between 5:15 AM and 6:30 AM."
+
+"Your average study time dropped by 18% this week."
+
+"You completed 87% of your planned tasks."
+
+"Wednesday is currently your most productive day."
+
+"Your coding time increased this week."
+
+"Your social media time is higher than your weekly target."
+
+Do NOT use an AI API initially.
+
+Use local calculations.
+
+==================================================
+23. GOALS
+==================================================
+
+Create goals.
+
+Examples:
+
+Study 100 hours this month
+Complete 50 coding hours
+Finish project
+Score X in exams
+Complete syllabus
+Maintain 14-day study streak
+
+Goal structure:
+
+title
+description
+target
+current
+unit
+deadline
+category
+priority
+status
+
+Display progress bars.
+
+==================================================
+24. EXAM / SUBJECT MANAGEMENT
+==================================================
+
+Create subjects.
+
+Each subject should support:
+
+- name
+- teacher
+- credits
+- difficulty
+- target hours
+- topics
+- completed topics
+- assignments
+- exam date
+- notes
+
+Show subject progress.
+
+Example:
+
+Time Series Analysis
+
+████████████░░░░ 78%
+
+==================================================
+25. UI / UX
+==================================================
+
+This is extremely important.
+
+DO NOT create a generic admin dashboard.
+
+The UI should feel like a premium personal productivity application.
+
+Design inspiration:
+
+Notion
+Linear
+Motion
+Sunsama
+TickTick
+Todoist
+Google Calendar
+GitHub contribution graph
+Duolingo gamification
+
+Use:
+
+- clean typography
+- excellent spacing
+- subtle animations
+- glass/modern cards where appropriate
+- responsive layout
+- keyboard shortcuts
+- hover states
+- smooth transitions
+- empty states
+- skeleton loading
+- toast notifications
+- command palette
+
+Support:
+
+LIGHT MODE
+DARK MODE
+
+Allow theme selection.
+
+==================================================
+26. RESPONSIVE DESIGN
+==================================================
+
+Desktop:
+Sidebar + main dashboard
+
+Tablet:
+Collapsible sidebar
+
+Mobile:
+Bottom navigation
+
+Mobile navigation:
+
+Home
+Calendar
+Tasks
+Study
+Profile
+
+Desktop sidebar:
+
+Dashboard
+Today
+Calendar
+Tasks
+Study
+Habits
+Goals
+Analytics
+Achievements
+Timetable
+Settings
+
+==================================================
+27. COMMAND PALETTE
+==================================================
+
+Add keyboard shortcut:
+
+Ctrl + K
+
+Commands:
+
+Add task
+Start timer
+Log study
+Open calendar
+Open dashboard
+Add habit
+Search tasks
+Export JSON
+Save
+Settings
+
+==================================================
+28. NOTIFICATIONS
+==================================================
+
+Create local browser notifications where possible.
+
+Examples:
+
+"Your study session starts in 10 minutes."
+
+"Your daily study goal is almost complete."
+
+"You have 3 unfinished tasks."
+
+"Don't break your 7-day streak!"
+
+Allow notifications to be enabled/disabled.
+
+==================================================
+29. AUTO SAVE UX
+==================================================
+
+Always show save state somewhere in the UI:
+
+● Saved
+● Saving...
+● Unsaved changes
+● File disconnected
+
+Autosave should happen after every meaningful change.
+
+Do not make the user worry about saving.
+
+==================================================
+30. BACKUP SYSTEM
+==================================================
+
+Add:
+
+Export JSON
+Import JSON
+Download Backup
+Restore Backup
+
+Also add:
+
+"Create Backup"
+
+The backup should contain the complete application state.
+
+Before destructive operations:
+
+Confirm with the user.
+
+==================================================
+31. SETTINGS
+==================================================
+
+Settings should include:
+
+Profile
+Theme
+Schedule
+Study goals
+Sleep goals
+XP settings
+Habit settings
+Notification settings
+Data management
+Backup
+Import/export
+Reset data
+
+NEVER delete data without confirmation.
+
+==================================================
+32. TECH STACK
+==================================================
+
+Prefer:
+
+React
+TypeScript
+Vite
+
+Use a modern component system.
+
+Recommended:
+
+Tailwind CSS
+shadcn/ui
+Lucide icons
+Recharts
+
+Use clean architecture.
+
+Separate:
+
+components
+pages
+hooks
+services
+store
+utils
+types
+data
+analytics
+
+Use TypeScript strictly.
+
+Avoid unnecessary dependencies.
+
+==================================================
+33. STATE MANAGEMENT
+==================================================
+
+Use a clean centralized state management solution.
+
+Zustand is preferred.
+
+Create separate stores/modules for:
+
+tasks
+schedule
+habits
+study
+analytics
+gamification
+settings
+data persistence
+
+Keep business logic separate from UI.
+
+==================================================
+34. FILE PERSISTENCE SERVICE
+==================================================
+
+Create a dedicated service such as:
+
+src/services/fileStorage.ts
+
+It should handle:
+
+createFile()
+openFile()
+saveFile()
+saveAs()
+loadFile()
+exportBackup()
+importBackup()
+
+Use:
+
+window.showOpenFilePicker()
+window.showSaveFilePicker()
+
+where available.
+
+Handle permissions properly.
+
+Do not request permissions unnecessarily.
+
+==================================================
+35. DATA INTEGRITY
+==================================================
+
+Implement:
+
+schema validation
+versioning
+migration support
+backup before major migrations
+corrupted JSON detection
+
+If JSON is invalid:
+
+Do NOT overwrite it.
+
+Show:
+
+"Your data file appears to be corrupted. A backup has been created."
+
+==================================================
+36. PERFORMANCE
+==================================================
+
+The app should remain fast with:
+
+1000+ tasks
+365+ daily logs
+1000+ study sessions
+hundreds of habits/events
+
+Avoid unnecessary rerenders.
+
+Use memoization where useful.
+
+Charts should not make the application slow.
+
+==================================================
+37. ACCESSIBILITY
+==================================================
+
+Support:
+
+keyboard navigation
+focus states
+ARIA labels
+good contrast
+screen reader friendly buttons
+reduced motion preference
+
+==================================================
+38. SECURITY / PRIVACY
+==================================================
+
+This is a personal local-first application.
+
+Do not upload my productivity data anywhere.
+
+No analytics tracking.
+
+No external database required.
+
+No server should receive my private productivity information.
+
+Everything should stay on my device unless I explicitly export/share it.
+
+==================================================
+39. IMPORTANT PRODUCT REQUIREMENT
+==================================================
+
+Do NOT just build a static UI mockup.
+
+I need a FUNCTIONAL APPLICATION.
+
+I should be able to:
+
+1. Create a task
+2. Complete it
+3. Receive XP
+4. Increase streak
+5. Update productivity score
+6. See dashboard update
+7. See charts update
+8. Automatically save JSON
+9. Close browser
+10. Reopen application
+11. Open the same JSON
+12. See my data exactly as before
+
+This entire flow must actually work.
+
+==================================================
+40. FIRST-RUN EXPERIENCE
+==================================================
+
+When opening for the first time:
+
+Show:
+
+"Welcome to your Productivity OS"
+
+Then setup:
+
+Step 1:
+Name
+
+Step 2:
+Wake time
+
+Step 3:
+Sleep time
+
+Step 4:
+Daily study target
+
+Step 5:
+Daily coding target
+
+Step 6:
+Choose/create JSON data file
+
+Step 7:
+Import existing timetable
+
+Step 8:
+Finish setup
+
+Then take me to:
+
+TODAY DASHBOARD
+
+==================================================
+41. DASHBOARD DESIGN
+==================================================
+
+The main dashboard should immediately show:
+
+Good morning, Vikash 👋
+
+Level 4
+🔥 7 Day Streak
+⭐ 820 XP
+
+TODAY'S PROGRESS
+
+Study
+████████░░ 80%
+
+Tasks
+███████░░░ 70%
+
+Habits
+█████████░ 90%
+
+Coding
+██████░░░░ 60%
+
+PRODUCTIVITY
+82 / 100
+
+TODAY'S SCHEDULE
+
+05:00 Wake up
+05:15 Deep Study
+07:00 Travel
+08:30 College
+...
+
+NEXT TASK
+
+"Revise Time Series — Moving Average"
+
+[Start] [Complete]
+
+==================================================
+42. GAMIFICATION UI
+==================================================
+
+Make XP and streaks visually satisfying but not childish.
+
+Use subtle animations.
+
+Examples:
+
++15 XP
++10 XP
+🔥 Streak increased!
+🏆 Achievement unlocked!
+
+Level-up modal:
+
+LEVEL UP!
+
+Level 7
+
+██████████████░░
+
+1,420 / 1,600 XP
+
+Keep going! 🚀
+
+==================================================
+43. DAILY REVIEW
+==================================================
+
+At the end of the day provide:
+
+Daily Review
+
+Study:
+3h 20m
+
+Coding:
+1h 40m
+
+Tasks:
+8 / 10
+
+Sleep:
+5h 30m
+
+Productivity:
+78
+
+XP:
++145
+
+Streak:
+🔥 8 days
+
+Wins:
+- Completed assignment
+- Finished coding task
+- 3h study
+
+Missed:
+- Exercise
+- One revision task
+
+Add optional notes:
+
+"What went well?"
+"What should improve tomorrow?"
+
+==================================================
+44. WEEKLY REVIEW
+==================================================
+
+Every week show:
+
+Weekly Review
+
+Total study:
+18h 45m
+
+Coding:
+8h 20m
+
+Tasks:
+42 / 50
+
+Average productivity:
+81
+
+Average sleep:
+6h 10m
+
+Best day:
+Wednesday
+
+Weakest day:
+Friday
+
+XP earned:
+640
+
+Current streak:
+9 days
+
+Then show actionable insights.
+
+==================================================
+45. DESIGN QUALITY
+==================================================
+
+I want this to look like a real production application.
+
+Avoid:
+
+- excessive gradients
+- huge empty spaces
+- generic dashboard cards
+- random colors
+- unnecessary animations
+- clutter
+- poor typography
+- fake data after setup
+
+Use a coherent design system.
+
+Use consistent:
+
+spacing
+border radius
+shadows
+typography
+icons
+colors
+states
+
+==================================================
+46. DEVELOPMENT PROCESS
+==================================================
+
+Before coding:
+
+1. Understand all requirements.
+2. Design the data model.
+3. Design application architecture.
+4. Design navigation.
+5. Design the persistence system.
+6. Design the gamification logic.
+7. Then implement.
+
+Do not rush directly into UI.
+
+Build in phases:
+
+PHASE 1
+Core application + data model + persistence
+
+PHASE 2
+Dashboard + tasks + schedule
+
+PHASE 3
+Study tracker + Pomodoro + habits
+
+PHASE 4
+XP + levels + streaks + achievements
+
+PHASE 5
+Analytics + charts + heatmap
+
+PHASE 6
+Calendar + drag/drop scheduling
+
+PHASE 7
+Polish + animations + responsive design
+
+==================================================
+47. TESTING
+==================================================
+
+Before considering the project complete, test:
+
+- Create task
+- Edit task
+- Delete task
+- Complete task
+- Undo completion
+- XP calculation
+- XP anti-farming
+- Level progression
+- Streak calculation
+- Habit completion
+- Study session
+- Pomodoro
+- JSON save
+- JSON load
+- JSON import
+- JSON export
+- Browser refresh
+- Browser restart
+- File permission denied
+- Missing JSON file
+- Corrupted JSON
+- Mobile layout
+- Desktop layout
+
+==================================================
+48. FINAL REQUIREMENT
+==================================================
+
+The final result should feel like:
+
+"MY PERSONAL PRODUCTIVITY OPERATING SYSTEM"
+
+not:
+
+"an Excel spreadsheet converted into a website."
+
+Make it beautiful, practical, fast, editable, local-first, data-safe, and genuinely useful every day.
+
+Start by creating the project architecture and data model, then implement the application.
+
+Do not stop at a static prototype.
