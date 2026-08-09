@@ -48,8 +48,11 @@ interface UiState {
   /** resolved theme actually applied to the document */
   resolvedTheme: 'light' | 'dark';
   confirm: ConfirmRequest | null;
-  /** quick-add dialog; when a date is passed the new task lands on that day */
-  quickAddFor: ISODate | null;
+  /** quick-add dialog; the date the new task should land on */
+  quickAddOpen: boolean;
+  quickAddDate: ISODate | null;
+  /** id of the task being edited, if any */
+  taskEditorId: string | null;
 
   navigate: (route: RouteId) => void;
   toggleSidebar: () => void;
@@ -60,7 +63,8 @@ interface UiState {
   requestConfirm: (req: ConfirmRequest) => void;
   closeConfirm: () => void;
   openQuickAdd: (date?: ISODate | null) => void;
-  closeQuickAdd: () => void;
+  openTaskEditor: (taskId: string) => void;
+  closeTaskDialogs: () => void;
 }
 
 const routeFromHash = (): RouteId => {
@@ -81,7 +85,9 @@ export const useUiStore = create<UiState>((set, get) => ({
   paletteOpen: false,
   resolvedTheme: prefersDark() ? 'dark' : 'light',
   confirm: null,
-  quickAddFor: null,
+  quickAddOpen: false,
+  quickAddDate: null,
+  taskEditorId: null,
 
   navigate: (route) => {
     if (window.location.hash !== `#/${route}`) window.location.hash = `#/${route}`;
@@ -107,8 +113,10 @@ export const useUiStore = create<UiState>((set, get) => ({
 
   requestConfirm: (req) => set({ confirm: req }),
   closeConfirm: () => set({ confirm: null }),
-  openQuickAdd: (date = null) => set({ quickAddFor: date ?? todayISO() }),
-  closeQuickAdd: () => set({ quickAddFor: null }),
+  openQuickAdd: (date = null) =>
+    set({ quickAddOpen: true, quickAddDate: date ?? todayISO(), taskEditorId: null }),
+  openTaskEditor: (taskId) => set({ taskEditorId: taskId, quickAddOpen: false }),
+  closeTaskDialogs: () => set({ quickAddOpen: false, quickAddDate: null, taskEditorId: null }),
 }));
 
 if (typeof window !== 'undefined') {

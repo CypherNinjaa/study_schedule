@@ -21,7 +21,7 @@ import type {
   Weekday,
 } from '@/types';
 import { uid } from '@/utils/misc';
-import { todayISO } from '@/utils/date';
+import { todayISO, toISODate } from '@/utils/date';
 import { awardXP, studySessionXP, taskXP, XP_RULES } from '@/services/xp';
 import { ensureLog } from '@/services/rollup';
 import { applyStreakFreeze, removeStreakFreeze, type FreezeResult } from '@/services/streaks';
@@ -848,7 +848,7 @@ function datesForRule(
   const end = new Date(`${to}T00:00:00`);
   const anchorDate = new Date(`${anchor}T00:00:00`);
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const iso = d.toISOString().slice(0, 10);
+    const iso = toISODate(d);
     const dayDiff = Math.round((d.getTime() - anchorDate.getTime()) / 86_400_000);
     if (dayDiff <= 0) continue;
     const every = Math.max(1, rule.interval);
