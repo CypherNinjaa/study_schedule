@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
@@ -6,6 +7,15 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+  },
+  server: {
+    // Honour a PORT assigned by the environment (e.g. the preview harness);
+    // fall back to Vite's default when unset.
+    port: process.env.PORT ? Number(process.env.PORT) : undefined,
+  },
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
   },
   build: {
     rollupOptions: {

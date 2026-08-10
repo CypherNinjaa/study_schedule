@@ -1,38 +1,10 @@
-import {
-  BarChart3,
-  BookOpen,
-  CalendarDays,
-  CheckSquare,
-  ChevronLeft,
-  GraduationCap,
-  LayoutDashboard,
-  Library,
-  Repeat,
-  Settings as SettingsIcon,
-  Sun,
-  Target,
-  Trophy,
-} from 'lucide-react';
-import { useUiStore, type RouteId } from '@/store/useUiStore';
+import { ChevronLeft } from 'lucide-react';
+import { useUiStore } from '@/store/useUiStore';
 import { useDataStore } from '@/store/useDataStore';
+import { NAV } from '@/components/layout/nav';
 import { levelFromXP } from '@/services/xp';
 import { cn } from '@/utils/misc';
 import { ProgressBar } from '@/components/ui/Primitives';
-
-export const NAV: { id: RouteId; label: string; icon: typeof LayoutDashboard }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'today', label: 'Today', icon: Sun },
-  { id: 'calendar', label: 'Calendar', icon: CalendarDays },
-  { id: 'tasks', label: 'Tasks', icon: CheckSquare },
-  { id: 'study', label: 'Study', icon: BookOpen },
-  { id: 'habits', label: 'Habits', icon: Repeat },
-  { id: 'goals', label: 'Goals', icon: Target },
-  { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-  { id: 'achievements', label: 'Achievements', icon: Trophy },
-  { id: 'timetable', label: 'Timetable', icon: GraduationCap },
-  { id: 'subjects', label: 'Subjects', icon: Library },
-  { id: 'settings', label: 'Settings', icon: SettingsIcon },
-];
 
 export function Sidebar() {
   const route = useUiStore((s) => s.route);

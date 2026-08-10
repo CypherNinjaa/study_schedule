@@ -51,17 +51,6 @@ export function ConfirmDialog() {
   );
 }
 
-/** Convenience wrapper so callers don't have to reach into the store. */
-export function confirmAction(req: {
-  title: string;
-  message: string;
-  confirmLabel?: string;
-  danger?: boolean;
-  onConfirm: () => void | Promise<void>;
-}): void {
-  useUiStore.getState().requestConfirm(req);
-}
-
 export function EmptyState({
   icon,
   title,

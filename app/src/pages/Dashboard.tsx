@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ArrowRight,
   BookOpen,
+  CalendarCheck,
   Code2,
   Flame,
   MapPin,
@@ -24,11 +25,13 @@ import { habitsDueOn, timeAllocation } from '@/services/metrics';
 import { STREAK_RULES } from '@/services/streaks';
 import {
   addDaysISO,
+  diffDaysISO,
   formatHHMM12,
   formatMinutes,
   greeting,
   hhmmToMinutes,
   nowHHMM,
+  startOfWeekISO,
   todayISO,
   weekdayOf,
 } from '@/utils/date';
@@ -39,6 +42,7 @@ export function Dashboard() {
   const today = todayISO();
   const navigate = useUiStore((s) => s.navigate);
   const openQuickAdd = useUiStore((s) => s.openQuickAdd);
+  const setReviewOpen = useUiStore((s) => s.setReviewOpen);
   const setActiveDate = useDataStore((s) => s.setActiveDate);
 
   const day = useDayMetrics(today);
@@ -76,6 +80,13 @@ export function Dashboard() {
     [data.streaks],
   );
 
+  // Nudge a weekly review in the first two days of a new week, once there is a
+  // finished week worth reflecting on. Dismissible for the session.
+  const [reviewDismissed, setReviewDismissed] = useState(false);
+  const lastWeek = useRangeMetrics(addDaysISO(startOfWeekISO(today, data.settings.weekStartsOn), -7), addDaysISO(startOfWeekISO(today, data.settings.weekStartsOn), -1));
+  const daysIntoWeek = diffDaysISO(startOfWeekISO(today, data.settings.weekStartsOn), today);
+  const showReviewBanner = !reviewDismissed && daysIntoWeek <= 1 && lastWeek.activeDays > 0;
+
   return (
     <div className="animate-fade-in space-y-4">
       <PageHeader
@@ -92,6 +103,44 @@ export function Dashboard() {
           </>
         }
       />
+
+      {showReviewBanner && (
+        <button
+          type="button"
+          onClick={() => setReviewOpen(true)}
+          className="flex w-full items-center gap-3 rounded-panel border border-accent/30 bg-accent-soft px-4 py-3 text-left transition-colors hover:bg-accent-soft/70"
+        >
+          <CalendarCheck size={18} className="shrink-0 text-accent" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-ink">A new week — look back on the last one</p>
+            <p className="text-xs text-muted">
+              {lastWeek.activeDays} active {lastWeek.activeDays === 1 ? 'day' : 'days'}, {formatMinutes(lastWeek.studyMinutes)} studied. See what worked.
+            </p>
+          </div>
+          <span className="hidden items-center gap-1 text-xs font-medium text-accent sm:flex">
+            Open review <ArrowRight size={13} />
+          </span>
+          <span
+            role="button"
+            tabIndex={0}
+            aria-label="Dismiss weekly review prompt"
+            className="btn-icon h-7 w-7 shrink-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              setReviewDismissed(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                setReviewDismissed(true);
+              }
+            }}
+          >
+            ✕
+          </span>
+        </button>
+      )}
 
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="flex items-center gap-5 p-5 lg:col-span-1">

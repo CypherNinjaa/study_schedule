@@ -6,7 +6,7 @@ import { useDataStore } from '@/store/useDataStore';
 import { useUiStore } from '@/store/useUiStore';
 import { useData, useIndex } from '@/hooks/useMetrics';
 import { Card, CardHeader, PageHeader, Segmented } from '@/components/ui/Primitives';
-import { confirmAction } from '@/components/ui/ConfirmDialog';
+import { confirmAction } from '@/utils/confirm';
 import { Modal } from '@/components/ui/Modal';
 import { DayTimeline } from '@/components/planner/DayTimeline';
 import {

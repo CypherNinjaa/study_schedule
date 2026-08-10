@@ -14,7 +14,7 @@ import {
 import { useFeedbackStore } from '@/store/useFeedbackStore';
 import { useData } from '@/hooks/useMetrics';
 import { Card, CardHeader, PageHeader } from '@/components/ui/Primitives';
-import { confirmAction } from '@/components/ui/ConfirmDialog';
+import { confirmAction } from '@/utils/confirm';
 import { Modal } from '@/components/ui/Modal';
 import { addDaysISO, formatHHMM12, formatMinutes, hhmmToMinutes, todayISO, weekdayName } from '@/utils/date';
 

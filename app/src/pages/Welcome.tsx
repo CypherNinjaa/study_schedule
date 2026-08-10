@@ -27,8 +27,8 @@ export function Welcome() {
   const storageMode = useDataStore((s) => s.storageMode);
   const connectNewFile = useDataStore((s) => s.connectNewFile);
   const openExistingFile = useDataStore((s) => s.openExistingFile);
-  const useLocalOnly = useDataStore((s) => s.useLocalOnly);
-  const saveNow = useDataStore((s) => s.saveNow);
+  const continueLocalOnly = useDataStore((s) => s.continueLocalOnly);
+  const completeOnboarding = useDataStore((s) => s.completeOnboarding);
 
   const [step, setStep] = useState(0);
   const [name, setName] = useState(data?.profile.name ?? '');
@@ -81,7 +81,7 @@ export function Welcome() {
       },
       { silent: true },
     );
-    await saveNow();
+    await completeOnboarding();
   };
 
   return (
@@ -154,7 +154,7 @@ export function Welcome() {
                     <span className="block text-xs text-muted">Continue from a previous setup or another device</span>
                   </span>
                 </button>
-                <button type="button" className="btn-ghost w-full justify-start gap-3 py-3" onClick={() => void useLocalOnly()}>
+                <button type="button" className="btn-ghost w-full justify-start gap-3 py-3" onClick={() => void continueLocalOnly()}>
                   <HardDrive size={18} />
                   <span className="text-left">
                     <span className="block text-sm font-medium text-ink">Just use this browser for now</span>

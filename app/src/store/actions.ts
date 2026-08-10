@@ -689,7 +689,7 @@ export function deleteSemester(id: string): void {
 /* Streak freezes                                                      */
 /* ------------------------------------------------------------------ */
 
-export function useStreakFreeze(key: StreakKey, date: ISODate): void {
+export function spendStreakFreeze(key: StreakKey, date: ISODate): void {
   // mutate() runs `fn` synchronously against a draft, so the outcome is
   // readable straight after — and a rejected freeze never touches live state.
   let outcome: FreezeResult = { ok: false, reason: 'No data loaded yet.' };

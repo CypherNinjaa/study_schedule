@@ -4,7 +4,7 @@ import type { Task } from '@/types';
 import { deleteTask, duplicateTask, postponeTask, setTaskStatus } from '@/store/actions';
 import { useDataStore } from '@/store/useDataStore';
 import { useUiStore } from '@/store/useUiStore';
-import { confirmAction } from '@/components/ui/ConfirmDialog';
+import { confirmAction } from '@/utils/confirm';
 import { formatHHMM12, formatMinutes, todayISO, addDaysISO } from '@/utils/date';
 import { cn } from '@/utils/misc';
 import { taskXP } from '@/services/xp';

@@ -53,6 +53,8 @@ interface UiState {
   quickAddDate: ISODate | null;
   /** id of the task being edited, if any */
   taskEditorId: string | null;
+  /** §44 weekly review modal */
+  reviewOpen: boolean;
 
   navigate: (route: RouteId) => void;
   toggleSidebar: () => void;
@@ -65,6 +67,7 @@ interface UiState {
   openQuickAdd: (date?: ISODate | null) => void;
   openTaskEditor: (taskId: string) => void;
   closeTaskDialogs: () => void;
+  setReviewOpen: (open: boolean) => void;
 }
 
 const routeFromHash = (): RouteId => {
@@ -88,6 +91,7 @@ export const useUiStore = create<UiState>((set, get) => ({
   quickAddOpen: false,
   quickAddDate: null,
   taskEditorId: null,
+  reviewOpen: false,
 
   navigate: (route) => {
     if (window.location.hash !== `#/${route}`) window.location.hash = `#/${route}`;
@@ -117,6 +121,7 @@ export const useUiStore = create<UiState>((set, get) => ({
     set({ quickAddOpen: true, quickAddDate: date ?? todayISO(), taskEditorId: null }),
   openTaskEditor: (taskId) => set({ taskEditorId: taskId, quickAddOpen: false }),
   closeTaskDialogs: () => set({ quickAddOpen: false, quickAddDate: null, taskEditorId: null }),
+  setReviewOpen: (open) => set({ reviewOpen: open }),
 }));
 
 if (typeof window !== 'undefined') {

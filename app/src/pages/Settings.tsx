@@ -19,7 +19,7 @@ import { useFeedbackStore } from '@/store/useFeedbackStore';
 import { useUiStore } from '@/store/useUiStore';
 import { useData } from '@/hooks/useMetrics';
 import { Card, CardHeader, PageHeader } from '@/components/ui/Primitives';
-import { confirmAction } from '@/components/ui/ConfirmDialog';
+import { confirmAction } from '@/utils/confirm';
 import { formatMinutes } from '@/utils/date';
 import { cn } from '@/utils/misc';
 

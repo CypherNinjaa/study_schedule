@@ -13,7 +13,7 @@ import {
 import { useDataStore, type SaveState } from '@/store/useDataStore';
 import { useUiStore } from '@/store/useUiStore';
 import { updateSettings } from '@/store/actions';
-import { NAV } from './Sidebar';
+import { NAV } from './nav';
 import { cn } from '@/utils/misc';
 
 const SAVE_LABEL: Record<SaveState, string> = {

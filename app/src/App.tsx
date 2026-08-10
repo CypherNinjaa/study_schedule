@@ -12,6 +12,7 @@ import { CorruptedScreen } from '@/pages/CorruptedScreen';
 import { Welcome } from '@/pages/Welcome';
 import { QuickAddDialog } from '@/components/tasks/QuickAddDialog';
 import { CommandPalette } from '@/components/CommandPalette';
+import { WeeklyReview } from '@/components/WeeklyReview';
 import { Dashboard } from '@/pages/Dashboard';
 import { Today } from '@/pages/Today';
 import { Tasks } from '@/pages/Tasks';
@@ -25,6 +26,7 @@ import { Settings } from '@/pages/Settings';
 import { Calendar } from '@/pages/Calendar';
 import { addDaysISO, todayISO } from '@/utils/date';
 import { materialiseRecurring } from '@/store/actions';
+import { useReminders } from '@/hooks/useReminders';
 
 // Analytics pulls in Recharts, so it loads on demand.
 const Analytics = lazy(() => import('@/pages/Analytics'));
@@ -58,6 +60,8 @@ export default function App() {
   useEffect(() => {
     void boot();
   }, [boot]);
+
+  useReminders(bootPhase === 'ready' && onboarded);
 
   useEffect(() => {
     applyTheme(themeMode);
@@ -136,6 +140,7 @@ export default function App() {
 
       <QuickAddDialog />
       <CommandPalette />
+      <WeeklyReview />
       <ConfirmDialog />
       <Toaster />
       <XPFloats />

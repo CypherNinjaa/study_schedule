@@ -39,7 +39,9 @@ interface DataState {
   importData: () => Promise<void>;
   exportBackup: () => void;
   resetAllData: () => Promise<void>;
-  useLocalOnly: () => Promise<void>;
+  continueLocalOnly: () => Promise<void>;
+  /** Marks onboarding done and enters the app (booting/welcome → ready). */
+  completeOnboarding: () => Promise<void>;
 }
 
 export interface MutateOpts {
@@ -328,10 +330,17 @@ export const useDataStore = create<DataState>((set, get) => {
       await get().saveNow();
     },
 
-    useLocalOnly: async () => {
+    continueLocalOnly: async () => {
       const data = get().data ?? createDefaultData();
       await fs.forgetHandle();
       set({ data, storageMode: 'local', fileName: null, saveState: 'dirty' });
+      await get().saveNow();
+    },
+
+    completeOnboarding: async () => {
+      // The onboarding wizard has already written profile.onboarded via mutate;
+      // this flips the app out of the welcome gate and persists the result.
+      set({ bootPhase: 'ready' });
       await get().saveNow();
     },
   };

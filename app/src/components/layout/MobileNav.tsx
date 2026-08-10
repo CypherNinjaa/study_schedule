@@ -1,6 +1,6 @@
 import { CalendarDays, CheckSquare, Home, User, X, BookOpen } from 'lucide-react';
 import { useUiStore, type RouteId } from '@/store/useUiStore';
-import { NAV } from './Sidebar';
+import { NAV } from './nav';
 import { cn } from '@/utils/misc';
 
 const BOTTOM: { id: RouteId; label: string; icon: typeof Home }[] = [

@@ -5,7 +5,7 @@ import { createTask, deleteTask, updateTask } from '@/store/actions';
 import { useDataStore } from '@/store/useDataStore';
 import { useUiStore } from '@/store/useUiStore';
 import { Modal } from '@/components/ui/Modal';
-import { confirmAction } from '@/components/ui/ConfirmDialog';
+import { confirmAction } from '@/utils/confirm';
 import { useFeedbackStore } from '@/store/useFeedbackStore';
 import { taskXP } from '@/services/xp';
 

@@ -14,8 +14,9 @@ import {
 } from '@/store/actions';
 import { useFeedbackStore } from '@/store/useFeedbackStore';
 import { useData } from '@/hooks/useMetrics';
-import { Card, CardHeader, PageHeader, ProgressBar, Segmented, StatCard } from '@/components/ui/Primitives';
-import { EmptyState, confirmAction } from '@/components/ui/ConfirmDialog';
+import { Card, PageHeader, ProgressBar, Segmented, StatCard } from '@/components/ui/Primitives';
+import { EmptyState } from '@/components/ui/ConfirmDialog';
+import { confirmAction } from '@/utils/confirm';
 import { Modal } from '@/components/ui/Modal';
 import { subjectStats, type SubjectStats } from '@/services/metrics';
 import { diffDaysISO, formatDateShort, formatMinutes, todayISO } from '@/utils/date';

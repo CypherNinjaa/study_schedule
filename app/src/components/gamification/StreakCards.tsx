@@ -1,8 +1,7 @@
 import { Snowflake } from 'lucide-react';
-import { useDataStore } from '@/store/useDataStore';
 import { useData } from '@/hooks/useMetrics';
-import { useStreakFreeze } from '@/store/actions';
-import { confirmAction } from '@/components/ui/ConfirmDialog';
+import { spendStreakFreeze } from '@/store/actions';
+import { confirmAction } from '@/utils/confirm';
 import { STREAK_RULES, freezesRemainingThisWeek } from '@/services/streaks';
 import { addDaysISO, todayISO } from '@/utils/date';
 import { cn } from '@/utils/misc';
@@ -45,7 +44,7 @@ export function StreakCards({ compact = false }: { compact?: boolean }) {
                         left === 1 ? '' : 's'
                       } left this week, and it will not count as a day you actually did the work.`,
                       confirmLabel: 'Use freeze',
-                      onConfirm: () => useStreakFreeze(rule.key, yesterday),
+                      onConfirm: () => spendStreakFreeze(rule.key, yesterday),
                     })
                   }
                 >
@@ -72,9 +71,4 @@ export function StreakCards({ compact = false }: { compact?: boolean }) {
       })}
     </div>
   );
-}
-
-/** Hook-free variant used where the store is read directly. */
-export function useStreakSummary() {
-  return useDataStore((s) => s.data?.streaks.streaks ?? null);
 }
