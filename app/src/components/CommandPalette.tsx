@@ -134,8 +134,8 @@ export function CommandPalette() {
       },
       {
         id: 'act:docs',
-        label: 'Help & documentation',
-        hint: 'Opens in a new tab',
+        label: 'Help & docs',
+        hint: 'Opens documentation in a new tab',
         group: 'Help',
         icon: HelpCircle,
         run: openDocs,
