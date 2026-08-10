@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FAQ</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Frequently asked questions</h1>
+  <p class="lead">Quick answers to the things people wonder about most. If something here doesn't solve it, the <a href="troubleshooting.html">troubleshooting guide</a> goes deeper.</p>
+
+  <h2 id="general">Getting started &amp; basics</h2>
+
+  <details>
+    <summary>Is this free? Do I need an account?</summary>
+    <p>Yes, it's free, and there's no account. There's no sign-up, no login, and no server — you just open the app and start. Everything lives on your own device.</p>
+  </details>
+
+  <details>
+    <summary>Does it work offline?</summary>
+    <p>Completely. The app runs entirely in your browser with no network calls, so it works on a plane, in a library basement, anywhere. There's nothing to be "online" with.</p>
+  </details>
+
+  <details>
+    <summary>Which browser should I use?</summary>
+    <p>Chrome or Edge are recommended, because they let the app save directly to a real file you control. It still works in other browsers using a built-in browser-storage fallback — see <a href="concept-storage.html">Storage &amp; autosave</a> for the difference.</p>
+  </details>
+
+  <details>
+    <summary>Do I have to fill in everything to start?</summary>
+    <p>No. The <a href="getting-started.html">setup wizard</a> gets you going in a few minutes, and you can skip the parts you don't need yet. Add subjects, habits, and your timetable whenever you're ready.</p>
+  </details>
+
+  <h2 id="privacy">Privacy &amp; data</h2>
+
+  <details>
+    <summary>Where is my data stored? Can anyone see it?</summary>
+    <p>On your device only — in a file you choose, or your browser's local storage. Nothing is uploaded, there's no tracking, and no one else can see it. Read the full promise on <a href="concept-privacy.html">Privacy &amp; data safety</a>.</p>
+  </details>
+
+  <details>
+    <summary>How do I back up or move my data to another device?</summary>
+    <p>Use <strong>Export</strong> in <a href="guide-settings.html">Settings</a> to save a copy of your data file, then <strong>Import</strong> it on the other device. That's also your backup — keep an exported copy somewhere safe.</p>
+  </details>
+
+  <details>
+    <summary>Will I lose my data if I clear my browser or update it?</summary>
+    <p>If you use a real file (Chrome/Edge), your data lives in that file and survives browser changes. If you're on the browser-storage fallback, clearing browser data <em>can</em> remove it — so export a backup first. Either way, an occasional export is your safety net.</p>
+  </details>
+
+  <details>
+    <summary>Can I use it on my phone?</summary>
+    <p>The interface is fully responsive and works on a phone, with a bottom navigation bar. For heavy data entry and the file-based storage, a laptop or desktop in Chrome/Edge is the smoother experience.</p>
+  </details>
+
+  <h2 id="xp-streaks">XP, streaks &amp; scoring</h2>
+
+  <details>
+    <summary>Can I cheat to get more XP?</summary>
+    <p>Not really — and that's by design. XP is granted through an idempotent ledger, so toggling a task or habit on and off never pays out twice. Rewards track real actions, which is what makes them worth anything. See <a href="concept-xp.html">XP &amp; levels</a>.</p>
+  </details>
+
+  <details>
+    <summary>My streak broke even though I studied — why?</summary>
+    <p>Streaks are based on whether the day's condition was met (for example, hitting your study target, or waking within the early-wake grace window). Check that you logged enough to meet the target, and remember today's streak never counts as broken until the day is actually over. Details on <a href="concept-streaks.html">Streaks &amp; freezes</a>.</p>
+  </details>
+
+  <details>
+    <summary>What's a streak freeze and how do I get one?</summary>
+    <p>A freeze protects a streak on a day you can't keep it. You get one free freeze per week by default — use it on a genuine off day rather than losing a long run.</p>
+  </details>
+
+  <details>
+    <summary>How is my productivity score calculated?</summary>
+    <p>It's a weighted blend of study, tasks, habits, coding, sleep, exercise, and schedule adherence, minus a distraction penalty. The full weights and labels are on <a href="concept-score.html">Productivity score</a>.</p>
+  </details>
+
+  <h2 id="features">Features &amp; usage</h2>
+
+  <details>
+    <summary>What's the difference between a task and a habit?</summary>
+    <p>A <a href="guide-tasks.html">task</a> is one-off — do it and it's done. A <a href="guide-habits.html">habit</a> repeats on a schedule and builds a streak; completing it today just means it comes back on its next due day.</p>
+  </details>
+
+  <details>
+    <summary>What's the difference between the Calendar, Timetable, and Today planner?</summary>
+    <p>The <a href="guide-timetable.html">Timetable</a> is your repeating weekly class schedule. The <a href="guide-calendar.html">Calendar</a> shows specific dated items across weeks and months. The <a href="guide-today.html">Today planner</a> is the detailed hour-by-hour view of a single day.</p>
+  </details>
+
+  <details>
+    <summary>Do I have to use the Pomodoro timer to log study?</summary>
+    <p>No. You can enter a study session manually with its duration, or let a completed Pomodoro log it automatically. Both count the same way.</p>
+  </details>
+
+  <details>
+    <summary>Can I change the seeded subjects and timetable?</summary>
+    <p>Absolutely — everything seeded is fully editable. Rename subjects, adjust topics and targets, and reshape the timetable to match your actual semester.</p>
+  </details>
+</main>
+</body>
+</html>

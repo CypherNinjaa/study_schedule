@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Goals</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Goals</h1>
+  <p class="lead">Bigger targets that span weeks or months — "study 100 hours this semester," "finish the syllabus," "maintain a 14-day study streak." Goals track their own progress, some of them automatically.</p>
+
+  <h2 id="anatomy">What a goal contains</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Title &amp; description</td><td>What you're aiming for and why.</td></tr>
+        <tr><td>Target &amp; unit</td><td>The number to reach and its unit (hours, sessions, tasks, days…).</td></tr>
+        <tr><td>Current</td><td>Progress so far — updated automatically or by you.</td></tr>
+        <tr><td>Deadline</td><td>When it should be done by.</td></tr>
+        <tr><td>Category &amp; priority</td><td>For grouping and focus.</td></tr>
+        <tr><td>Status</td><td>Active, completed, or failed.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="auto-vs-manual">Automatic vs manual goals</h2>
+  <p>Goals come in two flavours:</p>
+  <ul>
+    <li><strong>Automatic</strong> — the app measures progress for you from your data. A "study 100 hours" goal fills as you log study sessions; a streak goal tracks your live streak. You never update it by hand.</li>
+    <li><strong>Manual</strong> — you set the current value yourself, for things the app can't measure (like "read 5 chapters").</li>
+  </ul>
+  <div class="callout callout--info">
+    <span class="callout__icon" data-icon="target"></span>
+    <div class="callout__body">
+      <p>Automatic goals are recomputed every time your data changes, so their progress bars are always current without any bookkeeping from you.</p>
+    </div>
+  </div>
+
+  <h2 id="lifecycle">The goal lifecycle</h2>
+  <ol class="steps steps--plain">
+    <li><h3>Active</h3><p>In progress, with a live progress bar toward the target.</p></li>
+    <li><h3>Completed</h3><p>You reached the target. This awards <strong>+75 XP</strong> (and weekly goals award <strong>+100</strong>).</p></li>
+    <li><h3>Failed</h3><p>The deadline passed without reaching the target. Automatic goals mark themselves failed so your goal list stays honest — a clear signal to reset or rescope.</p></li>
+  </ol>
+
+  <h2 id="creating">Creating a good goal</h2>
+  <ol class="steps">
+    <li><h3>Make it measurable</h3><p>Pick a target and unit the app (or you) can actually track — "50 coding hours," not "get better at coding."</p></li>
+    <li><h3>Give it a real deadline</h3><p>A deadline turns a wish into a plan and lets the app tell you if you're on pace.</p></li>
+    <li><h3>Prefer automatic where possible</h3><p>If the app can measure it from study, coding, tasks, or streaks, let it — less manual upkeep, more accuracy.</p></li>
+  </ol>
+
+  <div class="callout callout--tip">
+    <span class="callout__icon" data-icon="sparkles"></span>
+    <div class="callout__body">
+      <span class="callout__title">Tie goals to exams</span>
+      <p>Around exam season, set a study-hours goal per subject with the exam as the deadline. Combined with the exam-proximity insights and <a href="guide-subjects.html">subject progress</a>, you'll always know which subject needs attention next.</p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

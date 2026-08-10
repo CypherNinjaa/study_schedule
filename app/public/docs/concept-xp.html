@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XP &amp; levels</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>XP &amp; levels</h1>
+  <p class="lead">Experience points turn real effort into visible progress. Here's exactly how XP is earned, how levels grow, and why you can't cheat the system.</p>
+
+  <h2 id="what-earns-xp">What earns XP</h2>
+  <p>XP is awarded for genuine actions across the app. The main sources:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Action</th><th>XP</th></tr></thead>
+      <tbody>
+        <tr><td>Complete a task</td><td>10 base, scaling with difficulty and priority (see below)</td></tr>
+        <tr><td>Complete a study session</td><td>10 + 5 per 30 minutes (capped at 40)</td></tr>
+        <tr><td>Complete a Pomodoro</td><td>15</td></tr>
+        <tr><td>Keep a habit for the day</td><td>10</td></tr>
+        <tr><td>Hit your daily study goal</td><td>50</td></tr>
+        <tr><td>Hit your daily coding goal</td><td>30</td></tr>
+        <tr><td>Complete every planned task in a day</td><td>50 <span class="muted">(needs at least two tasks)</span></td></tr>
+        <tr><td>Exercise</td><td>15</td></tr>
+        <tr><td>Hit a weekly goal</td><td>100</td></tr>
+        <tr><td>Complete a goal</td><td>75</td></tr>
+        <tr><td>Unlock an achievement</td><td>40</td></tr>
+        <tr><td>Do a daily review</td><td>15</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>How task XP scales</h3>
+  <p>A task is worth more when it's harder and more urgent:</p>
+  <pre><code>task XP = 10 (base)
+        + (difficulty − 1) × 4
+        + priority bonus
+
+priority bonus:  low +0   medium +2   high +5   critical +8</code></pre>
+  <p>So a routine task (difficulty 1, low priority) is worth <strong>10 XP</strong>, while a hard, critical task (difficulty 5, critical priority) is worth <strong>10 + 16 + 8 = 34 XP</strong>. Difficulty is always clamped to the 1–5 range.</p>
+
+  <h2 id="levels">How levels work</h2>
+  <p>Your total XP determines your level, and the amount needed for each level grows on a smooth quadratic curve — early levels come quickly to build momentum, later ones take sustained effort.</p>
+  <pre><code>XP needed to reach level L = 25 × (L−1)² + 75 × (L−1)</code></pre>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Level</th><th>Total XP required</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>0</td></tr>
+        <tr><td>2</td><td>100</td></tr>
+        <tr><td>3</td><td>250</td></tr>
+        <tr><td>4</td><td>450</td></tr>
+        <tr><td>5</td><td>700</td></tr>
+        <tr><td>6</td><td>1,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Your dashboard shows your current level, a progress bar toward the next one, and how much XP remains. When you cross a threshold, a brief <strong>Level up!</strong> celebration appears.</p>
+
+  <h2 id="anti-farming">Why you can't farm XP</h2>
+  <p>Gamification is worthless if you can game it. The app awards XP based on real <em>state transitions</em>, not repeated clicks. Every award is recorded once against a unique key in a ledger.</p>
+  <div class="callout callout--info">
+    <span class="callout__icon" data-icon="shield"></span>
+    <div class="callout__body">
+      <p><strong>Example:</strong> Completing a task grants its XP once. If you un-complete it and complete it again, no new XP is granted — the ledger already recorded that task's completion. The same idempotent rule applies to study sessions, Pomodoros, habits, daily goals, and achievements.</p>
+    </div>
+  </div>
+  <p>This means your level always reflects work you genuinely did. It also means XP totals stay stable and correct even if you edit history or re-import a file.</p>
+
+  <h2 id="where-you-see-it">Where you see XP</h2>
+  <ul>
+    <li><strong>Dashboard</strong> — current level, XP progress bar, and today's XP.</li>
+    <li><strong>Floating "+XP" cues</strong> — a subtle animation when you earn points.</li>
+    <li><strong>Analytics</strong> — XP progression over time.</li>
+    <li><strong>Daily &amp; weekly reviews</strong> — XP earned in the period.</li>
+  </ul>
+  <p>Related: <a href="concept-streaks.html">Streaks &amp; freezes</a> and <a href="guide-achievements.html">Achievements</a>.</p>
+</main>
+</body>
+</html>

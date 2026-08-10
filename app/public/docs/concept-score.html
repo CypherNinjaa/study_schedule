@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Productivity score</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Productivity score</h1>
+  <p class="lead">A single number from 0 to 100 that sums up your day — built from weighted factors you can see, never an arbitrary guess.</p>
+
+  <h2 id="the-idea">The idea</h2>
+  <p>The productivity score answers "how did today go?" at a glance. Crucially, it's fully transparent: the app shows the exact contribution of each factor, so an 82 is always explainable. It rewards balance — a day of nothing but study won't max it out, because tasks, habits, sleep, and the rest all count too.</p>
+
+  <h2 id="factors">The factors and their weights</h2>
+  <p>Each factor contributes up to a fixed maximum. You earn a share of that maximum based on how close you got to the relevant target.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Factor</th><th>Max points</th><th>Based on</th></tr></thead>
+      <tbody>
+        <tr><td>Study</td><td>+30</td><td>study minutes vs your daily study target</td></tr>
+        <tr><td>Tasks</td><td>+25</td><td>tasks completed vs tasks planned</td></tr>
+        <tr><td>Habits</td><td>+15</td><td>habits done vs habits due today</td></tr>
+        <tr><td>Coding</td><td>+10</td><td>coding minutes vs your daily coding target</td></tr>
+        <tr><td>Sleep</td><td>+10</td><td>how close sleep was to your target</td></tr>
+        <tr><td>Exercise</td><td>+5</td><td>exercise minutes vs your exercise target</td></tr>
+        <tr><td>Schedule adherence</td><td>+5</td><td>time-blocked items you actually completed</td></tr>
+        <tr><td>Distraction</td><td>−10 (penalty)</td><td>social media time over your limit</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The positive factors add up to 100. The distraction penalty can subtract up to 10, and the final total is clamped to the 0–100 range.</p>
+
+  <div class="callout callout--info">
+    <span class="callout__icon" data-icon="gauge"></span>
+    <div class="callout__body">
+      <span class="callout__title">Example breakdown</span>
+      <p>A typical strong day might read: Study +30, Tasks +25, Habits +15, Coding +10, Sleep +8, Exercise +5, Adherence +5, Distraction −6 → <strong>score 92, "Outstanding"</strong>. Every line is shown on your dashboard so you know precisely where the points came from.</p>
+    </div>
+  </div>
+
+  <h2 id="details">How each factor is scored</h2>
+  <ul>
+    <li><strong>Proportional factors</strong> (study, tasks, habits, coding, exercise, adherence) give you the fraction of their maximum equal to your progress toward the target. Half your study target ≈ +15 of the 30.</li>
+    <li><strong>Sleep</strong> peaks when you're near your target. Both too little and too much pull it down gently, rather than rewarding extremes.</li>
+    <li><strong>Distraction</strong> only bites when you exceed your own social-media limit, and it scales with how far over you go — up to the −10 cap.</li>
+  </ul>
+  <p>Factors with no data simply don't count against you — if you had no tasks planned, the tasks factor is treated as neutral rather than a zero.</p>
+
+  <h2 id="labels">Score labels</h2>
+  <p>Each score maps to a plain-language label so you don't have to interpret the number:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Score</th><th>Label</th></tr></thead>
+      <tbody>
+        <tr><td>90–100</td><td>Outstanding</td></tr>
+        <tr><td>80–89</td><td>Excellent</td></tr>
+        <tr><td>70–79</td><td>Strong</td></tr>
+        <tr><td>55–69</td><td>Decent</td></tr>
+        <tr><td>35–54</td><td>Below par</td></tr>
+        <tr><td>1–34</td><td>Rough day</td></tr>
+        <tr><td>0</td><td>No data</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout--tip">
+    <span class="callout__icon" data-icon="sparkles"></span>
+    <div class="callout__body">
+      <span class="callout__title">Don't chase 100</span>
+      <p>The score is feedback, not a boss. A sustainable 75 every day beats a burnout 95 followed by three zeros. Use it to spot patterns — which factor keeps costing you points — and adjust. See <a href="guide-analytics.html">Analytics</a> for trends over time.</p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

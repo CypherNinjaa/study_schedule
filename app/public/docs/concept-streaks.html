@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Streaks &amp; freezes</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Streaks &amp; freezes</h1>
+  <p class="lead">Streaks reward showing up day after day. The app tracks six of them, each with its own rule for what "counting" means — plus a streak freeze so one off day doesn't erase weeks of consistency.</p>
+
+  <h2 id="the-six">The six streaks</h2>
+  <p>Each streak counts consecutive days on which you met its condition. Miss a day and it resets; meet it and it grows.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Streak</th><th>Qualifies when, on a given day, you…</th></tr></thead>
+      <tbody>
+        <tr><td>🔥 Study</td><td>reach your daily study-minutes target</td></tr>
+        <tr><td>💻 Coding</td><td>reach your daily coding-minutes target</td></tr>
+        <tr><td>🏃 Exercise</td><td>log at least some exercise for the day</td></tr>
+        <tr><td>🌅 Early wake</td><td>wake at or before your wake-time target (with a small grace window)</td></tr>
+        <tr><td>✅ Tasks</td><td>complete all your planned tasks for the day</td></tr>
+        <tr><td>🔁 Habits</td><td>complete all habits that were due that day</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout--info">
+    <span class="callout__icon" data-icon="info"></span>
+    <div class="callout__body">
+      <p>The early-wake streak includes a <strong>15-minute grace</strong> — waking a few minutes late still counts, so the streak reflects your real routine rather than punishing you to the second.</p>
+    </div>
+  </div>
+
+  <h2 id="how-counted">How streaks are counted</h2>
+  <p>Streaks are always <em>derived from your history</em>, not stored as a fragile counter. That means they stay correct even if you edit a past day or re-import your data — the app recomputes them from the underlying records.</p>
+  <p>Two important behaviours:</p>
+  <ul>
+    <li><strong>Today never breaks a streak.</strong> A streak only resets once a qualifying day has fully passed without the condition met. So at 2pm, a study streak you haven't earned <em>yet</em> today is still shown as alive — you have until the day ends.</li>
+    <li><strong>Best streak is remembered.</strong> Alongside the current streak, the app keeps your all-time best for each type, so a reset never erases the memory of your record.</li>
+  </ul>
+
+  <h2 id="freezes">Streak freezes</h2>
+  <p>Life happens. A streak freeze protects a streak on a day you couldn't meet the condition, so a single miss doesn't wipe out weeks of momentum.</p>
+  <ul>
+    <li>You get <strong>one free freeze per week</strong> by default (adjustable in Settings).</li>
+    <li>Applying a freeze to a day keeps the streak intact across that gap.</li>
+    <li>You can remove a freeze if you applied it by mistake.</li>
+    <li>Unused freezes don't stockpile indefinitely — the weekly allowance keeps them meaningful.</li>
+  </ul>
+
+  <div class="callout callout--tip">
+    <span class="callout__icon" data-icon="flame"></span>
+    <div class="callout__body">
+      <span class="callout__title">Use freezes deliberately</span>
+      <p>A freeze is best spent on a genuine exception — a travel day, an exam, illness — not as a routine crutch. The app will even nudge you when a long streak is at risk so you can decide: push through today, or spend a freeze.</p>
+    </div>
+  </div>
+
+  <h2 id="where-you-see-it">Where streaks appear</h2>
+  <ul>
+    <li><strong>Dashboard</strong> — your active streaks front and centre.</li>
+    <li><strong>Insights</strong> — timely warnings like "Your 8-day study streak needs today."</li>
+    <li><strong>Analytics</strong> — streak history over time.</li>
+    <li><strong>Achievements</strong> — many badges are tied to streak milestones (3, 7, 30 days, and beyond).</li>
+  </ul>
+  <p>Related: <a href="concept-xp.html">XP &amp; levels</a>, <a href="guide-habits.html">Habits</a>, and <a href="guide-settings.html">Settings</a> for changing your targets and freeze allowance.</p>
+</main>
+</body>
+</html>

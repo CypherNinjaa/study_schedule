@@ -1,6 +1,6 @@
-import { CalendarDays, CheckSquare, Home, User, X, BookOpen } from 'lucide-react';
+import { CalendarDays, CheckSquare, Home, User, X, BookOpen, HelpCircle } from 'lucide-react';
 import { useUiStore, type RouteId } from '@/store/useUiStore';
-import { NAV } from './nav';
+import { NAV, openDocs } from './nav';
 import { cn } from '@/utils/misc';
 
 const BOTTOM: { id: RouteId; label: string; icon: typeof Home }[] = [
@@ -70,6 +70,18 @@ export function MobileDrawer() {
               {label}
             </button>
           ))}
+
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              openDocs();
+            }}
+            className="nav-item w-full"
+          >
+            <HelpCircle size={18} />
+            Help &amp; docs
+          </button>
         </nav>
       </div>
     </div>

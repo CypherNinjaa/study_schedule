@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Today &amp; planner</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Today &amp; planner</h1>
+  <p class="lead">The Today page is where you plan and run a single day — a timeline that blends your classes, planned blocks, and tasks into one place to work from.</p>
+
+  <h2 id="overview">What the planner shows</h2>
+  <p>Today lays your day out as a timeline, from your wake time to your sleep time. On it you'll see:</p>
+  <ul>
+    <li><strong>Classes</strong> pulled from your <a href="guide-timetable.html">timetable</a> for that weekday.</li>
+    <li><strong>Tasks</strong> scheduled for the day, with their times, categories, and status.</li>
+    <li><strong>Routine anchors</strong> like wake, travel, and sleep, derived from your settings.</li>
+  </ul>
+  <p>It's the practical counterpart to the <a href="guide-dashboard.html">dashboard</a>: the dashboard summarises, Today is where you actually do the work.</p>
+
+  <h2 id="planning">Planning your day</h2>
+  <ol class="steps">
+    <li><h3>Review what's fixed</h3><p>Your classes and routine anchors are already placed. See the gaps between them — that's your available time.</p></li>
+    <li><h3>Add tasks into the gaps</h3><p>Create tasks and give them a start time so they land on the timeline. Use the quick-add (the + button or <span class="kbd">Ctrl</span> + <span class="kbd">K</span> → "Add task").</p></li>
+    <li><h3>Order by priority</h3><p>Put your most important work in your best hours. The app highlights high and critical priority tasks.</p></li>
+  </ol>
+
+  <h2 id="working">Working through the day</h2>
+  <p>As you go, keep the timeline honest by updating each item's status. Every task supports these states:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Status</th><th>Use it when</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pill">To do</span></td><td>Not started yet.</td></tr>
+        <tr><td><span class="pill pill--accent">In progress</span></td><td>You're actively working on it.</td></tr>
+        <tr><td><span class="pill pill--ok">Completed</span></td><td>Done — awards XP and updates streaks and score.</td></tr>
+        <tr><td><span class="pill pill--warn">Skipped</span></td><td>Consciously not doing it today.</td></tr>
+        <tr><td><span class="pill">Postponed</span></td><td>Moving it to another day.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout--tip">
+    <span class="callout__icon" data-icon="check"></span>
+    <div class="callout__body">
+      <span class="callout__title">Skip and postpone are features, not failures</span>
+      <p>An accurate day is more useful than a perfect-looking one. Marking something skipped or postponed keeps your analytics truthful and prevents overdue clutter. The app even nudges you to clear out stale overdue tasks.</p>
+    </div>
+  </div>
+
+  <h2 id="free-time">Turning free time into progress</h2>
+  <p>Because the planner knows your fixed commitments, it can point out genuinely open time. When there's a meaningful gap, that's your cue to slot in a study block or a task — a short session still moves a subject forward. See the free-time insight on <a href="guide-analytics.html">Analytics</a>.</p>
+
+  <h2 id="recurring">Recurring items</h2>
+  <p>Things you do every day or every week — a morning revision block, daily coding practice — can be set to recur so you don't recreate them each day. Recurring templates roll forward automatically. Set recurrence when creating a task; see <a href="guide-tasks.html">Tasks</a>.</p>
+
+  <p>Next: manage the full backlog beyond a single day in <a href="guide-tasks.html">Tasks</a>.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subjects &amp; exams</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Subjects &amp; exams</h1>
+  <p class="lead">Manage each course as a living record: its syllabus topics, assignments, exam date, and how much you've actually studied it. This is where study time turns into visible syllabus progress.</p>
+
+  <h2 id="what-is-a-subject">What a subject holds</h2>
+  <dl class="kv">
+    <dt>Name &amp; code</dt><dd>e.g. "Time Series Analysis" (STAT311).</dd>
+    <dt>Teacher &amp; credits</dt><dd>Who teaches it and its credit weight.</dd>
+    <dt>Difficulty &amp; target hours</dt><dd>How hard it is for you and how many hours you're aiming to put in.</dd>
+    <dt>Topics</dt><dd>The syllabus broken into modules and topics you can tick off.</dd>
+    <dt>Assignments</dt><dd>Coursework with due dates.</dd>
+    <dt>Exam date</dt><dd>Powers exam-countdown insights.</dd>
+    <dt>Notes</dt><dd>Anything subject-specific worth keeping.</dd>
+  </dl>
+
+  <h2 id="seeded">The seeded BCA-V subjects</h2>
+  <p>If you accepted the subject seed during setup, you start with six courses, each pre-filled with its syllabus modules:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Code</th><th>Subject</th></tr></thead>
+      <tbody>
+        <tr><td>STAT311</td><td>Time Series Analysis</td></tr>
+        <tr><td>CSIT379</td><td>Data Science — An Introduction</td></tr>
+        <tr><td>CSIT394</td><td>Analytical Data Visualization</td></tr>
+        <tr><td>QAM303</td><td>Computational Quantitative Techniques</td></tr>
+        <tr><td>BC308</td><td>Campus to Corporate</td></tr>
+        <tr><td>FREN316</td><td>Communicative French</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Everything is editable — rename, re-weight, add or remove topics, and adjust targets to match your actual syllabus. Higher-credit subjects are seeded with a larger default target-hours figure.</p>
+
+  <h2 id="progress">Subject progress</h2>
+  <p>Each subject shows a progress bar built from two things working together:</p>
+  <ul>
+    <li><strong>Topics completed</strong> — how much of the syllabus you've ticked off.</li>
+    <li><strong>Study time logged</strong> — hours recorded against that subject via <a href="guide-study.html">study sessions</a> and Pomodoros.</li>
+  </ul>
+  <p>Because study sessions can be tagged with a subject, simply studying and logging it keeps these bars moving without extra admin.</p>
+
+  <h2 id="exams">Exams and countdowns</h2>
+  <p>Set an exam date and the app watches the calendar for you. As an exam approaches (within about three weeks), an insight appears telling you how many days remain, how much you've studied that subject recently, and how many topics are still open — turning urgency into a clear next action.</p>
+
+  <div class="callout callout--warn">
+    <span class="callout__icon" data-icon="graduation"></span>
+    <div class="callout__body">
+      <span class="callout__title">Neglected-subject alerts</span>
+      <p>If a subject gets no study time for two weeks, Analytics flags it. It's an easy way to catch the course you've quietly been avoiding before it becomes a problem.</p>
+    </div>
+  </div>
+
+  <h2 id="workflow">A simple subject workflow</h2>
+  <ol class="steps">
+    <li><h3>Keep topics current</h3><p>Tick topics as you finish them so progress reflects reality.</p></li>
+    <li><h3>Tag your study</h3><p>Always pick the subject when logging a session — it's what powers subject analytics.</p></li>
+    <li><h3>Set exam dates early</h3><p>The countdown insights only help if the dates are in.</p></li>
+    <li><h3>Review before exams</h3><p>Use subject progress plus <a href="guide-goals.html">goals</a> to decide where the next hour should go.</p></li>
+  </ol>
+</main>
+</body>
+</html>

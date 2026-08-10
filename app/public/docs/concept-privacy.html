@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy &amp; data safety</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Privacy &amp; data safety</h1>
+  <p class="lead">The core promise of Productivity OS: your private productivity data stays on your device, and the app goes to real lengths to make sure you never lose it.</p>
+
+  <h2 id="privacy">Privacy by design</h2>
+  <p>This isn't a setting you turn on — it's how the app is built. There is simply no code that sends your data anywhere.</p>
+  <ul class="checklist">
+    <li data-icon="lock"><span><strong>No servers.</strong> Your productivity data is never uploaded. There's no backend to receive it.</span></li>
+    <li data-icon="lock"><span><strong>No accounts.</strong> No sign-up, no login, no email. Nothing identifies you.</span></li>
+    <li data-icon="lock"><span><strong>No tracking.</strong> No analytics, no telemetry, no cookies following you. Your usage isn't measured.</span></li>
+    <li data-icon="lock"><span><strong>No third parties.</strong> Nothing about how you study, sleep, or spend your time is shared with anyone.</span></li>
+    <li data-icon="lock"><span><strong>Works offline.</strong> Because it needs no network, you can use it on a plane, and it can't leak what it can't send.</span></li>
+  </ul>
+  <p>The only time data leaves your device is when <em>you</em> explicitly export or share a file. That's a deliberate action you take, and it's entirely in your control.</p>
+
+  <div class="callout callout--tip">
+    <span class="callout__icon" data-icon="shield"></span>
+    <div class="callout__body">
+      <span class="callout__title">Especially the personal stuff</span>
+      <p>Sensitive metrics like sleep and relationship time are treated as neutral, private numbers. They're shown to you, never judged, and never transmitted.</p>
+    </div>
+  </div>
+
+  <h2 id="never-lose">Never silently lose data</h2>
+  <p>Privacy is only half the promise. The other half is that your months of records don't vanish. Several safeguards work together:</p>
+
+  <h3>Autosave on every change</h3>
+  <p>There's no "did I save?" moment. Every meaningful edit is written automatically, and pending writes are flushed when you leave the tab. Details in <a href="concept-storage.html">Storage &amp; autosave</a>.</p>
+
+  <h3>A browser mirror as a safety net</h3>
+  <p>Even in file mode, the app keeps a synced copy inside the browser. If file access drops, saving continues to the mirror so no change is lost while you're disconnected.</p>
+
+  <h3>Corruption protection</h3>
+  <p>If the app ever opens a file that isn't valid — truncated, hand-edited badly, or damaged by a disk error — it will <strong>not</strong> overwrite it. Instead it shows a clear message, preserves a backup of the unreadable file, and lets you recover rather than destroying what's there.</p>
+  <div class="callout callout--warn">
+    <span class="callout__icon" data-icon="info"></span>
+    <div class="callout__body">
+      <p><em>"Your data file appears to be corrupted. A backup has been created."</em> — If you see this, don't panic and don't overwrite anything. Head to <a href="troubleshooting.html">Troubleshooting</a> for recovery steps.</p>
+    </div>
+  </div>
+
+  <h3>Confirmation before destruction</h3>
+  <p>The app never deletes your data without asking. Destructive actions — like resetting all data — require an explicit confirmation first. See <a href="guide-settings.html">Settings</a>.</p>
+
+  <h2 id="your-responsibilities">Your part of the deal</h2>
+  <p>Because your data is truly yours, its safety is partly in your hands. A few habits keep it bulletproof:</p>
+  <ul>
+    <li><strong>Prefer file mode</strong> in Chrome or Edge — a real file survives browser resets.</li>
+    <li><strong>Download a backup weekly</strong>, especially if you're in browser mode.</li>
+    <li><strong>Keep backups somewhere separate</strong> — a synced folder or external drive.</li>
+    <li><strong>Before clearing browser data</strong>, make sure your file is connected or you've exported a copy.</li>
+  </ul>
+  <p>See <a href="tips.html">Tips &amp; best practices</a> for a simple backup routine.</p>
+</main>
+</body>
+</html>

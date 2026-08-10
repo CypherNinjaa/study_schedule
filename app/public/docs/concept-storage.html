@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Storage &amp; autosave</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Storage &amp; autosave</h1>
+  <p class="lead">Your entire workspace lives in one JSON file on your device. This page explains how it's saved, what happens automatically, and what to do if the connection to the file is ever lost.</p>
+
+  <h2 id="one-file">Everything is one JSON file</h2>
+  <p>All of it — profile, settings, timetable, tasks, study sessions, habits, XP, streaks, achievements, goals, notes — is stored in a single structured JSON file, for example <code>productivity-data.json</code>. Because it's plain text, you can read it in any editor, copy it to a USB drive, email it to yourself, or keep it in a synced folder. You own it completely.</p>
+
+  <div class="callout callout--info">
+    <span class="callout__icon" data-icon="info"></span>
+    <div class="callout__body">
+      <p>The file is <strong>versioned</strong>. It carries a schema version number so that future updates to the app can safely understand and upgrade files created by older versions.</p>
+    </div>
+  </div>
+
+  <h2 id="how-saving-works">How autosave works</h2>
+  <p>You never have to press save. The moment you change anything — complete a task, log a study session, edit your timetable — the app:</p>
+  <ol class="steps steps--plain">
+    <li><h3>Updates instantly</h3><p>The change appears on screen immediately and is marked as "unsaved".</p></li>
+    <li><h3>Waits a beat</h3><p>A short debounce (under a second) batches rapid edits together so it isn't writing on every keystroke.</p></li>
+    <li><h3>Writes to your file</h3><p>The indicator shows "Saving…", then "Saved ✓" once the write completes.</p></li>
+  </ol>
+  <p>Writes are also flushed when you switch away from the tab or close it, so a change made a split second before closing still lands safely.</p>
+
+  <h2 id="two-modes">The two storage modes</h2>
+  <p>Depending on your browser and your choice during setup, the app saves in one of two ways:</p>
+
+  <h3>File mode (recommended)</h3>
+  <p>Available in Chrome and Edge on desktop. Using the browser's File System Access API, the app writes directly to the <code>.json</code> file you chose. The file on disk is always the source of truth, and a copy is also mirrored inside the browser as a safety net.</p>
+
+  <h3>Browser mode (fallback)</h3>
+  <p>If your browser can't write files directly, or you chose "just use this browser," your data is stored inside the browser using IndexedDB. It's still private and persists between sessions — but it lives in that browser profile, so it won't appear if you switch browsers or clear site data. In this mode, use <strong>Download backup</strong> regularly and keep the file somewhere safe.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>File mode</th><th>Browser mode</th></tr></thead>
+      <tbody>
+        <tr><td>Where data lives</td><td>A file you chose on disk</td><td>Inside the browser (IndexedDB)</td></tr>
+        <tr><td>Browsers</td><td>Chrome, Edge (desktop)</td><td>Any browser</td></tr>
+        <tr><td>Survives clearing browser data</td><td>Yes — the file remains</td><td>No — export backups</td></tr>
+        <tr><td>Easy to move between devices</td><td>Yes — copy the file</td><td>Export, then import elsewhere</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="disconnected">"File disconnected" — what it means</h2>
+  <p>Browsers sometimes drop write permission to a file — for instance after a restart, or if the file was moved. When that happens the indicator shows <span class="pill pill--warn">File disconnected</span>. Nothing is lost: the app keeps saving to its in-browser mirror in the meantime.</p>
+  <p>To restore the direct file connection, click the indicator (or use <strong>Reconnect</strong> in Settings) and grant permission again. The app compares the file on disk with its mirror and keeps whichever is newer, so you never lose the latest work.</p>
+
+  <div class="callout callout--warn">
+    <span class="callout__icon" data-icon="wrench"></span>
+    <div class="callout__body">
+      <span class="callout__title">If reconnecting keeps failing</span>
+      <p>Your data is safe in the browser regardless. Download a backup immediately, then see <a href="troubleshooting.html">Troubleshooting</a> for step-by-step recovery.</p>
+    </div>
+  </div>
+
+  <h2 id="backups">Backups, import, and export</h2>
+  <p>Independent of autosave, you can always take a manual snapshot:</p>
+  <ul>
+    <li><strong>Download backup</strong> — saves a timestamped copy of your complete data as a <code>.json</code> file.</li>
+    <li><strong>Export</strong> — the same complete data, for moving to another device or archiving.</li>
+    <li><strong>Import</strong> — load a previously exported/backed-up file. Handy when moving from browser mode to file mode, or to a new computer.</li>
+  </ul>
+  <p>All of these live on the <a href="guide-settings.html">Settings</a> page and in the <a href="guide-palette.html">command palette</a>. For the privacy guarantees around all of this, see <a href="concept-privacy.html">Privacy &amp; data safety</a>.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Troubleshooting</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Troubleshooting</h1>
+  <p class="lead">When something isn't behaving, start here. Most issues come down to storage access or a browser quirk, and nearly all are fixable without losing any data.</p>
+
+  <div class="callout callout--info">
+    <span class="callout__icon" data-icon="shield"></span>
+    <div class="callout__body">
+      <p>First principle: <strong>your data is designed to survive.</strong> The app autosaves, keeps a browser mirror, and refuses to overwrite a file it can't read. Before trying any fix below, an <a href="guide-settings.html">export</a> gives you a guaranteed safety net.</p>
+    </div>
+  </div>
+
+  <h2 id="saving">Saving &amp; storage</h2>
+
+  <details>
+    <summary>The indicator says "Disconnected" or "Unsaved"</summary>
+    <p>The browser lost permission to write to your file — common after reopening the app in a new session. Open <a href="guide-settings.html">Settings</a> and use <strong>Reconnect file</strong>, then re-select your data file. Your recent work is held in the browser mirror in the meantime, so you won't lose it by reconnecting.</p>
+  </details>
+
+  <details>
+    <summary>It keeps asking me to pick my file every time I open it</summary>
+    <p>Some browsers require re-granting file access per session for security. Reconnect when prompted. If it's disruptive, you can rely on browser-storage mode instead — just be sure to export backups regularly, since clearing browser data would remove that copy.</p>
+  </details>
+
+  <details>
+    <summary>I got a message that my data file couldn't be read</summary>
+    <p>The app detected the file was invalid or corrupt and, deliberately, <strong>did not overwrite it</strong> — that protects whatever might be recoverable. Don't save over it. Instead, import your most recent <a href="guide-settings.html">exported backup</a>. If you don't have one, keep the original file untouched; a valid earlier version may still be recoverable from it.</p>
+  </details>
+
+  <details>
+    <summary>I don't get the "save to a file" option at all</summary>
+    <p>Your browser doesn't support direct file access. The app automatically falls back to browser storage, which works fine — see <a href="concept-storage.html">Storage &amp; autosave</a>. For file-based saving, use Chrome or Edge on desktop.</p>
+  </details>
+
+  <h2 id="data-issues">Missing or unexpected data</h2>
+
+  <details>
+    <summary>My data looks empty or reset</summary>
+    <p>Usually the app opened without its file connected, showing an empty state rather than your real data — it hasn't deleted anything. Reconnect your file (or import your backup) via <a href="guide-settings.html">Settings</a> and your data returns. Avoid creating new entries until you've reconnected, so you don't build on the empty view.</p>
+  </details>
+
+  <details>
+    <summary>An import didn't seem to work</summary>
+    <p>Make sure you're importing a file exported by this app (its own JSON format). Importing replaces your current data, so the app confirms first. If it declined the file, it was likely not a valid export — check you selected the right one.</p>
+  </details>
+
+  <h2 id="counters">Streaks, XP &amp; score look wrong</h2>
+
+  <details>
+    <summary>XP didn't increase when I completed something</summary>
+    <p>If you'd completed that exact item before (then un-completed and re-completed it), no new XP is granted — the ledger prevents double-paying. This is working as intended; see <a href="concept-xp.html">XP &amp; levels</a>.</p>
+  </details>
+
+  <details>
+    <summary>A streak reset unexpectedly</summary>
+    <p>Check the streak's condition was actually met on the missed day (e.g. study target reached, or wake time within the early-wake grace). If a legitimate off day broke it, that's what the weekly <a href="concept-streaks.html">freeze</a> is for next time. Streaks are recomputed from your history, so correcting a day's data corrects the streak.</p>
+  </details>
+
+  <details>
+    <summary>My productivity score seems off for the day</summary>
+    <p>The score blends several factors with fixed weights. A low score usually means one heavily-weighted factor (study or tasks) was low, or the distraction penalty applied. Open <a href="concept-score.html">Productivity score</a> to see the breakdown and which factor pulled it down.</p>
+  </details>
+
+  <h2 id="display">Display &amp; interface</h2>
+
+  <details>
+    <summary>The layout looks broken or unstyled</summary>
+    <p>The stylesheet probably didn't load — often from opening files in an unusual way. Reload the page. If you're running the app from a local server, make sure it's actually serving the asset files, not just the HTML.</p>
+  </details>
+
+  <details>
+    <summary>The theme won't stick between visits</summary>
+    <p>The theme preference is saved in browser storage. If it resets, your browser may be clearing site data on close (private/incognito mode does this). Use a normal window to keep preferences.</p>
+  </details>
+
+  <div class="callout callout--tip">
+    <span class="callout__icon" data-icon="download"></span>
+    <div class="callout__body">
+      <span class="callout__title">When in doubt, export first</span>
+      <p>Before any fix that touches storage — reconnecting, importing, switching modes — export a backup. It costs ten seconds and turns every "what if this goes wrong" into "I have a copy."</p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

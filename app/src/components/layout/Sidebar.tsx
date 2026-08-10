@@ -1,7 +1,7 @@
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, HelpCircle } from 'lucide-react';
 import { useUiStore } from '@/store/useUiStore';
 import { useDataStore } from '@/store/useDataStore';
-import { NAV } from '@/components/layout/nav';
+import { NAV, openDocs } from '@/components/layout/nav';
 import { levelFromXP } from '@/services/xp';
 import { cn } from '@/utils/misc';
 import { ProgressBar } from '@/components/ui/Primitives';
@@ -50,6 +50,16 @@ export function Sidebar() {
           </button>
         ))}
       </nav>
+
+      <button
+        type="button"
+        onClick={openDocs}
+        title={collapsed ? 'Help & docs' : undefined}
+        className={cn('nav-item mx-2 mb-1', collapsed && 'justify-center px-0')}
+      >
+        <HelpCircle size={18} className="shrink-0" />
+        {!collapsed && <span className="truncate">Help &amp; docs</span>}
+      </button>
 
       {!collapsed && (
         <div className="border-t border-line px-3 py-3">

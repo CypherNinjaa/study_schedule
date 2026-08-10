@@ -14,6 +14,16 @@ import {
 } from 'lucide-react';
 import type { RouteId } from '@/store/useUiStore';
 
+/**
+ * The documentation site ships in `public/docs`, so it's served from the same
+ * origin as the app (honouring Vite's base path) and opens in a new tab.
+ */
+export const DOCS_URL = `${import.meta.env.BASE_URL}docs/index.html`;
+
+export function openDocs() {
+  window.open(DOCS_URL, '_blank', 'noopener,noreferrer');
+}
+
 /** Sidebar, mobile bottom bar and command palette all read this one list. */
 export const NAV: { id: RouteId; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study &amp; Pomodoro</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Study &amp; Pomodoro</h1>
+  <p class="lead">Log what you actually studied, run focused Pomodoro sessions, and build an honest record of your learning time — by subject, method, and day.</p>
+
+  <h2 id="sessions">Study sessions</h2>
+  <p>A study session is a record of a real chunk of studying. Each one captures:</p>
+  <dl class="kv">
+    <dt>Subject &amp; topic</dt><dd>What you studied, linked to your <a href="guide-subjects.html">subjects</a> for subject-level stats.</dd>
+    <dt>Duration</dt><dd>How many minutes — entered directly or captured by the timer.</dd>
+    <dt>Method</dt><dd>How you studied (see below).</dd>
+    <dt>Concentration &amp; difficulty</dt><dd>Optional self-ratings to spot which conditions work best for you.</dd>
+    <dt>Notes</dt><dd>Anything worth remembering about the session.</dd>
+  </dl>
+
+  <h3>Study methods</h3>
+  <p>Tagging the method makes your analytics far richer — you can see whether you spend enough time on active recall versus passive reading. Available methods:</p>
+  <p>
+    <span class="pill">Reading</span> <span class="pill">Practice</span> <span class="pill">Revision</span>
+    <span class="pill">Problem solving</span> <span class="pill">Watching lecture</span> <span class="pill">Coding</span>
+    <span class="pill">Mock test</span> <span class="pill">Flashcards</span>
+  </p>
+  <div class="callout callout--info">
+    <span class="callout__icon" data-icon="info"></span>
+    <div class="callout__body">
+      <p>Sessions logged with the <strong>Coding</strong> method count toward your coding minutes and coding streak, not just study — so coding practice feeds the right targets automatically.</p>
+    </div>
+  </div>
+
+  <h2 id="xp">XP from studying</h2>
+  <p>Completing a study session earns XP that scales with length, so longer focused sessions are rewarded — up to a sensible cap that stops one marathon from dominating:</p>
+  <pre><code>study XP = 10 + 5 per 30 minutes   (maximum 40)</code></pre>
+  <p>Hitting your full daily study target adds a further <strong>+50</strong> bonus. See <a href="concept-xp.html">XP &amp; levels</a>.</p>
+
+  <h2 id="pomodoro">The Pomodoro timer</h2>
+  <p>Built in for focused work. The classic technique alternates a focus block with a short break; after several rounds you take a longer break. The default is <strong>25 minutes focus / 5 minutes break</strong>, and you can customise it:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Preset</th><th>Focus</th><th>Break</th></tr></thead>
+      <tbody>
+        <tr><td>Short</td><td>15 min</td><td>5 min</td></tr>
+        <tr><td>Classic (default)</td><td>25 min</td><td>5 min</td></tr>
+        <tr><td>Long</td><td>45 min</td><td>10 min</td></tr>
+        <tr><td>Deep</td><td>50 min</td><td>10 min</td></tr>
+        <tr><td>Extended</td><td>60 min</td><td>15 min</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>You can also set how many focus rounds happen before a long break. Adjust all of this in <a href="guide-settings.html">Settings</a>.</p>
+
+  <h3>What happens when a Pomodoro completes</h3>
+  <ol class="steps steps--plain">
+    <li><h3>A study session is logged</h3><p>The focused time is recorded automatically against your chosen subject.</p></li>
+    <li><h3>XP is awarded</h3><p>+15 for the completed Pomodoro.</p></li>
+    <li><h3>Stats and streaks update</h3><p>Study minutes, your study ring, and the study streak all move.</p></li>
+    <li><h3>It autosaves</h3><p>No manual save needed.</p></li>
+  </ol>
+
+  <h2 id="tracking">What the Study page shows</h2>
+  <ul>
+    <li>Today's, this week's, and this month's study time.</li>
+    <li>Subject-wise breakdown — where your hours actually went.</li>
+    <li>Study consistency and progress toward your daily target.</li>
+    <li>Today's completed Pomodoros.</li>
+  </ul>
+
+  <div class="callout callout--tip">
+    <span class="callout__icon" data-icon="book"></span>
+    <div class="callout__body">
+      <span class="callout__title">Log honestly, even the short ones</span>
+      <p>Fifteen focused minutes recorded truthfully is worth more to your future self than an exaggerated hour. Consistent, accurate logging is what makes the trends on <a href="guide-analytics.html">Analytics</a> genuinely useful.</p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

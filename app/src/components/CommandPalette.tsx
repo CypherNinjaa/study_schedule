@@ -6,6 +6,7 @@ import {
   CheckSquare,
   Download,
   FileJson,
+  HelpCircle,
   Moon,
   Plus,
   Save,
@@ -15,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useDataStore } from '@/store/useDataStore';
 import { useUiStore, type RouteId } from '@/store/useUiStore';
-import { NAV } from '@/components/layout/nav';
+import { NAV, openDocs } from '@/components/layout/nav';
 import { updateSettings } from '@/store/actions';
 import { relativeDayLabel } from '@/utils/date';
 import { cn } from '@/utils/misc';
@@ -130,6 +131,14 @@ export function CommandPalette() {
         group: 'Data',
         icon: Download,
         run: exportBackup,
+      },
+      {
+        id: 'act:docs',
+        label: 'Help & documentation',
+        hint: 'Opens in a new tab',
+        group: 'Help',
+        icon: HelpCircle,
+        run: openDocs,
       },
     ];
 

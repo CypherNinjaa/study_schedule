@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tasks</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Tasks</h1>
+  <p class="lead">A full task manager for everything you need to get done — study, college work, coding, projects, and personal to-dos — with priorities, categories, difficulty, and recurrence.</p>
+
+  <h2 id="anatomy">Anatomy of a task</h2>
+  <p>Each task can carry as much or as little detail as you like. The full set of fields:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>What it's for</th></tr></thead>
+      <tbody>
+        <tr><td>Title</td><td>A short description of what to do.</td></tr>
+        <tr><td>Description &amp; notes</td><td>Extra detail, links, or context.</td></tr>
+        <tr><td>Date</td><td>The day it belongs to.</td></tr>
+        <tr><td>Start &amp; end time</td><td>Optional — placing it on the Today timeline and calendar.</td></tr>
+        <tr><td>Category</td><td>Study, College, Coding, Project, Assignment, Exercise, Personal, Relationship, or Other.</td></tr>
+        <tr><td>Subject</td><td>Optionally link it to a <a href="guide-subjects.html">subject</a> for subject-level analytics.</td></tr>
+        <tr><td>Priority</td><td>Low, Medium, High, or Critical.</td></tr>
+        <tr><td>Difficulty</td><td>1–5 — feeds the XP reward.</td></tr>
+        <tr><td>Estimated / actual duration</td><td>Plan vs reality, useful for improving your estimates.</td></tr>
+        <tr><td>Status</td><td>To do, In progress, Completed, Skipped, or Postponed.</td></tr>
+        <tr><td>Recurring</td><td>Repeat daily, weekly, or on a custom pattern.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="creating">Creating a task</h2>
+  <p>The fastest way is <strong>quick-add</strong>: press <span class="kbd">Ctrl</span> + <span class="kbd">K</span> and choose "Add task," or tap the + button. Type a title, set a priority and date, and you're done — everything else is optional and can be filled in later.</p>
+  <p>For detailed tasks, open the task and add its subject, difficulty, times, and notes.</p>
+
+  <h2 id="priority-difficulty">Priority and difficulty</h2>
+  <p>These two fields do more than sort your list — they shape your rewards. Completing a harder, higher-priority task earns more XP:</p>
+  <pre><code>task XP = 10 + (difficulty − 1) × 4 + priority bonus
+priority bonus:  low +0   medium +2   high +5   critical +8</code></pre>
+  <p>Set them honestly. Marking everything "critical, difficulty 5" just inflates numbers; accurate values make your analytics and XP meaningful. Full details in <a href="concept-xp.html">XP &amp; levels</a>.</p>
+
+  <h2 id="completing">Completing tasks</h2>
+  <p>Mark a task complete and a chain of updates happens automatically:</p>
+  <ol class="steps steps--plain">
+    <li><h3>XP is awarded</h3><p>Calculated from the task's difficulty and priority — once, thanks to the anti-farming ledger.</p></li>
+    <li><h3>Progress updates</h3><p>Your Tasks ring and productivity score recalculate on the spot.</p></li>
+    <li><h3>Streaks advance</h3><p>Completing all planned tasks keeps your task-completion streak alive.</p></li>
+    <li><h3>It autosaves</h3><p>The change is written to your file within a second.</p></li>
+  </ol>
+
+  <div class="callout callout--info">
+    <span class="callout__icon" data-icon="shield"></span>
+    <div class="callout__body">
+      <p>Un-completing and re-completing a task does <strong>not</strong> grant XP again. Rewards are tied to real state changes, so your totals stay trustworthy.</p>
+    </div>
+  </div>
+
+  <h2 id="recurring">Recurring tasks</h2>
+  <p>For anything you repeat — daily revision, weekly assignment review — set it to recur. The app materialises upcoming instances ahead of time so they appear on the right days without you recreating them. Change or stop the recurrence whenever your routine shifts.</p>
+
+  <h2 id="organising">Organising and finding tasks</h2>
+  <ul>
+    <li><strong>Filter</strong> by status, category, priority, or subject to focus your view.</li>
+    <li><strong>Search</strong> tasks from the command palette (<span class="kbd">Ctrl</span> + <span class="kbd">K</span>).</li>
+    <li><strong>Clear overdue items</strong> regularly — the app flags tasks left in "to do" past their date so your list stays honest.</li>
+  </ul>
+
+  <p>To work tasks in the context of a single day, use the <a href="guide-today.html">Today planner</a>; to see them across weeks, use the <a href="guide-calendar.html">Calendar</a>.</p>
+</main>
+</body>
+</html>

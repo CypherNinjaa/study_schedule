@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Dashboard</h1>
+  <p class="lead">Your daily home base. Open the app and the dashboard tells you, in one glance, how today is going and what to do next.</p>
+
+  <h2 id="whats-here">What's on the dashboard</h2>
+  <p>The dashboard gathers the most important signals from every other part of the app into a single screen:</p>
+  <dl class="kv">
+    <dt>Greeting</dt><dd>A time-aware hello using your name — "Good morning, Vikash 👋".</dd>
+    <dt>Level &amp; XP</dt><dd>Your current level, a progress bar toward the next, and today's XP.</dd>
+    <dt>Streaks</dt><dd>Your active streaks (study, coding, and more) with their current counts.</dd>
+    <dt>Progress rings</dt><dd>Today's completion for Study, Tasks, Habits, and Coding against your targets.</dd>
+    <dt>Productivity score</dt><dd>Today's 0–100 score with its label, and the factor breakdown.</dd>
+    <dt>Today's schedule</dt><dd>Your timeline for the day — classes, planned blocks, and tasks.</dd>
+    <dt>Next task</dt><dd>The single most relevant thing to do now, with quick actions.</dd>
+    <dt>Insights</dt><dd>A few timely, data-driven observations (see <a href="guide-analytics.html">Analytics</a>).</dd>
+  </dl>
+
+  <h2 id="progress-rings">Reading the progress rings</h2>
+  <p>Each ring fills as you approach that target for the day. They map directly to your daily goals set during onboarding (and changeable in <a href="guide-settings.html">Settings</a>):</p>
+  <ul>
+    <li><strong>Study</strong> — minutes studied vs your study target.</li>
+    <li><strong>Tasks</strong> — tasks completed vs planned today.</li>
+    <li><strong>Habits</strong> — habits done vs due today.</li>
+    <li><strong>Coding</strong> — coding minutes vs your coding target.</li>
+  </ul>
+  <p>These same four factors are the biggest contributors to your <a href="concept-score.html">productivity score</a>, so filling the rings and raising the score go hand in hand.</p>
+
+  <h2 id="next-task">The "next task" card</h2>
+  <p>Rather than making you scan a list, the dashboard surfaces the next thing worth doing and gives you one-tap actions:</p>
+  <ul>
+    <li><strong>Start</strong> — begin working on it (and, where relevant, start a timer).</li>
+    <li><strong>Complete</strong> — mark it done, which awards XP and updates your streaks and score instantly.</li>
+  </ul>
+
+  <div class="callout callout--tip">
+    <span class="callout__icon" data-icon="check"></span>
+    <div class="callout__body">
+      <span class="callout__title">Watch it update live</span>
+      <p>Complete a task from here and you'll see the rings move, XP float up, and the score recalculate immediately — no refresh, no save button. That's the whole app working as one system.</p>
+    </div>
+  </div>
+
+  <h2 id="workflow">A good dashboard habit</h2>
+  <p>Open the dashboard first thing each morning to see your plan, and again in the evening to check your rings before the day closes. For a full routine, see <a href="workflows.html">Everyday workflows</a>.</p>
+</main>
+</body>
+</html>
