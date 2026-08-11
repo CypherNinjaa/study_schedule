@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { GripHorizontal, MapPin } from 'lucide-react';
+import { CheckCircle2, Flame, GripHorizontal, MapPin } from 'lucide-react';
 import type { ClassSlot, ISODate, Task } from '@/types';
 import { updateTask } from '@/store/actions';
 import { useUiStore } from '@/store/useUiStore';
@@ -10,10 +10,20 @@ import { cn } from '@/utils/misc';
 const PX_PER_MIN = 1.1;
 const SNAP = 15;
 
+export interface StudyTimelineBlock {
+  id: string;
+  title: string;
+  subjectId: string | null;
+  start: number; // minutes from midnight
+  end: number;   // minutes from midnight
+  minutes: number;
+  method?: string | null;
+  fromPomodoro: boolean;
+}
+
 /**
- * Vertical day planner. Class slots are rendered from the timetable and are
- * read-only here; time-blocked tasks can be dragged to move and resized from
- * the bottom edge. Everything snaps to 15 minutes.
+ * Vertical day planner. Class slots, time-blocked tasks, and completed study sessions /
+ * Pomodoro focus rounds are displayed side-by-side on the timeline.
  */
 export function DayTimeline({ date }: { date: ISODate }) {
   const data = useData();
@@ -37,6 +47,59 @@ export function DayTimeline({ date }: { date: ISODate }) {
   );
   const untimed = (index.tasks.get(date) ?? []).filter((t) => t.start === null);
 
+  // Extract completed study sessions and Pomodoro focus rounds for this date
+  const studyBlocks = useMemo<StudyTimelineBlock[]>(() => {
+    const pomoRounds = (data.pomodoroLog ?? []).filter((p) => p.date === date && p.kind === 'focus');
+    const sessions = (data.studySessions ?? []).filter((s) => s.date === date);
+
+    const items: StudyTimelineBlock[] = [];
+
+    // Add Pomodoro focus rounds
+    pomoRounds.forEach((p) => {
+      const dStart = new Date(p.startedAt);
+      const dEnd = new Date(p.endedAt);
+      let startMin = dStart.getHours() * 60 + dStart.getMinutes();
+      let endMin = dEnd.getHours() * 60 + dEnd.getMinutes();
+      if (isNaN(startMin)) startMin = 9 * 60;
+      if (isNaN(endMin) || endMin <= startMin) endMin = startMin + p.minutes;
+
+      items.push({
+        id: p.id,
+        title: p.label || 'Focus round',
+        subjectId: p.subjectId,
+        start: startMin,
+        end: endMin,
+        minutes: p.minutes,
+        method: p.method,
+        fromPomodoro: true,
+      });
+    });
+
+    // Add manual study sessions that have a start time and are not already counted from Pomodoro
+    sessions
+      .filter((s) => !s.fromPomodoro && s.start !== null)
+      .forEach((s) => {
+        const startMin = hhmmToMinutes(s.start!);
+        const endMin = s.end ? hhmmToMinutes(s.end) : startMin + s.minutes;
+        items.push({
+          id: s.id,
+          title: s.topic || 'Study session',
+          subjectId: s.subjectId,
+          start: startMin,
+          end: Math.max(startMin + 15, endMin),
+          minutes: s.minutes,
+          method: s.method,
+          fromPomodoro: false,
+        });
+      });
+
+    return items;
+  }, [data.pomodoroLog, data.studySessions, date]);
+
+  const untimedStudySessions = useMemo(() => {
+    return (data.studySessions ?? []).filter((s) => s.date === date && !s.fromPomodoro && s.start === null);
+  }, [data.studySessions, date]);
+
   const blocks = [
     ...slots.map((s) => ({ kind: 'class' as const, start: hhmmToMinutes(s.start), end: hhmmToMinutes(s.end), slot: s })),
     ...timedTasks.map((t) => ({
@@ -44,6 +107,12 @@ export function DayTimeline({ date }: { date: ISODate }) {
       start: hhmmToMinutes(t.start),
       end: t.end ? hhmmToMinutes(t.end) : hhmmToMinutes(t.start) + (t.estimatedMinutes ?? 45),
       task: t,
+    })),
+    ...studyBlocks.map((sb) => ({
+      kind: 'study' as const,
+      start: sb.start,
+      end: sb.end,
+      study: sb,
     })),
   ];
 
@@ -96,12 +165,14 @@ export function DayTimeline({ date }: { date: ISODate }) {
   };
 
   const nowMin = date === todayISO() ? hhmmToMinutes(nowHHMM()) : null;
+  const hasClasses = slots.length > 0;
 
   if (blocks.length === 0) {
     return (
       <div className="px-4 py-8 text-center text-sm text-muted">
         Nothing scheduled for this day.
         {untimed.length > 0 && ` ${untimed.length} task${untimed.length === 1 ? '' : 's'} without a time.`}
+        {untimedStudySessions.length > 0 && ` ${untimedStudySessions.length} logged study session${untimedStudySessions.length === 1 ? '' : 's'}.`}
       </div>
     );
   }
@@ -126,6 +197,7 @@ export function DayTimeline({ date }: { date: ISODate }) {
         )}
 
         <div className="absolute inset-y-0 left-[52px] right-0">
+          {/* Class Slots */}
           {slots.map((slot) => {
             const s = hhmmToMinutes(slot.start);
             const e = hhmmToMinutes(slot.end);
@@ -134,7 +206,7 @@ export function DayTimeline({ date }: { date: ISODate }) {
             return (
               <div
                 key={slot.id}
-                className="absolute left-0 w-[46%] overflow-hidden rounded-ctl border px-2 py-1"
+                className={cn('absolute overflow-hidden rounded-ctl border px-2 py-1', hasClasses ? 'left-0 w-[30%]' : 'left-0 w-[46%]')}
                 style={{
                   top: top(s),
                   height: Math.max(18, (e - s) * PX_PER_MIN - 2),
@@ -158,6 +230,7 @@ export function DayTimeline({ date }: { date: ISODate }) {
             );
           })}
 
+          {/* Time-blocked Tasks */}
           {timedTasks.map((task) => {
             const live = drag?.id === task.id ? drag : null;
             const s = live ? live.start : hhmmToMinutes(task.start);
@@ -173,7 +246,8 @@ export function DayTimeline({ date }: { date: ISODate }) {
               <div
                 key={task.id}
                 className={cn(
-                  'group absolute right-0 w-[50%] cursor-grab overflow-hidden rounded-ctl border px-2 py-1 transition-shadow active:cursor-grabbing',
+                  'group absolute cursor-grab overflow-hidden rounded-ctl border px-2 py-1 transition-shadow active:cursor-grabbing',
+                  hasClasses ? 'left-[32%] w-[33%]' : 'left-0 w-[48%]',
                   live && 'z-30 shadow-pop',
                   done && 'opacity-60',
                 )}
@@ -204,14 +278,60 @@ export function DayTimeline({ date }: { date: ISODate }) {
               </div>
             );
           })}
+
+          {/* Completed Study Sessions & Pomodoro Focus Rounds */}
+          {studyBlocks.map((sb) => {
+            const subject = data.subjects.find((sub) => sub.id === sb.subjectId);
+            const color = subject?.color ?? '#10b981';
+            return (
+              <div
+                key={sb.id}
+                className={cn(
+                  'absolute overflow-hidden rounded-ctl border px-2 py-1 transition-all shadow-sm',
+                  hasClasses ? 'left-[67%] w-[31%]' : 'right-0 w-[48%]',
+                )}
+                style={{
+                  top: top(sb.start),
+                  height: Math.max(24, (sb.end - sb.start) * PX_PER_MIN - 2),
+                  borderColor: `${color}88`,
+                  background: `linear-gradient(135deg, ${color}25 0%, ${color}10 100%)`,
+                }}
+                title={`${sb.title} · ${sb.minutes} min logged (${sb.fromPomodoro ? 'Pomodoro Focus' : 'Study Session'})`}
+              >
+                <div className="flex items-center justify-between gap-1">
+                  <p className="truncate text-[11px] font-semibold text-ink flex items-center gap-1">
+                    {sb.fromPomodoro ? <Flame size={11} className="text-amber-500 shrink-0" /> : <CheckCircle2 size={11} className="text-emerald-500 shrink-0" />}
+                    <span className="truncate">{sb.title}</span>
+                  </p>
+                  <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
+                    {sb.minutes}m
+                  </span>
+                </div>
+                <p className="truncate text-[10px] tabular text-muted flex items-center gap-1">
+                  {formatHHMM12(minutesToHHMM(sb.start))}–{formatHHMM12(minutesToHHMM(sb.end))}
+                  {sb.method && (
+                    <span className="capitalize opacity-80">• {sb.method.replace('_', ' ')}</span>
+                  )}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {untimed.length > 0 && (
-        <p className="mt-2 border-t border-line pt-2 text-[11px] text-muted">
-          {untimed.length} task{untimed.length === 1 ? '' : 's'} without a time — give one a start time to place it
-          on the timeline.
-        </p>
+      {(untimed.length > 0 || untimedStudySessions.length > 0) && (
+        <div className="mt-2 border-t border-line pt-2 text-[11px] text-muted space-y-1">
+          {untimed.length > 0 && (
+            <p>
+              {untimed.length} task{untimed.length === 1 ? '' : 's'} without a time — give one a start time to place it on the timeline.
+            </p>
+          )}
+          {untimedStudySessions.length > 0 && (
+            <p className="text-emerald-600 dark:text-emerald-400 font-medium">
+              ✓ {untimedStudySessions.length} additional study session{untimedStudySessions.length === 1 ? '' : 's'} logged today ({untimedStudySessions.reduce((acc, s) => acc + s.minutes, 0)} min total).
+            </p>
+          )}
+        </div>
       )}
     </div>
   );

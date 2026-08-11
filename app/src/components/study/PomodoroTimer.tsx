@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Coffee, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
+import { Coffee, Edit3, Minus, Pause, Play, Plus, RotateCcw, Settings as SettingsIcon, SkipForward } from 'lucide-react';
 import type { StudyMethod } from '@/types';
-import { logPomodoroRound } from '@/store/actions';
+import { logPomodoroRound, updateSettings } from '@/store/actions';
 import { useData } from '@/hooks/useMetrics';
 import { useFeedbackStore } from '@/store/useFeedbackStore';
 import { Card, CardHeader, Ring } from '@/components/ui/Primitives';
@@ -39,12 +39,10 @@ function beep() {
   }
 }
 
-/**
- * Pomodoro timer. The countdown is derived from a wall-clock deadline rather
- * than counted down tick by tick, so a throttled background tab still finishes
- * at the right moment. A round is only written to the log when it completes in
- * full — skipping or resetting records nothing, which keeps Pomodoro XP honest.
- */
+const FOCUS_PRESETS = [15, 25, 45, 50, 60];
+const BREAK_PRESETS = [3, 5, 10, 15];
+const LONG_BREAK_PRESETS = [10, 15, 20, 30];
+
 export function PomodoroTimer() {
   const data = useData();
   const cfg = data.settings.pomodoro;
@@ -57,6 +55,7 @@ export function PomodoroTimer() {
   const [label, setLabel] = useState('');
   const [subjectId, setSubjectId] = useState('');
   const [method, setMethod] = useState<StudyMethod>('reading');
+  const [isEditingSettings, setIsEditingSettings] = useState(false);
 
   const deadlineRef = useRef<number | null>(null);
   const startedAtRef = useRef<string | null>(null);
@@ -67,10 +66,25 @@ export function PomodoroTimer() {
     [cfg.focusMinutes, cfg.breakMinutes, cfg.longBreakMinutes],
   );
 
-  // Re-arm when the user changes the durations in settings while idle.
+  const prevPhaseRef = useRef(phase);
+  const prevLengthRef = useRef(lengthFor(phase));
+
+  // Re-arm when phase changes, or when durations in settings change while idle.
   useEffect(() => {
-    if (!running) setRemaining(lengthFor(phase));
-  }, [running, phase, lengthFor]);
+    const newLength = lengthFor(phase);
+    if (prevPhaseRef.current !== phase) {
+      prevPhaseRef.current = phase;
+      prevLengthRef.current = newLength;
+      setRemaining(newLength);
+      return;
+    }
+    if (prevLengthRef.current !== newLength) {
+      if (!running && remaining === prevLengthRef.current) {
+        setRemaining(newLength);
+      }
+      prevLengthRef.current = newLength;
+    }
+  }, [phase, lengthFor, running, remaining]);
 
   const finish = useCallback(
     (p: Phase, minutes: number) => {
@@ -172,18 +186,147 @@ export function PomodoroTimer() {
     setRemaining(lengthFor(next));
   };
 
+  const adjustMinutes = (delta: number) => {
+    const nextSec = Math.max(10, remaining + delta * 60);
+    setRemaining(nextSec);
+    if (running && deadlineRef.current !== null) {
+      deadlineRef.current = deadlineRef.current + delta * 60 * 1000;
+    }
+  };
+
+  const updatePomodoroSetting = (patch: Partial<typeof cfg>) => {
+    updateSettings({ pomodoro: { ...cfg, ...patch } });
+  };
+
   return (
     <Card>
       <CardHeader
         title="Pomodoro"
         subtitle={`${cfg.focusMinutes}/${cfg.breakMinutes} · long break every ${cfg.roundsBeforeLongBreak} rounds`}
         action={
-          <span className="chip">
-            {completedFocus} round{completedFocus === 1 ? '' : 's'} today
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className={cn(
+                'btn-ghost btn-xs gap-1',
+                isEditingSettings && 'bg-accent-soft text-accent',
+              )}
+              onClick={() => setIsEditingSettings(!isEditingSettings)}
+              title="Edit timer durations and presets"
+            >
+              <Edit3 size={13} /> Edit timer
+            </button>
+            <span className="chip">
+              {completedFocus} round{completedFocus === 1 ? '' : 's'} today
+            </span>
+          </div>
         }
       />
       <div className="flex flex-col items-center gap-4 p-4">
+        {isEditingSettings && (
+          <div className="w-full rounded-ctl border border-line bg-surface p-3 space-y-3 text-xs animate-fade-in">
+            <div className="flex items-center justify-between border-b border-line pb-2 font-medium text-ink">
+              <span className="flex items-center gap-1.5"><SettingsIcon size={14} className="text-accent" /> Edit Durations</span>
+              <button
+                type="button"
+                className="text-muted hover:text-ink text-[11px]"
+                onClick={() => setIsEditingSettings(false)}
+              >
+                Close
+              </button>
+            </div>
+            
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <label className="block label">Focus (min)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={120}
+                  className="input input-sm tabular"
+                  value={cfg.focusMinutes}
+                  onChange={(e) => updatePomodoroSetting({ focusMinutes: Math.max(1, Number(e.target.value) || 25) })}
+                />
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {FOCUS_PRESETS.map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      className={cn(
+                        'px-1.5 py-0.5 rounded text-[10px] border transition-colors',
+                        cfg.focusMinutes === m
+                          ? 'border-accent bg-accent-soft text-accent font-semibold'
+                          : 'border-line text-muted hover:bg-elevated',
+                      )}
+                      onClick={() => updatePomodoroSetting({ focusMinutes: m })}
+                    >
+                      {m}m
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block label">Short Break (min)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={60}
+                  className="input input-sm tabular"
+                  value={cfg.breakMinutes}
+                  onChange={(e) => updatePomodoroSetting({ breakMinutes: Math.max(1, Number(e.target.value) || 5) })}
+                />
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {BREAK_PRESETS.map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      className={cn(
+                        'px-1.5 py-0.5 rounded text-[10px] border transition-colors',
+                        cfg.breakMinutes === m
+                          ? 'border-accent bg-accent-soft text-accent font-semibold'
+                          : 'border-line text-muted hover:bg-elevated',
+                      )}
+                      onClick={() => updatePomodoroSetting({ breakMinutes: m })}
+                    >
+                      {m}m
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block label">Long Break (min)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={90}
+                  className="input input-sm tabular"
+                  value={cfg.longBreakMinutes}
+                  onChange={(e) => updatePomodoroSetting({ longBreakMinutes: Math.max(1, Number(e.target.value) || 15) })}
+                />
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {LONG_BREAK_PRESETS.map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      className={cn(
+                        'px-1.5 py-0.5 rounded text-[10px] border transition-colors',
+                        cfg.longBreakMinutes === m
+                          ? 'border-accent bg-accent-soft text-accent font-semibold'
+                          : 'border-line text-muted hover:bg-elevated',
+                      )}
+                      onClick={() => updatePomodoroSetting({ longBreakMinutes: m })}
+                    >
+                      {m}m
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <Ring value={progress} size={168} stroke={10} tone={phase === 'focus' ? 'var(--accent)' : 'var(--c-ok)'}>
           <span className="text-3xl font-semibold tabular text-ink">
             {mm}:{ss}
@@ -194,11 +337,30 @@ export function PomodoroTimer() {
           </span>
         </Ring>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            className="btn-outline btn-xs gap-1 text-muted"
+            onClick={() => adjustMinutes(-5)}
+            title="Subtract 5 minutes from remaining session"
+          >
+            <Minus size={13} /> 5m
+          </button>
+
           <button type="button" className="btn-primary gap-1.5" onClick={toggle}>
             {running ? <Pause size={15} /> : <Play size={15} />}
             {running ? 'Pause' : remaining < total ? 'Resume' : 'Start'}
           </button>
+
+          <button
+            type="button"
+            className="btn-outline btn-xs gap-1 text-muted"
+            onClick={() => adjustMinutes(5)}
+            title="Add 5 minutes to remaining session"
+          >
+            <Plus size={13} /> 5m
+          </button>
+
           <button type="button" className="btn-outline gap-1.5" onClick={reset} disabled={remaining === total && !running}>
             <RotateCcw size={15} /> Reset
           </button>
