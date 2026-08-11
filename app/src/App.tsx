@@ -27,6 +27,7 @@ import { Calendar } from '@/pages/Calendar';
 import { addDaysISO, todayISO } from '@/utils/date';
 import { materialiseRecurring } from '@/store/actions';
 import { useReminders } from '@/hooks/useReminders';
+import { FloatingPomodoroWidget } from '@/components/study/FloatingPomodoroWidget';
 
 // Analytics pulls in Recharts, so it loads on demand.
 const Analytics = lazy(() => import('@/pages/Analytics'));
@@ -146,6 +147,7 @@ export default function App() {
       <XPFloats />
       <AchievementToast />
       <LevelUpOverlay />
+      <FloatingPomodoroWidget />
     </div>
   );
 }
