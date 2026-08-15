@@ -29,10 +29,10 @@ export function FloatingPomodoroWidget() {
   useEffect(() => {
     if (!running) return;
     const interval = window.setInterval(() => {
-      tick(total);
+      tick();
     }, 250);
     return () => window.clearInterval(interval);
-  }, [running, total, tick]);
+  }, [running, tick]);
 
   // Update Document Title with active countdown
   useEffect(() => {

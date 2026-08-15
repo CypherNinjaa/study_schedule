@@ -54,16 +54,17 @@ export function DayTimeline({ date }: { date: ISODate }) {
 
     const items: StudyTimelineBlock[] = [];
 
-    // Add Pomodoro focus rounds (span exact focus minutes ending at endedAt)
+    // Add Pomodoro focus rounds (span exact startedAt to endedAt duration)
     pomoRounds.forEach((p) => {
+      const dStart = new Date(p.startedAt);
       const dEnd = new Date(p.endedAt);
+      let startMin = dStart.getHours() * 60 + dStart.getMinutes();
       let endMin = dEnd.getHours() * 60 + dEnd.getMinutes();
-      if (isNaN(endMin)) {
-        const dStart = new Date(p.startedAt);
-        const sMin = dStart.getHours() * 60 + dStart.getMinutes();
-        endMin = isNaN(sMin) ? 9 * 60 + p.minutes : sMin + p.minutes;
+
+      if (isNaN(startMin) || isNaN(endMin) || endMin <= startMin) {
+        if (isNaN(endMin)) endMin = 9 * 60 + p.minutes;
+        startMin = Math.max(0, endMin - p.minutes);
       }
-      const startMin = Math.max(0, endMin - p.minutes);
 
       items.push({
         id: p.id,

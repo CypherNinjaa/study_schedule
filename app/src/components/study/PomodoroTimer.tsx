@@ -73,6 +73,13 @@ export function PomodoroTimer() {
 
   const updatePomodoroSetting = (patch: Partial<typeof cfg>) => {
     updateSettings({ pomodoro: { ...cfg, ...patch } });
+    if (!running) {
+      const nextFocus = patch.focusMinutes ?? cfg.focusMinutes;
+      const nextBreak = patch.breakMinutes ?? cfg.breakMinutes;
+      const nextLong = patch.longBreakMinutes ?? cfg.longBreakMinutes;
+      const nextSec = (phase === 'focus' ? nextFocus : phase === 'break' ? nextBreak : nextLong) * 60;
+      setRemaining(nextSec, nextSec);
+    }
   };
 
   return (

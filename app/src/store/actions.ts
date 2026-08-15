@@ -282,9 +282,10 @@ export function logPomodoroRound(round: Omit<PomodoroRound, 'id'>): void {
           date: round.date,
         });
 
+        const dStart = new Date(round.startedAt);
         const dEnd = new Date(round.endedAt);
+        const startMinutes = isNaN(dStart.getTime()) ? null : dStart.getHours() * 60 + dStart.getMinutes();
         const endMinutes = isNaN(dEnd.getTime()) ? null : dEnd.getHours() * 60 + dEnd.getMinutes();
-        const startMinutes = endMinutes !== null ? Math.max(0, endMinutes - round.minutes) : null;
 
         // A focus round is study time, so it is also recorded as a session.
         d.studySessions.push({

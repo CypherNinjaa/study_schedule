@@ -59,7 +59,7 @@ interface PomodoroStoreState {
   reset: (totalSeconds: number) => void;
   skip: (nextPhase: PomodoroPhase, nextSeconds: number) => void;
   adjustMinutes: (deltaMinutes: number) => void;
-  tick: (totalSeconds: number) => void;
+  tick: (totalSeconds?: number) => void;
 }
 
 export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
@@ -132,7 +132,7 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
     });
   },
 
-  tick: (totalSeconds) => {
+  tick: (totalSeconds?: number) => {
     const { running, deadline, phase, completedFocus, label, subjectId, method, startedAt, initialTotal } = get();
     if (!running || deadline === null) return;
 
@@ -141,10 +141,10 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
 
     if (left === 0) {
       const endedAt = new Date().toISOString();
-      const startTime = startedAt ?? new Date(Date.now() - (initialTotal || totalSeconds) * 1000).toISOString();
+      const roundSec = initialTotal > 0 ? initialTotal : (totalSeconds ?? 1500);
+      const startTime = startedAt ?? new Date(Date.now() - roundSec * 1000).toISOString();
       
-      // Compute actual minutes from initialTotal instead of hardcoded 25m
-      const roundSec = initialTotal > 0 ? initialTotal : totalSeconds;
+      // Compute actual minutes from initialTotal/roundSec
       const minutes = Math.max(1, Math.round(roundSec / 60));
 
       const appSettings = useDataStore.getState().data?.settings.pomodoro;
