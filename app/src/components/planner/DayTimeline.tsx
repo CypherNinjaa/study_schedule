@@ -285,15 +285,27 @@ export function DayTimeline({ date }: { date: ISODate }) {
           {studyBlocks.map((sb) => {
             const subject = data.subjects.find((sub) => sub.id === sb.subjectId);
             const color = subject?.color ?? '#10b981';
+
+            // Detect overlapping study blocks to position side-by-side
+            const overlapping = studyBlocks.filter(
+              (other) => Math.max(sb.start, other.start) < Math.min(sb.end, other.end),
+            );
+            const overlapCount = Math.max(1, overlapping.length);
+            const subIndex = Math.max(0, overlapping.findIndex((o) => o.id === sb.id));
+
+            const colBase = hasClasses ? 67 : 50;
+            const totalWidth = hasClasses ? 31 : 48;
+            const blockWidth = totalWidth / overlapCount;
+            const leftPos = colBase + subIndex * blockWidth;
+
             return (
               <div
                 key={sb.id}
-                className={cn(
-                  'absolute overflow-hidden rounded-ctl border px-2 py-1 transition-all shadow-sm',
-                  hasClasses ? 'left-[67%] w-[31%]' : 'right-0 w-[48%]',
-                )}
+                className="absolute overflow-hidden rounded-ctl border px-2 py-1 transition-all shadow-sm z-10"
                 style={{
                   top: top(sb.start),
+                  left: `${leftPos}%`,
+                  width: `${blockWidth}%`,
                   height: Math.max(24, (sb.end - sb.start) * PX_PER_MIN - 2),
                   borderColor: `${color}88`,
                   background: `linear-gradient(135deg, ${color}25 0%, ${color}10 100%)`,

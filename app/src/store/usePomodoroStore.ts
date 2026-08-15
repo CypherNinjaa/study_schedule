@@ -87,14 +87,16 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
     }),
 
   toggle: () => {
-    const { running, remaining } = get();
+    const { running, remaining, initialTotal } = get();
     if (running) {
       set({ running: false, deadline: null });
     } else {
       const now = Date.now();
       const deadline = now + remaining * 1000;
+      // Record fresh start time if starting a new round or resuming
       const startedAt = get().startedAt ?? new Date().toISOString();
-      set({ running: true, deadline, startedAt });
+      const currentInitial = Math.max(initialTotal, remaining);
+      set({ running: true, deadline, startedAt, initialTotal: currentInitial });
     }
   },
 
@@ -131,7 +133,7 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
   },
 
   tick: (totalSeconds) => {
-    const { running, deadline, phase, completedFocus, label, subjectId, method, startedAt } = get();
+    const { running, deadline, phase, completedFocus, label, subjectId, method, startedAt, initialTotal } = get();
     if (!running || deadline === null) return;
 
     const left = Math.max(0, Math.round((deadline - Date.now()) / 1000));
@@ -139,8 +141,11 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
 
     if (left === 0) {
       const endedAt = new Date().toISOString();
-      const startTime = startedAt ?? endedAt;
-      const minutes = Math.round(totalSeconds / 60);
+      const startTime = startedAt ?? new Date(Date.now() - (initialTotal || totalSeconds) * 1000).toISOString();
+      
+      // Compute actual minutes from initialTotal instead of hardcoded 25m
+      const roundSec = initialTotal > 0 ? initialTotal : totalSeconds;
+      const minutes = Math.max(1, Math.round(roundSec / 60));
 
       const appSettings = useDataStore.getState().data?.settings.pomodoro;
       const soundEnabled = appSettings?.soundEnabled ?? true;
@@ -183,6 +188,7 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
             completedFocus: done,
             phase: nextPhase,
             remaining: nextSec,
+            initialTotal: nextSec,
             running: true,
             deadline: now + nextSec * 1000,
             startedAt: new Date().toISOString(),
@@ -192,6 +198,7 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
             completedFocus: done,
             phase: nextPhase,
             remaining: nextSec,
+            initialTotal: nextSec,
             running: false,
             deadline: null,
             startedAt: null,
@@ -206,6 +213,7 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
           set({
             phase: 'focus',
             remaining: nextSec,
+            initialTotal: nextSec,
             running: true,
             deadline: now + nextSec * 1000,
             startedAt: new Date().toISOString(),
@@ -214,6 +222,7 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
           set({
             phase: 'focus',
             remaining: nextSec,
+            initialTotal: nextSec,
             running: false,
             deadline: null,
             startedAt: null,
