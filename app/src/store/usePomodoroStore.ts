@@ -39,6 +39,7 @@ interface PomodoroStoreState {
   phase: PomodoroPhase;
   running: boolean;
   remaining: number; // in seconds
+  initialTotal: number; // max/initial duration in seconds for progress calculation
   completedFocus: number;
   label: string;
   subjectId: string;
@@ -52,7 +53,7 @@ interface PomodoroStoreState {
   setSubjectId: (subjectId: string) => void;
   setMethod: (method: StudyMethod) => void;
   setMinimized: (minimized: boolean) => void;
-  setRemaining: (remaining: number) => void;
+  setRemaining: (remaining: number, total?: number) => void;
 
   toggle: () => void;
   reset: (totalSeconds: number) => void;
@@ -65,6 +66,7 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
   phase: 'focus',
   running: false,
   remaining: 25 * 60,
+  initialTotal: 25 * 60,
   completedFocus: 0,
   label: '',
   subjectId: '',
@@ -78,7 +80,11 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
   setSubjectId: (subjectId) => set({ subjectId }),
   setMethod: (method) => set({ method }),
   setMinimized: (minimized) => set({ minimized }),
-  setRemaining: (remaining) => set({ remaining }),
+  setRemaining: (remaining, total) =>
+    set({
+      remaining,
+      initialTotal: total ?? Math.max(get().initialTotal, remaining),
+    }),
 
   toggle: () => {
     const { running, remaining } = get();
@@ -98,6 +104,7 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
       deadline: null,
       startedAt: null,
       remaining: totalSeconds,
+      initialTotal: totalSeconds,
     });
   },
 
@@ -108,14 +115,19 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
       deadline: null,
       startedAt: null,
       remaining: nextSeconds,
+      initialTotal: nextSeconds,
     });
   },
 
   adjustMinutes: (deltaMinutes) => {
-    const { remaining, running, deadline } = get();
+    const { remaining, running, deadline, initialTotal } = get();
     const nextSec = Math.max(10, remaining + deltaMinutes * 60);
     const newDeadline = running && deadline !== null ? deadline + deltaMinutes * 60 * 1000 : deadline;
-    set({ remaining: nextSec, deadline: newDeadline });
+    set({
+      remaining: nextSec,
+      initialTotal: Math.max(initialTotal, nextSec),
+      deadline: newDeadline,
+    });
   },
 
   tick: (totalSeconds) => {

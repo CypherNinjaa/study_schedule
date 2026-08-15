@@ -21,7 +21,7 @@ import type {
   Weekday,
 } from '@/types';
 import { uid } from '@/utils/misc';
-import { todayISO, toISODate } from '@/utils/date';
+import { minutesToHHMM, todayISO, toISODate } from '@/utils/date';
 import { awardXP, studySessionXP, taskXP, XP_RULES } from '@/services/xp';
 import { ensureLog } from '@/services/rollup';
 import { applyStreakFreeze, removeStreakFreeze, type FreezeResult } from '@/services/streaks';
@@ -281,6 +281,11 @@ export function logPomodoroRound(round: Omit<PomodoroRound, 'id'>): void {
           label: 'Pomodoro completed',
           date: round.date,
         });
+
+        const dEnd = new Date(round.endedAt);
+        const endMinutes = isNaN(dEnd.getTime()) ? null : dEnd.getHours() * 60 + dEnd.getMinutes();
+        const startMinutes = endMinutes !== null ? Math.max(0, endMinutes - round.minutes) : null;
+
         // A focus round is study time, so it is also recorded as a session.
         d.studySessions.push({
           id: uid('sess'),
@@ -288,8 +293,8 @@ export function logPomodoroRound(round: Omit<PomodoroRound, 'id'>): void {
           subjectId: round.subjectId,
           topicId: null,
           topic: round.label,
-          start: null,
-          end: null,
+          start: startMinutes !== null ? minutesToHHMM(startMinutes) : null,
+          end: endMinutes !== null ? minutesToHHMM(endMinutes) : null,
           minutes: round.minutes,
           method: round.method ?? 'reading',
           concentration: 4,

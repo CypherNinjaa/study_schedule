@@ -18,6 +18,7 @@ export function PomodoroTimer() {
   const phase = usePomodoroStore((s) => s.phase);
   const running = usePomodoroStore((s) => s.running);
   const remaining = usePomodoroStore((s) => s.remaining);
+  const initialTotal = usePomodoroStore((s) => s.initialTotal);
   const completedFocus = usePomodoroStore((s) => s.completedFocus);
   const label = usePomodoroStore((s) => s.label);
   const subjectId = usePomodoroStore((s) => s.subjectId);
@@ -35,8 +36,9 @@ export function PomodoroTimer() {
 
   const [isEditingSettings, setIsEditingSettings] = useState(false);
 
-  const total = (phase === 'focus' ? cfg.focusMinutes : phase === 'break' ? cfg.breakMinutes : cfg.longBreakMinutes) * 60;
-  const progress = total === 0 ? 0 : (total - remaining) / total;
+  const cfgTotal = (phase === 'focus' ? cfg.focusMinutes : phase === 'break' ? cfg.breakMinutes : cfg.longBreakMinutes) * 60;
+  const total = Math.max(initialTotal, cfgTotal, remaining, 1);
+  const progress = Math.min(1, Math.max(0, (total - remaining) / total));
   const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
   const ss = String(remaining % 60).padStart(2, '0');
 

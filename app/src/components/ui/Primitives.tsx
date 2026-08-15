@@ -89,6 +89,7 @@ export function Ring({
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const clamped = Math.min(1, Math.max(0, value));
+  const strokeColor = tone.startsWith('var(') || tone.startsWith('#') || tone.startsWith('rgb(') ? tone : `rgb(${tone})`;
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90" aria-hidden>
@@ -98,12 +99,12 @@ export function Ring({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={`rgb(${tone})`}
+          stroke={strokeColor}
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - clamped)}
-          className="transition-[stroke-dashoffset] duration-700"
+          className="transition-[stroke-dashoffset] duration-300"
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">{children}</div>

@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { BookOpen, Clock, Flame, Pencil, Plus, Timer, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { BookOpen, ChevronLeft, ChevronRight, Clock, Flame, Pencil, Plus, Timer, Trash2 } from 'lucide-react';
 import type { StudyMethod, StudySession } from '@/types';
 import { deleteStudySession, logStudySession, updateStudySession } from '@/store/actions';
 import { useDataStore } from '@/store/useDataStore';
@@ -40,12 +40,15 @@ const RANGES = [
   { value: '90', label: '90D' },
 ];
 
+const PAGE_SIZE = 6;
+
 export function Study() {
   const data = useData();
   const activeDate = useDataStore((s) => s.activeDate);
   const [days, setDays] = useState('7');
   const [editing, setEditing] = useState<StudySession | null>(null);
   const [creating, setCreating] = useState(false);
+  const [page, setPage] = useState(1);
 
   const to = todayISO();
   const from = addDaysISO(to, -(Number(days) - 1));
@@ -61,6 +64,14 @@ export function Study() {
         .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)),
     [data.studySessions, from, to],
   );
+
+  useEffect(() => {
+    setPage(1);
+  }, [days, recent.length]);
+
+  const totalPages = Math.max(1, Math.ceil(recent.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedRecent = recent.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const stats = useMemo(() => subjectStats(data, from, to).filter((s) => !s.subject.archived), [data, from, to]);
   const maxSubjectMinutes = Math.max(1, ...stats.map((s) => s.minutes));
@@ -180,9 +191,11 @@ export function Study() {
           title="Sessions"
           subtitle={`${recent.length} in the last ${days} days`}
           action={
-            <button type="button" className="btn-outline btn-sm gap-1.5" onClick={() => setCreating(true)}>
-              <Plus size={14} /> Log
-            </button>
+            <div className="flex items-center gap-2">
+              <button type="button" className="btn-outline btn-sm gap-1.5" onClick={() => setCreating(true)}>
+                <Plus size={14} /> Log
+              </button>
+            </div>
           }
         />
         {recent.length === 0 ? (
@@ -199,54 +212,87 @@ export function Study() {
             />
           </div>
         ) : (
-          <ul className="divide-y divide-line">
-            {recent.map((s) => {
-              const subject = data.subjects.find((sub) => sub.id === s.subjectId);
-              return (
-                <li key={s.id} className="group flex items-center gap-3 px-4 py-2.5">
-                  <span
-                    className="h-8 w-1 shrink-0 rounded-full"
-                    style={{ background: subject?.color ?? 'rgb(var(--line))' }}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm text-ink">{s.topic || subject?.name || 'Study session'}</p>
-                    <p className="flex flex-wrap items-center gap-x-2 text-[11px] text-muted">
-                      <span className="tabular">{formatDateShort(s.date)}</span>
-                      {s.start && <span className="tabular">{formatHHMM12(s.start)}</span>}
-                      <span className="tabular">{formatMinutes(s.minutes, { short: true })}</span>
-                      <span>{s.method.replace('_', ' ')}</span>
-                      <span>focus {s.concentration}/5</span>
-                      {s.fromPomodoro && <span className="text-accent">pomodoro</span>}
-                    </p>
-                  </div>
+          <>
+            <ul className="divide-y divide-line">
+              {paginatedRecent.map((s) => {
+                const subject = data.subjects.find((sub) => sub.id === s.subjectId);
+                return (
+                  <li key={s.id} className="group flex items-center gap-3 px-4 py-2.5">
+                    <span
+                      className="h-8 w-1 shrink-0 rounded-full"
+                      style={{ background: subject?.color ?? 'rgb(var(--line))' }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm text-ink">{s.topic || subject?.name || 'Study session'}</p>
+                      <p className="flex flex-wrap items-center gap-x-2 text-[11px] text-muted">
+                        <span className="tabular">{formatDateShort(s.date)}</span>
+                        {s.start && <span className="tabular">{formatHHMM12(s.start)}</span>}
+                        <span className="tabular">{formatMinutes(s.minutes, { short: true })}</span>
+                        <span>{s.method.replace('_', ' ')}</span>
+                        <span>focus {s.concentration}/5</span>
+                        {s.fromPomodoro && <span className="text-accent font-medium">pomodoro</span>}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-icon h-7 w-7 opacity-0 focus:opacity-100 group-hover:opacity-100"
+                      aria-label={`Edit session ${s.topic || s.date}`}
+                      onClick={() => setEditing(s)}
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-icon h-7 w-7 text-danger opacity-0 focus:opacity-100 group-hover:opacity-100"
+                      aria-label={`Delete session ${s.topic || s.date}`}
+                      onClick={() =>
+                        confirmAction({
+                          title: 'Delete this session?',
+                          message: `${formatMinutes(s.minutes)} on ${formatDateShort(s.date)} will be removed, and the XP it earned comes off your total.`,
+                          confirmLabel: 'Delete',
+                          danger: true,
+                          onConfirm: () => deleteStudySession(s.id),
+                        })
+                      }
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t border-line px-4 py-2.5 text-xs text-muted">
+                <span>
+                  Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, recent.length)} of {recent.length}
+                </span>
+                <div className="flex items-center gap-1.5">
                   <button
                     type="button"
-                    className="btn-icon h-7 w-7 opacity-0 focus:opacity-100 group-hover:opacity-100"
-                    aria-label={`Edit session ${s.topic || s.date}`}
-                    onClick={() => setEditing(s)}
+                    className="btn-icon h-7 w-7"
+                    disabled={currentPage === 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    aria-label="Previous page"
                   >
-                    <Pencil size={14} />
+                    <ChevronLeft size={15} />
                   </button>
+                  <span className="tabular px-1">
+                    Page {currentPage} of {totalPages}
+                  </span>
                   <button
                     type="button"
-                    className="btn-icon h-7 w-7 text-danger opacity-0 focus:opacity-100 group-hover:opacity-100"
-                    aria-label={`Delete session ${s.topic || s.date}`}
-                    onClick={() =>
-                      confirmAction({
-                        title: 'Delete this session?',
-                        message: `${formatMinutes(s.minutes)} on ${formatDateShort(s.date)} will be removed, and the XP it earned comes off your total.`,
-                        confirmLabel: 'Delete',
-                        danger: true,
-                        onConfirm: () => deleteStudySession(s.id),
-                      })
-                    }
+                    className="btn-icon h-7 w-7"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    aria-label="Next page"
                   >
-                    <Trash2 size={14} />
+                    <ChevronRight size={15} />
                   </button>
-                </li>
-              );
-            })}
-          </ul>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </Card>
 
