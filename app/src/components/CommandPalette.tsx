@@ -8,12 +8,14 @@ import {
   FileJson,
   HelpCircle,
   Moon,
+  PictureInPicture2,
   Plus,
   Save,
   Search,
   Sun,
   Target,
 } from 'lucide-react';
+import { usePomodoroStore } from '@/store/usePomodoroStore';
 import { useDataStore } from '@/store/useDataStore';
 import { useUiStore, type RouteId } from '@/store/useUiStore';
 import { NAV, openDocs } from '@/components/layout/nav';
@@ -92,6 +94,14 @@ export function CommandPalette() {
         group: 'Create',
         icon: BookOpen,
         run: go('study'),
+      },
+      {
+        id: 'act:pip-timer',
+        label: 'Toggle Picture-in-Picture Focus Timer',
+        hint: 'Floating mini window',
+        group: 'Study',
+        icon: PictureInPicture2,
+        run: () => usePomodoroStore.getState().requestPipToggle(),
       },
       { id: 'act:new-goal', label: 'New goal', group: 'Create', icon: Target, run: go('goals') },
       {

@@ -73,3 +73,19 @@ export function celebrationFireworks() {
     // Non-essential visual effect
   }
 }
+
+export function burstCanvasConfetti(canvas: HTMLCanvasElement) {
+  if (!isMotionAllowed()) return;
+  try {
+    const myConfetti = confetti.create(canvas, { resize: true, useWorker: false });
+    myConfetti({
+      particleCount: 55,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'],
+      disableForReducedMotion: true,
+    });
+  } catch {
+    // Non-essential visual effect
+  }
+}

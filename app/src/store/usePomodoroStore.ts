@@ -127,12 +127,16 @@ interface PomodoroStoreState {
    * Used to keep the floating widget visible and show the alert pulse.
    */
   alerting: boolean;
+  isPipActive: boolean;
+  pipRequested: number;
 
   setPhase: (phase: PomodoroPhase) => void;
   setLabel: (label: string) => void;
   setSubjectId: (subjectId: string) => void;
   setMethod: (method: StudyMethod) => void;
   setMinimized: (minimized: boolean) => void;
+  setPipActive: (active: boolean) => void;
+  requestPipToggle: () => void;
   /** Used by PomodoroTimer to sync remaining when settings change while idle. */
   setRemaining: (remaining: number, total?: number) => void;
   /** Clear the alerting state — called on any user interaction after completion. */
@@ -164,12 +168,16 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
   startedAt: null,
   minimized: false,
   alerting: false,
+  isPipActive: false,
+  pipRequested: 0,
 
   setPhase: (phase) => set({ phase }),
   setLabel: (label) => set({ label }),
   setSubjectId: (subjectId) => set({ subjectId }),
   setMethod: (method) => set({ method }),
   setMinimized: (minimized) => set({ minimized }),
+  setPipActive: (isPipActive) => set({ isPipActive }),
+  requestPipToggle: () => set((s) => ({ pipRequested: s.pipRequested + 1 })),
 
   setRemaining: (remaining, total) => {
     const next = total ?? remaining;

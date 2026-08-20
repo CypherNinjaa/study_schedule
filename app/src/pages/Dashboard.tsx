@@ -6,11 +6,13 @@ import {
   Code2,
   Flame,
   MapPin,
+  PictureInPicture2,
   Plus,
   Sparkles,
   Timer,
   Trophy,
 } from 'lucide-react';
+import { usePomodoroStore } from '@/store/usePomodoroStore';
 import { cn } from '@/utils/misc';
 import { daysUntil } from '@/utils/time';
 import { useDataStore } from '@/store/useDataStore';
@@ -106,6 +108,14 @@ export function Dashboard() {
         subtitle={`${score.label} day so far · ${formatMinutes(day.studyMinutes)} studied · ${day.tasksCompleted}/${day.tasksTotal} tasks done`}
         action={
           <>
+            <button
+              type="button"
+              className="btn-outline btn-sm gap-1.5"
+              onClick={() => usePomodoroStore.getState().requestPipToggle()}
+              title="Open Picture-in-Picture Focus Timer"
+            >
+              <PictureInPicture2 size={15} /> <span className="hidden sm:inline">PiP Timer</span>
+            </button>
             <button type="button" className="btn-outline btn-sm gap-1.5" onClick={() => navigate('study')}>
               <Timer size={15} /> Start focus
             </button>

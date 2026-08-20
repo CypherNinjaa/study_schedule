@@ -4,6 +4,7 @@ import {
   Edit3,
   Minus,
   Pause,
+  PictureInPicture2,
   Play,
   Plus,
   RotateCcw,
@@ -35,6 +36,8 @@ export function PomodoroTimer() {
   const subjectId = usePomodoroStore((s) => s.subjectId);
   const method = usePomodoroStore((s) => s.method);
   const alerting = usePomodoroStore((s) => s.alerting);
+  const isPipActive = usePomodoroStore((s) => s.isPipActive);
+  const requestPipToggle = usePomodoroStore((s) => s.requestPipToggle);
 
   const setLabel = usePomodoroStore((s) => s.setLabel);
   const setSubjectId = usePomodoroStore((s) => s.setSubjectId);
@@ -116,6 +119,22 @@ export function PomodoroTimer() {
         subtitle={`${cfg.focusMinutes}/${cfg.breakMinutes} · long break every ${cfg.roundsBeforeLongBreak} rounds`}
         action={
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className={cn(
+                'btn-ghost btn-xs gap-1',
+                isPipActive && 'bg-accent-soft text-accent',
+              )}
+              onClick={requestPipToggle}
+              title={
+                isPipActive
+                  ? 'Close Picture-in-Picture window'
+                  : 'Open in Picture-in-Picture (Always on top)'
+              }
+            >
+              <PictureInPicture2 size={13} />
+              <span className="hidden sm:inline">{isPipActive ? 'PiP Active' : 'PiP'}</span>
+            </button>
             <button
               type="button"
               className={cn(

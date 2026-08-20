@@ -55,6 +55,14 @@ export default {
           '0%, 100%': { opacity: '1', transform: 'scale(1)' },
           '50%': { opacity: '0.4', transform: 'scale(1.03)' },
         },
+        breath: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.03)' },
+        },
+        'glow-pulse': {
+          '0%, 100%': { opacity: '0.25', transform: 'scale(0.95)' },
+          '50%': { opacity: '0.55', transform: 'scale(1.08)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in .18s ease-out both',
@@ -62,6 +70,9 @@ export default {
         'xp-float': 'xp-float 1.6s ease-out both',
         pop: 'pop .22s cubic-bezier(.2,.8,.2,1) both',
         'timer-alert': 'timer-alert 1.2s ease-in-out infinite',
+        breath: 'breath 4s ease-in-out infinite',
+        'glow-pulse': 'glow-pulse 3s ease-in-out infinite',
+        'spin-slow': 'spin 12s linear infinite',
       },
     },
   },
