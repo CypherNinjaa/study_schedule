@@ -382,3 +382,77 @@ export function importFromDisk(): Promise<OpenResult> {
     input.click();
   });
 }
+
+/* ---------------------------------------------------------------- */
+/* Study Materials File Handles                                     */
+/* ---------------------------------------------------------------- */
+
+const MATERIAL_HANDLE_PREFIX = 'pos:material-handle:';
+
+export async function saveMaterialHandle(id: string, h: FSFileHandle): Promise<void> {
+  try {
+    await set(`${MATERIAL_HANDLE_PREFIX}${id}`, h);
+  } catch {
+    /* ignore */
+  }
+}
+
+export async function getMaterialHandle(id: string): Promise<FSFileHandle | null> {
+  try {
+    const h = await get<FSFileHandle>(`${MATERIAL_HANDLE_PREFIX}${id}`);
+    if (h && typeof h.getFile === 'function') return h;
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+export async function deleteMaterialHandle(id: string): Promise<void> {
+  try {
+    await del(`${MATERIAL_HANDLE_PREFIX}${id}`);
+  } catch {
+    /* ignore */
+  }
+}
+
+export async function pickMaterialFile(): Promise<{ handle: FSFileHandle; file: File } | null> {
+  const win = window as unknown as WindowWithFS;
+  if (!win.showOpenFilePicker) return null;
+  try {
+    const [h] = await win.showOpenFilePicker({
+      multiple: false,
+    });
+    if (!h) return null;
+    const file = await h.getFile();
+    return { handle: h, file };
+  } catch {
+    return null;
+  }
+}
+
+export async function openMaterialFileHandle(h: FSFileHandle): Promise<boolean> {
+  try {
+    if (h.queryPermission && h.requestPermission) {
+      let state = await h.queryPermission({ mode: 'read' });
+      if (state !== 'granted') {
+        state = await h.requestPermission({ mode: 'read' });
+      }
+      if (state !== 'granted') return false;
+    }
+    const file = await h.getFile();
+    const url = URL.createObjectURL(file);
+    const win = window.open(url, '_blank');
+    if (!win) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    return true;
+  } catch {
+    return false;
+  }
+}

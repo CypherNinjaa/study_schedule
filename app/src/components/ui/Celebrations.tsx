@@ -4,6 +4,7 @@ import { Sparkles } from 'lucide-react';
 import { useFeedbackStore } from '@/store/useFeedbackStore';
 import { xpForLevel } from '@/services/xp';
 import { cn } from '@/utils/misc';
+import { burstConfetti, celebrationFireworks } from '@/utils/confetti';
 
 const TIER_RING: Record<string, string> = {
   bronze: 'from-amber-500/25 to-amber-500/5 text-amber-500',
@@ -39,6 +40,7 @@ export function LevelUpOverlay() {
 
   useEffect(() => {
     if (level === null) return;
+    celebrationFireworks();
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && dismiss();
     document.addEventListener('keydown', onKey);
     const timer = window.setTimeout(dismiss, 6000);
@@ -77,6 +79,7 @@ export function AchievementToast() {
 
   useEffect(() => {
     if (!current) return;
+    burstConfetti('large');
     const timer = window.setTimeout(dismiss, 5200);
     return () => window.clearTimeout(timer);
   }, [current, dismiss]);

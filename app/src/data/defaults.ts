@@ -114,6 +114,8 @@ export function createDefaultData(now: string = new Date().toISOString()): AppDa
     goals: [],
     notes: [],
     events: [],
+    exams: [],
+    studyMaterials: [],
     pomodoroLog: [],
     lastUpdated: now,
   };

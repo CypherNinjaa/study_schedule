@@ -18,7 +18,8 @@ export function WeeklyReview() {
   const index = useIndex();
 
   // Review the previous week — the one that has actually finished.
-  const anchor = useMemo(() => addDaysISO(todayISO(), -7), []);
+  // No useMemo: this is a cheap string operation and must stay fresh.
+  const anchor = addDaysISO(todayISO(), -7);
   const review = useMemo(
     () => computeWeeklyReview(data, anchor, index),
     [data, index, anchor],

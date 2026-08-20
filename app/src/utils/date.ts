@@ -24,9 +24,23 @@ export function addDaysISO(s: ISODate, n: number): ISODate {
   return toISODate(d);
 }
 
+/**
+ * Returns the signed number of calendar days between two ISO dates.
+ *   diffDaysISO(a, b) = a - b
+ *   positive  when a is LATER  than b  (a is further in the future)
+ *   negative  when a is EARLIER than b (a is further in the past)
+ *
+ * Prefer the semantic wrappers in `utils/time.ts` (`daysUntil`, `daysAgo`)
+ * which have self-documenting names that are impossible to call backwards.
+ */
 export function diffDaysISO(a: ISODate, b: ISODate): number {
   const ms = fromISODate(a).getTime() - fromISODate(b).getTime();
   return Math.round(ms / 86_400_000);
+}
+
+/** Shorthand: positive = target is in the future; negative = overdue. */
+export function daysUntil(target: ISODate, from: ISODate = todayISO()): number {
+  return diffDaysISO(target, from);
 }
 
 export function weekdayOf(s: ISODate): Weekday {

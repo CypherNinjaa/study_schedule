@@ -5,6 +5,7 @@ import { confirmAction } from '@/utils/confirm';
 import { STREAK_RULES, freezesRemainingThisWeek } from '@/services/streaks';
 import { addDaysISO, todayISO } from '@/utils/date';
 import { cn } from '@/utils/misc';
+import { Glyph } from '@/components/ui/Celebrations';
 
 /**
  * Streak strip. A freeze is deliberately awkward to spend: one click, one
@@ -21,15 +22,22 @@ export function StreakCards({ compact = false }: { compact?: boolean }) {
       {STREAK_RULES.map((rule) => {
         const streak = data.streaks.streaks[rule.key];
         const alive = streak.current > 0;
+        const isMilestone = streak.current >= 7 && (streak.current % 7 === 0 || streak.current === 30 || streak.current === 100);
         const left = freezesRemainingThisWeek(data, rule.key, today);
         const missedYesterday = streak.lastQualifiedDate !== null && streak.lastQualifiedDate < yesterday;
         const canFreeze = left > 0 && missedYesterday && streak.best > 0;
 
         return (
-          <div key={rule.key} className="card flex flex-col gap-1 p-3">
+          <div
+            key={rule.key}
+            className={cn(
+              'card flex flex-col gap-1 p-3 transition-shadow',
+              isMilestone && 'ring-1 ring-accent/40 shadow-sm',
+            )}
+          >
             <div className="flex items-center justify-between">
-              <span className="text-base leading-none" aria-hidden>
-                {rule.icon}
+              <span className="text-accent flex items-center justify-center h-5 w-5" aria-hidden>
+                <Glyph name={rule.icon} size={15} />
               </span>
               {canFreeze && (
                 <button

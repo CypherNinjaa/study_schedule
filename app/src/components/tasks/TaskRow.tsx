@@ -8,6 +8,7 @@ import { confirmAction } from '@/utils/confirm';
 import { formatHHMM12, formatMinutes, todayISO, addDaysISO } from '@/utils/date';
 import { cn } from '@/utils/misc';
 import { taskXP } from '@/services/xp';
+import { burstConfetti } from '@/utils/confetti';
 
 const PRIORITY_TONE: Record<Task['priority'], string> = {
   low: 'text-muted',
@@ -37,13 +38,18 @@ export function TaskRow({ task, showDate = false }: { task: Task; showDate?: boo
         role="checkbox"
         aria-checked={done}
         aria-label={done ? `Mark ${task.title} as not done` : `Complete ${task.title}`}
-        onClick={() => setTaskStatus(task.id, done ? 'todo' : 'completed')}
+        onClick={() => {
+          if (!done) {
+            burstConfetti('small');
+          }
+          setTaskStatus(task.id, done ? 'todo' : 'completed');
+        }}
         className={cn(
-          'mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border transition-colors',
+          'mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border transition-all active:scale-125',
           done ? 'border-ok bg-ok text-white' : 'border-line hover:border-accent',
         )}
       >
-        {done && <Check size={12} strokeWidth={3} />}
+        {done && <Check size={12} strokeWidth={3} className="animate-pop" />}
       </button>
 
       <button type="button" onClick={() => openEditor(task.id)} className="min-w-0 flex-1 text-left">

@@ -466,7 +466,7 @@ function SessionDialog({
                 <option value="">Free text</option>
                 {subject.topics.map((t) => (
                   <option key={t.id} value={t.id}>
-                    {t.done ? '✓ ' : ''}
+                    {t.done ? '[Done] ' : ''}
                     {t.title}
                   </option>
                 ))}

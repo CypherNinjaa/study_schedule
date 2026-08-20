@@ -11,6 +11,8 @@ import {
   Timer,
   Trophy,
 } from 'lucide-react';
+import { cn } from '@/utils/misc';
+import { daysUntil } from '@/utils/time';
 import { useDataStore } from '@/store/useDataStore';
 import { useUiStore } from '@/store/useUiStore';
 import { useData, useDayMetrics, useIndex, useRangeMetrics, useScore } from '@/hooks/useMetrics';
@@ -80,11 +82,21 @@ export function Dashboard() {
     [data.streaks],
   );
 
+  const upcomingExams = useMemo(
+    () =>
+      (data.exams || [])
+        .filter((e) => e.date >= today)
+        .sort((a, b) => a.date.localeCompare(b.date)),
+    [data.exams, today],
+  );
+  const nextExam = upcomingExams[0] ?? null;
+  const daysToExam = nextExam ? daysUntil(nextExam.date, today) : null;
+
   // Nudge a weekly review in the first two days of a new week, once there is a
   // finished week worth reflecting on. Dismissible for the session.
   const [reviewDismissed, setReviewDismissed] = useState(false);
   const lastWeek = useRangeMetrics(addDaysISO(startOfWeekISO(today, data.settings.weekStartsOn), -7), addDaysISO(startOfWeekISO(today, data.settings.weekStartsOn), -1));
-  const daysIntoWeek = diffDaysISO(startOfWeekISO(today, data.settings.weekStartsOn), today);
+  const daysIntoWeek = diffDaysISO(today, startOfWeekISO(today, data.settings.weekStartsOn));
   const showReviewBanner = !reviewDismissed && daysIntoWeek <= 1 && lastWeek.activeDays > 0;
 
   return (
@@ -304,6 +316,39 @@ export function Dashboard() {
                   </span>
                 )}
                 {nextClass.teacher && <span>{nextClass.teacher}</span>}
+              </div>
+            </Card>
+          )}
+
+          {nextExam && (
+            <Card className="p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-widest text-muted">Next exam</p>
+                  <p className="mt-1.5 text-sm font-semibold text-ink">{nextExam.title}</p>
+                </div>
+                <span
+                  className={cn(
+                    'rounded-md px-2 py-0.5 text-xs font-bold tabular border',
+                    daysToExam !== null && daysToExam <= 3
+                      ? 'border-danger/40 bg-danger/10 text-danger'
+                      : daysToExam !== null && daysToExam <= 7
+                        ? 'border-warn/40 bg-warn/10 text-warn'
+                        : 'border-accent/40 bg-accent/10 text-accent',
+                  )}
+                >
+                  {daysToExam === 0 ? 'Today' : `${daysToExam}d left`}
+                </span>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs text-muted">
+                <span>{nextExam.venue ? `Venue: ${nextExam.venue}` : nextExam.date}</span>
+                <button
+                  type="button"
+                  className="text-accent hover:underline inline-flex items-center gap-0.5"
+                  onClick={() => navigate('exams')}
+                >
+                  View exam <ArrowRight size={11} />
+                </button>
               </div>
             </Card>
           )}

@@ -48,7 +48,7 @@ export function Goals() {
   const activeCount = data.goals.filter((g) => g.status === 'active').length;
   const doneCount = data.goals.filter((g) => g.status === 'completed').length;
   const dueSoon = data.goals.filter(
-    (g) => g.status === 'active' && g.deadline !== null && diffDaysISO(today, g.deadline) <= 7,
+    (g) => g.status === 'active' && g.deadline !== null && diffDaysISO(g.deadline, today) <= 7,
   ).length;
 
   return (
@@ -110,15 +110,15 @@ export function Goals() {
 function GoalCard({ goal, today, onEdit }: { goal: Goal; today: string; onEdit: () => void }) {
   const progress = pct(goal.current, goal.target);
   const done = goal.status === 'completed';
-  const daysLeft = goal.deadline ? diffDaysISO(today, goal.deadline) : null;
+  const daysLeft = goal.deadline ? diffDaysISO(goal.deadline, today) : null;
   const overdue = !done && daysLeft !== null && daysLeft < 0;
 
   // For a dated goal, how far along the calendar is compared with the work.
   const pace =
     goal.deadline && !done
       ? (() => {
-          const total = diffDaysISO(goal.createdAt.slice(0, 10), goal.deadline);
-          const elapsed = diffDaysISO(goal.createdAt.slice(0, 10), today);
+          const total = diffDaysISO(goal.deadline, goal.createdAt.slice(0, 10));
+          const elapsed = diffDaysISO(today, goal.createdAt.slice(0, 10));
           if (total <= 0) return null;
           return Math.round((elapsed / total) * 100);
         })()

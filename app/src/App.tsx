@@ -22,6 +22,8 @@ import { Goals } from '@/pages/Goals';
 import { Achievements } from '@/pages/Achievements';
 import { Timetable } from '@/pages/Timetable';
 import { Subjects } from '@/pages/Subjects';
+import { Exams } from '@/pages/Exams';
+import { Materials } from '@/pages/Materials';
 import { Settings } from '@/pages/Settings';
 import { Calendar } from '@/pages/Calendar';
 import { addDaysISO, todayISO } from '@/utils/date';
@@ -38,6 +40,8 @@ const PAGES: Record<RouteId, React.ComponentType> = {
   calendar: Calendar,
   tasks: Tasks,
   study: Study,
+  exams: Exams,
+  materials: Materials,
   habits: Habits,
   goals: Goals,
   analytics: Analytics,
@@ -102,7 +106,7 @@ export default function App() {
     const tick = window.setInterval(() => {
       const store = useDataStore.getState();
       const today = todayISO();
-      if (store.activeDate === addDaysISO(today, -1)) store.setActiveDate(today);
+      if (store.activeDate < today) store.setActiveDate(today);
     }, 60_000);
     return () => window.clearInterval(tick);
   }, [bootPhase]);

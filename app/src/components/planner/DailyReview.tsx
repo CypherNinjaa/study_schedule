@@ -9,7 +9,6 @@ import { XP_RULES } from '@/services/xp';
 import { cn } from '@/utils/misc';
 
 const MOODS = [1, 2, 3, 4, 5] as const;
-const MOOD_FACE = ['😞', '🙁', '😐', '🙂', '😄'];
 
 /** End-of-day reflection. Two questions, deliberately small. */
 export function DailyReview({ date }: { date: ISODate }) {
@@ -56,11 +55,13 @@ export function DailyReview({ date }: { date: ISODate }) {
                 aria-pressed={log?.mood === m}
                 onClick={() => updateDailyLog(date, { mood: log?.mood === m ? null : m })}
                 className={cn(
-                  'flex h-8 w-8 items-center justify-center rounded-ctl border text-base transition-colors',
-                  log?.mood === m ? 'border-accent bg-accent-soft' : 'border-line hover:bg-elevated',
+                  'h-8 w-8 rounded-ctl border text-xs font-semibold tabular transition-colors',
+                  log?.mood === m
+                    ? 'border-accent bg-accent text-white'
+                    : 'border-line text-muted hover:bg-elevated',
                 )}
               >
-                {MOOD_FACE[m - 1]}
+                {m}
               </button>
             ))}
           </div>

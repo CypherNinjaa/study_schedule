@@ -3,6 +3,7 @@ import type {
   Assignment,
   CalendarEvent,
   ClassSlot,
+  Exam,
   Goal,
   Habit,
   HHMM,
@@ -13,6 +14,7 @@ import type {
   Semester,
   Settings,
   StreakKey,
+  StudyMaterial,
   StudySession,
   Subject,
   Task,
@@ -21,7 +23,7 @@ import type {
   Weekday,
 } from '@/types';
 import { uid } from '@/utils/misc';
-import { minutesToHHMM, todayISO, toISODate } from '@/utils/date';
+import { diffDaysISO, minutesToHHMM, startOfWeekISO, todayISO, toISODate } from '@/utils/date';
 import { awardXP, studySessionXP, taskXP, XP_RULES } from '@/services/xp';
 import { ensureLog } from '@/services/rollup';
 import { applyStreakFreeze, removeStreakFreeze, type FreezeResult } from '@/services/streaks';
@@ -526,6 +528,11 @@ export function deleteSubject(id: string): void {
     for (const sem of d.schedule.semesters) {
       for (const slot of sem.slots) if (slot.subjectId === id) slot.subjectId = null;
     }
+    // Clear subjectId on any auto-tracking goal that pointed at this subject
+    // so the goal does not silently continue tracking against a ghost subject.
+    for (const g of d.goals) {
+      if (g.auto?.subjectId === id) g.auto = { ...g.auto, subjectId: null };
+    }
   });
 }
 
@@ -843,6 +850,118 @@ export function deleteEvent(id: string): void {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Exams                                                              */
+/* ------------------------------------------------------------------ */
+
+export function createExam(payload: Omit<Exam, 'id' | 'createdAt'>): string {
+  const id = uid('exam');
+  mutate((d) => {
+    d.exams = d.exams || [];
+    d.exams.push({
+      ...payload,
+      id,
+      createdAt: new Date().toISOString(),
+    });
+  });
+  return id;
+}
+
+export function updateExam(id: string, patch: Partial<Exam>): void {
+  mutate((d) => {
+    d.exams = d.exams || [];
+    const exam = d.exams.find((e) => e.id === id);
+    if (exam) Object.assign(exam, patch);
+  });
+}
+
+export function deleteExam(id: string): void {
+  mutate((d) => {
+    d.exams = d.exams || [];
+    d.exams = d.exams.filter((e) => e.id !== id);
+  });
+}
+
+export function toggleExamSyllabusItem(examId: string, itemId: string): void {
+  mutate((d) => {
+    d.exams = d.exams || [];
+    const exam = d.exams.find((e) => e.id === examId);
+    if (!exam) return;
+    const exists = exam.syllabusChecked.includes(itemId);
+    if (exists) {
+      exam.syllabusChecked = exam.syllabusChecked.filter((id) => id !== itemId);
+    } else {
+      exam.syllabusChecked.push(itemId);
+    }
+  });
+}
+
+export function addExamSyllabusItem(examId: string, text: string, topicId?: string): void {
+  mutate((d) => {
+    d.exams = d.exams || [];
+    const exam = d.exams.find((e) => e.id === examId);
+    if (!exam) return;
+    exam.syllabus.push({
+      id: uid('syl'),
+      text: text.trim(),
+      topicId,
+    });
+  });
+}
+
+export function removeExamSyllabusItem(examId: string, itemId: string): void {
+  mutate((d) => {
+    d.exams = d.exams || [];
+    const exam = d.exams.find((e) => e.id === examId);
+    if (!exam) return;
+    exam.syllabus = exam.syllabus.filter((s) => s.id !== itemId);
+    exam.syllabusChecked = exam.syllabusChecked.filter((id) => id !== itemId);
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Study Materials                                                     */
+/* ------------------------------------------------------------------ */
+
+export function addMaterial(
+  payload: Omit<StudyMaterial, 'id' | 'createdAt' | 'lastOpenedAt'>,
+): string {
+  const id = uid('mat');
+  mutate((d) => {
+    d.studyMaterials = d.studyMaterials || [];
+    d.studyMaterials.push({
+      ...payload,
+      id,
+      createdAt: new Date().toISOString(),
+      lastOpenedAt: null,
+    });
+  });
+  return id;
+}
+
+export function updateMaterial(id: string, patch: Partial<StudyMaterial>): void {
+  mutate((d) => {
+    d.studyMaterials = d.studyMaterials || [];
+    const mat = d.studyMaterials.find((m) => m.id === id);
+    if (mat) Object.assign(mat, patch);
+  });
+}
+
+export function deleteMaterial(id: string): void {
+  mutate((d) => {
+    d.studyMaterials = d.studyMaterials || [];
+    d.studyMaterials = d.studyMaterials.filter((m) => m.id !== id);
+  });
+}
+
+export function recordMaterialOpened(id: string): void {
+  mutate((d) => {
+    d.studyMaterials = d.studyMaterials || [];
+    const mat = d.studyMaterials.find((m) => m.id === id);
+    if (mat) mat.lastOpenedAt = new Date().toISOString();
+  });
+}
+
 function datesForRule(
   rule: NonNullable<Task['recurrence']>,
   anchor: ISODate,
@@ -853,19 +972,37 @@ function datesForRule(
   const start = new Date(`${from}T00:00:00`);
   const end = new Date(`${to}T00:00:00`);
   const anchorDate = new Date(`${anchor}T00:00:00`);
+  const every = Math.max(1, rule.interval);
+
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const iso = toISODate(d);
     const dayDiff = Math.round((d.getTime() - anchorDate.getTime()) / 86_400_000);
     if (dayDiff <= 0) continue;
-    const every = Math.max(1, rule.interval);
-    if (rule.kind === 'daily' && dayDiff % every === 0) out.push(iso);
-    else if (rule.kind === 'weekly') {
-      const days = rule.daysOfWeek ?? [anchorDate.getDay()];
-      if (days.includes(d.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6) && Math.floor(dayDiff / 7) % every === 0) {
-        out.push(iso);
+
+    if (rule.kind === 'daily' && dayDiff % every === 0) {
+      out.push(iso);
+    } else if (rule.kind === 'weekly') {
+      const days = rule.daysOfWeek ?? [anchorDate.getDay() as Weekday];
+      if (days.includes(d.getDay() as Weekday)) {
+        // Compare which ISO calendar week each date falls in (Mon-based).
+        const weekDiff = Math.round(
+          diffDaysISO(startOfWeekISO(iso, 1), startOfWeekISO(anchor, 1)) / 7,
+        );
+        if (weekDiff >= 0 && weekDiff % every === 0) out.push(iso);
       }
-    } else if (rule.kind === 'monthly' && d.getDate() === anchorDate.getDate()) out.push(iso);
-    else if (rule.kind === 'weekdays' && d.getDay() >= 1 && d.getDay() <= 5) out.push(iso);
+    } else if (rule.kind === 'monthly') {
+      const monthDiff =
+        (d.getFullYear() - anchorDate.getFullYear()) * 12 +
+        (d.getMonth() - anchorDate.getMonth());
+      if (monthDiff > 0 && monthDiff % every === 0) {
+        // Clamp to last valid day of the target month (handles Jan 31 -> Feb 28, etc.)
+        const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+        const targetDay = Math.min(anchorDate.getDate(), lastDay);
+        if (d.getDate() === targetDay) out.push(iso);
+      }
+    } else if (rule.kind === 'weekdays' && d.getDay() >= 1 && d.getDay() <= 5) {
+      out.push(iso);
+    }
   }
   return out;
 }

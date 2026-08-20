@@ -343,7 +343,7 @@ export function DayTimeline({ date }: { date: ISODate }) {
           )}
           {untimedStudySessions.length > 0 && (
             <p className="text-emerald-600 dark:text-emerald-400 font-medium">
-              ✓ {untimedStudySessions.length} additional study session{untimedStudySessions.length === 1 ? '' : 's'} logged today ({untimedStudySessions.reduce((acc, s) => acc + s.minutes, 0)} min total).
+              {untimedStudySessions.length} additional study session{untimedStudySessions.length === 1 ? '' : 's'} logged today ({untimedStudySessions.reduce((acc, s) => acc + s.minutes, 0)} min total).
             </p>
           )}
         </div>

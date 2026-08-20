@@ -14,44 +14,48 @@ export const STREAK_RULES: StreakRule[] = [
   {
     key: 'study',
     label: 'Study',
-    icon: '🔥',
+    icon: 'Flame',
     description: (d) => `Hit ${d.settings.targets.study} min of study`,
     qualifies: (d, m) => m.studyMinutes >= d.settings.targets.study && d.settings.targets.study > 0,
   },
   {
     key: 'coding',
     label: 'Coding',
-    icon: '💻',
+    icon: 'Code2',
     description: (d) => `Hit ${d.settings.targets.coding} min of coding`,
     qualifies: (d, m) => m.codingMinutes >= d.settings.targets.coding && d.settings.targets.coding > 0,
   },
   {
     key: 'exercise',
     label: 'Exercise',
-    icon: '🏃',
+    icon: 'Activity',
     description: (d) => `Move for ${d.settings.targets.exercise} min`,
     qualifies: (d, m) => m.exerciseMinutes >= d.settings.targets.exercise && d.settings.targets.exercise > 0,
   },
   {
     key: 'earlyWake',
     label: 'Early wake',
-    icon: '🌅',
+    icon: 'Sun',
     description: (d) => `Wake up by ${d.settings.wakeTime}`,
     // A 15-minute grace window keeps the streak humane.
+    // The 4:00 AM floor prevents late-night logging (00:30, 01:00, etc.) from
+    // wrongly counting as an early wake.
     qualifies: (d, m) =>
-      m.wokeAt !== null && hhmmToMinutes(m.wokeAt) <= hhmmToMinutes(d.settings.wakeTime) + 15,
+      m.wokeAt !== null &&
+      hhmmToMinutes(m.wokeAt) >= 240 &&
+      hhmmToMinutes(m.wokeAt) <= hhmmToMinutes(d.settings.wakeTime) + 15,
   },
   {
     key: 'tasks',
     label: 'Tasks',
-    icon: '✅',
+    icon: 'CheckSquare',
     description: () => 'Complete every planned task',
     qualifies: (_d, m) => m.tasksTotal > 0 && m.tasksCompleted === m.tasksTotal,
   },
   {
     key: 'habits',
     label: 'Habits',
-    icon: '🧭',
+    icon: 'Compass',
     description: () => 'Complete all habits due today',
     qualifies: (d, m) => {
       const due = habitsDueOn(d.habits, m.date).length;

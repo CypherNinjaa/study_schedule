@@ -77,6 +77,8 @@ export function validateAndMigrate(raw: unknown): ValidationResult {
     goals: arr(raw.goals),
     notes: arr(raw.notes),
     events: arr(raw.events),
+    exams: arr(raw.exams),
+    studyMaterials: arr(raw.studyMaterials),
     pomodoroLog: arr(raw.pomodoroLog),
     lastUpdated: typeof raw.lastUpdated === 'string' ? raw.lastUpdated : new Date().toISOString(),
   };

@@ -1,5 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { Coffee, Edit3, Minus, Pause, Play, Plus, RotateCcw, Settings as SettingsIcon, SkipForward } from 'lucide-react';
+import {
+  Coffee,
+  Edit3,
+  Minus,
+  Pause,
+  Play,
+  Plus,
+  RotateCcw,
+  Save,
+  Settings as SettingsIcon,
+  SkipForward,
+} from 'lucide-react';
 import type { StudyMethod } from '@/types';
 import { updateSettings } from '@/store/actions';
 import { usePomodoroStore, PHASE_LABEL, type PomodoroPhase } from '@/store/usePomodoroStore';
@@ -18,26 +29,34 @@ export function PomodoroTimer() {
   const phase = usePomodoroStore((s) => s.phase);
   const running = usePomodoroStore((s) => s.running);
   const remaining = usePomodoroStore((s) => s.remaining);
-  const initialTotal = usePomodoroStore((s) => s.initialTotal);
+  const displayTotal = usePomodoroStore((s) => s.displayTotal);
   const completedFocus = usePomodoroStore((s) => s.completedFocus);
   const label = usePomodoroStore((s) => s.label);
   const subjectId = usePomodoroStore((s) => s.subjectId);
   const method = usePomodoroStore((s) => s.method);
+  const alerting = usePomodoroStore((s) => s.alerting);
 
   const setLabel = usePomodoroStore((s) => s.setLabel);
   const setSubjectId = usePomodoroStore((s) => s.setSubjectId);
   const setMethod = usePomodoroStore((s) => s.setMethod);
   const setRemaining = usePomodoroStore((s) => s.setRemaining);
+  const acknowledgeAlert = usePomodoroStore((s) => s.acknowledgeAlert);
 
   const toggle = usePomodoroStore((s) => s.toggle);
   const resetStore = usePomodoroStore((s) => s.reset);
   const skipStore = usePomodoroStore((s) => s.skip);
   const adjustMinutes = usePomodoroStore((s) => s.adjustMinutes);
+  const submitEarly = usePomodoroStore((s) => s.submitEarly);
 
   const [isEditingSettings, setIsEditingSettings] = useState(false);
 
-  const cfgTotal = (phase === 'focus' ? cfg.focusMinutes : phase === 'break' ? cfg.breakMinutes : cfg.longBreakMinutes) * 60;
-  const total = Math.max(initialTotal, cfgTotal, remaining, 1);
+  const cfgTotal =
+    (phase === 'focus'
+      ? cfg.focusMinutes
+      : phase === 'break'
+        ? cfg.breakMinutes
+        : cfg.longBreakMinutes) * 60;
+  const total = Math.max(displayTotal, cfgTotal, remaining, 1);
   const progress = Math.min(1, Math.max(0, (total - remaining) / total));
   const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
   const ss = String(remaining % 60).padStart(2, '0');
@@ -45,24 +64,24 @@ export function PomodoroTimer() {
   const prevPhaseRef = useRef(phase);
   const prevTotalRef = useRef(total);
 
-  // Sync remaining time when phase or default settings change while idle
+  // Sync remaining time when phase or default settings change while idle.
   useEffect(() => {
     if (prevPhaseRef.current !== phase) {
       prevPhaseRef.current = phase;
       prevTotalRef.current = total;
-      setRemaining(total);
+      setRemaining(total, total);
       return;
     }
     if (prevTotalRef.current !== total) {
       if (!running && remaining === prevTotalRef.current) {
-        setRemaining(total);
+        setRemaining(total, total);
       }
       prevTotalRef.current = total;
     }
   }, [phase, total, running, remaining, setRemaining]);
 
   const reset = () => {
-    resetStore(total);
+    resetStore(cfgTotal);
   };
 
   const skip = () => {
@@ -77,10 +96,18 @@ export function PomodoroTimer() {
       const nextFocus = patch.focusMinutes ?? cfg.focusMinutes;
       const nextBreak = patch.breakMinutes ?? cfg.breakMinutes;
       const nextLong = patch.longBreakMinutes ?? cfg.longBreakMinutes;
-      const nextSec = (phase === 'focus' ? nextFocus : phase === 'break' ? nextBreak : nextLong) * 60;
+      const nextSec =
+        (phase === 'focus' ? nextFocus : phase === 'break' ? nextBreak : nextLong) * 60;
       setRemaining(nextSec, nextSec);
     }
   };
+
+  const ringTone =
+    alerting
+      ? 'var(--c-warn)'
+      : phase === 'focus'
+        ? 'var(--accent)'
+        : 'var(--c-ok)';
 
   return (
     <Card>
@@ -110,7 +137,9 @@ export function PomodoroTimer() {
         {isEditingSettings && (
           <div className="w-full rounded-ctl border border-line bg-surface p-3 space-y-3 text-xs animate-fade-in">
             <div className="flex items-center justify-between border-b border-line pb-2 font-medium text-ink">
-              <span className="flex items-center gap-1.5"><SettingsIcon size={14} className="text-accent" /> Edit Durations</span>
+              <span className="flex items-center gap-1.5">
+                <SettingsIcon size={14} className="text-accent" /> Edit Durations
+              </span>
               <button
                 type="button"
                 className="text-muted hover:text-ink text-[11px]"
@@ -119,7 +148,7 @@ export function PomodoroTimer() {
                 Close
               </button>
             </div>
-            
+
             <div className="grid gap-3 sm:grid-cols-3">
               <div>
                 <label className="block label">Focus (min)</label>
@@ -129,7 +158,9 @@ export function PomodoroTimer() {
                   max={120}
                   className="input input-sm tabular"
                   value={cfg.focusMinutes}
-                  onChange={(e) => updatePomodoroSetting({ focusMinutes: Math.max(1, Number(e.target.value) || 25) })}
+                  onChange={(e) =>
+                    updatePomodoroSetting({ focusMinutes: Math.max(1, Number(e.target.value) || 25) })
+                  }
                 />
                 <div className="mt-1.5 flex flex-wrap gap-1">
                   {FOCUS_PRESETS.map((m) => (
@@ -158,7 +189,9 @@ export function PomodoroTimer() {
                   max={60}
                   className="input input-sm tabular"
                   value={cfg.breakMinutes}
-                  onChange={(e) => updatePomodoroSetting({ breakMinutes: Math.max(1, Number(e.target.value) || 5) })}
+                  onChange={(e) =>
+                    updatePomodoroSetting({ breakMinutes: Math.max(1, Number(e.target.value) || 5) })
+                  }
                 />
                 <div className="mt-1.5 flex flex-wrap gap-1">
                   {BREAK_PRESETS.map((m) => (
@@ -187,7 +220,11 @@ export function PomodoroTimer() {
                   max={90}
                   className="input input-sm tabular"
                   value={cfg.longBreakMinutes}
-                  onChange={(e) => updatePomodoroSetting({ longBreakMinutes: Math.max(1, Number(e.target.value) || 15) })}
+                  onChange={(e) =>
+                    updatePomodoroSetting({
+                      longBreakMinutes: Math.max(1, Number(e.target.value) || 15),
+                    })
+                  }
                 />
                 <div className="mt-1.5 flex flex-wrap gap-1">
                   {LONG_BREAK_PRESETS.map((m) => (
@@ -211,15 +248,32 @@ export function PomodoroTimer() {
           </div>
         )}
 
-        <Ring value={progress} size={168} stroke={10} tone={phase === 'focus' ? 'var(--accent)' : 'var(--c-ok)'}>
-          <span className="text-3xl font-semibold tabular text-ink">
-            {mm}:{ss}
-          </span>
-          <span className="mt-0.5 flex items-center gap-1 text-xs text-muted">
-            {phase !== 'focus' && <Coffee size={12} />}
-            {PHASE_LABEL[phase]}
-          </span>
-        </Ring>
+        <div className={cn('rounded-full transition-transform', alerting && 'animate-timer-alert')}>
+          <Ring
+            value={progress}
+            size={168}
+            stroke={10}
+            tone={ringTone}
+          >
+            <span className={cn('text-3xl font-semibold tabular', alerting ? 'text-warn' : 'text-ink')}>
+              {mm}:{ss}
+            </span>
+            <span className="mt-0.5 flex items-center gap-1 text-xs text-muted">
+              {phase !== 'focus' && <Coffee size={12} />}
+              {alerting ? 'Time is up!' : PHASE_LABEL[phase]}
+            </span>
+          </Ring>
+        </div>
+
+        {alerting && (
+          <button
+            type="button"
+            className="btn-primary btn-sm animate-fade-in"
+            onClick={acknowledgeAlert}
+          >
+            Got it
+          </button>
+        )}
 
         <div className="flex flex-wrap items-center justify-center gap-2">
           <button
@@ -245,10 +299,31 @@ export function PomodoroTimer() {
             <Plus size={13} /> 5m
           </button>
 
-          <button type="button" className="btn-outline gap-1.5" onClick={reset} disabled={remaining === total && !running}>
+          {(running || !!usePomodoroStore.getState().startedAt) && phase === 'focus' && (
+            <button
+              type="button"
+              className="btn-outline btn-sm gap-1.5 text-ok border-ok/60 hover:bg-ok/10"
+              onClick={submitEarly}
+              title="Log elapsed study time and stop the timer"
+            >
+              <Save size={14} /> Save &amp; Stop
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="btn-outline gap-1.5"
+            onClick={reset}
+            disabled={remaining === cfgTotal && !running && !alerting}
+          >
             <RotateCcw size={15} /> Reset
           </button>
-          <button type="button" className="btn-ghost gap-1.5" onClick={skip} title="Skip without logging the round">
+          <button
+            type="button"
+            className="btn-ghost gap-1.5"
+            onClick={skip}
+            title="Skip without logging the round"
+          >
             <SkipForward size={15} /> Skip
           </button>
         </div>
@@ -279,7 +354,9 @@ export function PomodoroTimer() {
           <label className="block">
             <span className="label">Method</span>
             <select className="input" value={method} onChange={(e) => setMethod(e.target.value as StudyMethod)}>
-              {(['reading', 'practice', 'revision', 'problem_solving', 'coding', 'flashcards'] as StudyMethod[]).map((m) => (
+              {(
+                ['reading', 'practice', 'revision', 'problem_solving', 'coding', 'flashcards'] as StudyMethod[]
+              ).map((m) => (
                 <option key={m} value={m}>
                   {m.replace('_', ' ')}
                 </option>
@@ -289,7 +366,8 @@ export function PomodoroTimer() {
         </div>
 
         <p className={cn('text-center text-[11px] leading-relaxed text-muted')}>
-          A round is logged as study time only when the timer runs to the end. Skipping or resetting records nothing.
+          A focus round is logged when the timer completes or when you click Save &amp; Stop.
+          Skipping or resetting records nothing.
         </p>
       </div>
     </Card>

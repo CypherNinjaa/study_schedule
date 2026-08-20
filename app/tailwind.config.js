@@ -51,12 +51,17 @@ export default {
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
         shimmer: { '100%': { transform: 'translateX(100%)' } },
+        'timer-alert': {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.4', transform: 'scale(1.03)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in .18s ease-out both',
         'slide-up': 'slide-up .2s ease-out both',
         'xp-float': 'xp-float 1.6s ease-out both',
         pop: 'pop .22s cubic-bezier(.2,.8,.2,1) both',
+        'timer-alert': 'timer-alert 1.2s ease-in-out infinite',
       },
     },
   },

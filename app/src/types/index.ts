@@ -421,6 +421,49 @@ export interface CalendarEvent {
   color?: string;
 }
 
+export interface ExamSyllabusItem {
+  id: string;
+  text: string;
+  topicId?: string;
+}
+
+export interface Exam {
+  id: string;
+  subjectId: string | null;
+  title: string;
+  date: ISODate;
+  time: HHMM | null;
+  durationMinutes: number;
+  venue: string;
+  syllabus: ExamSyllabusItem[];
+  syllabusChecked: string[];
+  notes: string;
+  createdAt: ISOInstant;
+}
+
+/* ------------------------------------------------------------------ */
+/* Study Materials                                                     */
+/* ------------------------------------------------------------------ */
+
+export type MaterialType = 'pdf' | 'video' | 'audio' | 'image' | 'link' | 'folder' | 'other';
+
+export interface StudyMaterial {
+  id: string;
+  title: string;
+  description: string;
+  type: MaterialType;
+  subjectId: string | null;
+  topicId: string | null;
+  tags: string[];
+  url?: string;
+  filePath?: string;
+  fileHandleKey?: string;
+  fileName?: string;
+  fileSize?: number;
+  createdAt: ISOInstant;
+  lastOpenedAt: ISOInstant | null;
+}
+
 /* ------------------------------------------------------------------ */
 /* Root document                                                       */
 /* ------------------------------------------------------------------ */
@@ -441,6 +484,8 @@ export interface AppData {
   goals: Goal[];
   notes: Note[];
   events: CalendarEvent[];
+  exams: Exam[];
+  studyMaterials: StudyMaterial[];
   pomodoroLog: PomodoroRound[];
   lastUpdated: ISOInstant;
 }

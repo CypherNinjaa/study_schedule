@@ -91,3 +91,25 @@ describe('controlled streak freeze (§12)', () => {
     expect(res.ok).toBe(false);
   });
 });
+
+describe('early wake streak qualifications', () => {
+  it('qualifies wake up on or before wakeTime + 15 min and after 04:00', () => {
+    const data = createDefaultData(NOW);
+    data.settings.wakeTime = '05:00';
+    const log = emptyDailyLog('2026-01-15');
+    log.wokeAt = '05:10';
+    data.dailyLogs.push(log);
+    recomputeStreaks(data, '2026-01-15');
+    expect(data.streaks.streaks.earlyWake.current).toBe(1);
+  });
+
+  it('rejects midnight and late-night wake times below 04:00 AM', () => {
+    const data = createDefaultData(NOW);
+    data.settings.wakeTime = '05:00';
+    const log = emptyDailyLog('2026-01-15');
+    log.wokeAt = '00:30'; // Late night / midnight study log
+    data.dailyLogs.push(log);
+    recomputeStreaks(data, '2026-01-15');
+    expect(data.streaks.streaks.earlyWake.current).toBe(0);
+  });
+});

@@ -87,7 +87,7 @@ export function Subjects() {
         <StatCard
           icon={<GraduationCap size={18} />}
           label="Next exam"
-          value={nextExam ? `${diffDaysISO(today, nextExam.subject.examDate!)}d` : '—'}
+          value={nextExam ? `${diffDaysISO(nextExam.subject.examDate!, today)}d` : '—'}
           hint={nextExam ? `${nextExam.subject.code} · ${formatDateShort(nextExam.subject.examDate!)}` : 'No exam dates set'}
           tone="var(--c-danger)"
         />
@@ -140,7 +140,7 @@ function SubjectCard({ stats, today, onEdit }: { stats: SubjectStats; today: str
   const [assignTitle, setAssignTitle] = useState('');
   const [assignDue, setAssignDue] = useState('');
 
-  const daysToExam = s.examDate ? diffDaysISO(today, s.examDate) : null;
+  const daysToExam = s.examDate ? diffDaysISO(s.examDate, today) : null;
 
   return (
     <Card className={cn(s.archived && 'opacity-70')}>

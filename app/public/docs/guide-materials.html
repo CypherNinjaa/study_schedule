@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Materials</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Study Materials</h1>
+  <p class="lead">Organize your lecture notes, textbook PDFs, video playlists, and reference links in one private, searchable library.</p>
+
+  <h2 id="overview">Local-first asset management</h2>
+  <p>The Materials tab is built on top of the browser's <strong>File System Access API</strong> and IndexedDB. It stores references and secure handles to your files on disk without uploading anything to remote servers or duplicating gigabytes of data.</p>
+
+  <h2 id="types">Resource types</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Type</th><th>Best for</th><th>How it opens</th></tr></thead>
+      <tbody>
+        <tr><td>PDF Document</td><td>Class slides, lecture notes, question banks</td><td>Direct in browser / default PDF reader</td></tr>
+        <tr><td>Video Lecture</td><td>Recorded sessions, tutorial MP4s</td><td>Browser media player / local player</td></tr>
+        <tr><td>Audio / Podcast</td><td>Revision audio, language lessons</td><td>Browser audio player</td></tr>
+        <tr><td>Diagram / Image</td><td>Architecture diagrams, formulas, mind maps</td><td>Full-screen preview</td></tr>
+        <tr><td>Web Link</td><td>Google Drive folders, YouTube playlists, GitHub repos</td><td>New browser tab</td></tr>
+        <tr><td>Folder / Path</td><td>Project folders, local code repositories</td><td>Copies path to clipboard</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="adding">Adding study materials</h2>
+  <p>You can add materials using three convenient modes:</p>
+  <ol class="steps steps--plain">
+    <li><h3>Select local file</h3><p>Click "Choose file" to pick any document from your computer. The app saves a local handle so you can launch it with one click anytime.</p></li>
+    <li><h3>Web link</h3><p>Enter any URL to bookmark study articles, videos, or shared class resources.</p></li>
+    <li><h3>Manual path</h3><p>Enter an absolute or relative path to a local directory or file.</p></li>
+  </ol>
+
+  <h2 id="organizing">Search &amp; categorization</h2>
+  <p>Filter materials quickly by subject, resource type, or keyword search across titles, descriptions, and custom hashtag tags (e.g. <code>#unit1</code>, <code>#important</code>, <code>#pyq</code>).</p>
+</main>
+</body>
+</html>

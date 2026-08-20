@@ -16,8 +16,9 @@ import { XP_RULES } from '@/services/xp';
 import { addDaysISO, lastNDays, todayISO, weekdayName } from '@/utils/date';
 import { cn, pct } from '@/utils/misc';
 
+
 const PALETTE = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#a855f7', '#ec4899', '#14b8a6'];
-const ICONS = ['✅', '📚', '💻', '🏃', '🌅', '💧', '🧘', '📖', '🛏️', '🍎', '🚫', '✍️'];
+const ICONS = ['Check', 'BookOpen', 'Code2', 'Activity', 'Sun', 'Droplet', 'Heart', 'Bookmark', 'Moon', 'Flame', 'Shield', 'PenTool'];
 
 export function Habits() {
   const data = useData();
@@ -231,7 +232,7 @@ function describeFreq(h: Pick<Habit, 'freq'> & Partial<Pick<Habit, 'timesPerWeek
 function HabitDialog({ habit, onClose }: { habit: Habit | null; onClose: () => void }) {
   const toast = useFeedbackStore((s) => s.toast);
   const [name, setName] = useState(habit?.name ?? '');
-  const [icon, setIcon] = useState(habit?.icon ?? '✅');
+  const [icon, setIcon] = useState(habit?.icon ?? 'Check');
   const [color, setColor] = useState(habit?.color ?? PALETTE[0]);
   const [freq, setFreq] = useState<HabitFreq>(habit?.freq ?? 'daily');
   const [timesPerWeek, setTimesPerWeek] = useState(String(habit?.timesPerWeek ?? 3));
@@ -308,11 +309,11 @@ function HabitDialog({ habit, onClose }: { habit: Habit | null; onClose: () => v
                 aria-pressed={icon === i}
                 onClick={() => setIcon(i)}
                 className={cn(
-                  'flex h-9 w-9 items-center justify-center rounded-ctl border text-base transition-colors',
-                  icon === i ? 'border-accent bg-accent-soft' : 'border-line hover:bg-elevated',
+                  'flex h-9 w-9 items-center justify-center rounded-ctl border text-ink transition-colors',
+                  icon === i ? 'border-accent bg-accent-soft text-accent' : 'border-line hover:bg-elevated',
                 )}
               >
-                {i}
+                <Glyph name={i} size={16} />
               </button>
             ))}
           </div>

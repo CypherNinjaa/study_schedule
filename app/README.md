@@ -1,32 +1,44 @@
-# React + TypeScript + Vite
+# Productivity OS - Local-First Student Study Workspace
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A private, offline-first study and productivity operating system designed for students. Built with React, TypeScript, TailwindCSS, and Zustand.
 
-Currently, two official plugins are available:
+## Core Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Daily Planning & Timeline**: Structure your day with class schedules, untimed tasks, and study blocks.
+- **Enhanced Pomodoro Timer**:
+  - Configurable focus and break durations with quick presets.
+  - Multi-tone ascending chime, document title countdown, and desktop notifications.
+  - **Save & Stop**: Accurately saves elapsed wall-clock focus time on early completion.
+  - Minimizable floating widget with alert states that persist across navigation.
+- **Exam Scheduler & Syllabus Checklist**:
+  - Track upcoming exams with color-coded countdown days.
+  - Automatic topic import from subjects into an interactive preparation checklist.
+  - Dashboard next-exam preview widget.
+- **Study Materials Library**:
+  - Organize notes, PDFs, recorded lectures, and web links by subject.
+  - Local-first file access via the File System Access API and IndexedDB.
+- **Habits & Streaks**:
+  - Daily, weekly, and custom frequency habits with completion heatmaps.
+  - 6 distinct activity streaks with streak freeze protection and realistic time boundaries.
+- **Gamification & Celebrations**:
+  - XP progression, level milestones, and 35 unlockable achievements.
+  - Particle celebrations on task completion, focus rounds, and level-ups.
+- **Local Storage & Privacy**:
+  - All data saved directly to your chosen local JSON file.
+  - Zero cloud dependency, zero trackers, 100% offline capability.
 
-## React Compiler
+## Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Install dependencies
+npm install
 
-## Expanding the Oxlint configuration
+# Run local development server
+npm run dev
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+# Run test suite
+npm test
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+# Build production bundle
+npm run build
 ```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
