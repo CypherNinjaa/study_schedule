@@ -24,6 +24,7 @@ import { Timetable } from '@/pages/Timetable';
 import { Subjects } from '@/pages/Subjects';
 import { Exams } from '@/pages/Exams';
 import { Materials } from '@/pages/Materials';
+import { Library } from '@/pages/Library';
 import { Settings } from '@/pages/Settings';
 import { Calendar } from '@/pages/Calendar';
 import { addDaysISO, todayISO } from '@/utils/date';
@@ -42,6 +43,7 @@ const PAGES: Record<RouteId, React.ComponentType> = {
   study: Study,
   exams: Exams,
   materials: Materials,
+  library: Library,
   habits: Habits,
   goals: Goals,
   analytics: Analytics,

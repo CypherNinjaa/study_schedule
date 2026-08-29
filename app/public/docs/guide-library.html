@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Library &amp; Ebook Reader</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/nav.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+<main class="doc">
+  <h1>Library &amp; Ebook Reader</h1>
+  <p class="lead">Save, organize, and read your textbooks, research papers, and ebooks locally with an interactive 3D page flip reader and eye-comfort settings.</p>
+
+  <h2 id="overview">Private, local-first reading</h2>
+  <p>The Library module is a built-in ebook reader and bookshelf designed specifically for focused studying. Your books, PDFs, reading progress, and covers are stored entirely on your computer inside IndexedDB — nothing is uploaded to the cloud.</p>
+
+  <h2 id="formats">Supported file formats</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Format</th><th>Extension</th><th>Reading Engine</th><th>Key Capabilities</th></tr></thead>
+      <tbody>
+        <tr><td>PDF Documents</td><td><code>.pdf</code></td><td>PDF.js with High-DPI Canvas</td><td>3D Book Flip, 2-page spread, continuous scroll, 50%–250% zoom</td></tr>
+        <tr><td>EPUB Ebooks</td><td><code>.epub</code></td><td>Reflowable EPUB Engine</td><td>Dynamic typography, responsive text reflow, chapter navigation</td></tr>
+        <tr><td>Kindle Ebooks</td><td><code>.mobi</code>, <code>.azw3</code></td><td>Text Extraction &amp; Reader</td><td>Metadata extraction, paginated reading, search</td></tr>
+        <tr><td>Plain Text &amp; Notes</td><td><code>.txt</code></td><td>Paginated Plain Text Engine</td><td>Fast search highlighting, custom margins, sentence boundary breaking</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="views">Library view modes</h2>
+  <p>You can switch between three distinct view modes using the toolbar toggles:</p>
+  <ul class="checklist">
+    <li data-icon="grid"><span><strong>3D Bookshelf View:</strong> An interactive 3D virtual library with realistic wooden shelves, custom book covers, dynamic spine thicknesses based on page count, and reading progress bars on spines.</span></li>
+    <li data-icon="layout"><span><strong>Grid View:</strong> Clean 2:3 aspect ratio cards displaying book cover thumbnails, linked subject badges, progress bars, and quick actions.</span></li>
+    <li data-icon="list"><span><strong>Compact List View:</strong> Space-efficient rows ideal for large textbook collections, showing file sizes, formats, and last opened timestamps.</span></li>
+  </ul>
+
+  <h2 id="3d-flip">3D page flip engine</h2>
+  <p>When reading in <strong>3D Book Flip</strong> mode, the reader simulates an authentic open book:</p>
+  <ol class="steps steps--plain">
+    <li><h3>Bidirectional flipping</h3><p>Click on the right half of the book or press <span class="kbd">&rarr;</span> / <span class="kbd">Space</span> to flip forward (Right-to-Left). Click on the left half or press <span class="kbd">&larr;</span> to flip backward (Left-to-Right).</p></li>
+    <li><h3>Responsive window auto-fit</h3><p>The reader automatically detects your PDF aspect ratio and window dimensions, scaling the 2-page book spread to fill your screen with zero text cutoff.</p></li>
+    <li><h3>Realistic paper lighting</h3><p>Pages rotate in true 3D perspective with dynamic shadow sweeps and central spine crease shading.</p></li>
+  </ol>
+
+  <h2 id="eye-comfort">Eye comfort &amp; themes</h2>
+  <p>Click the <strong>Settings</strong> and <strong>Eye Comfort</strong> icons in the top bar to tailor your reading environment:</p>
+  <div class="cards">
+    <div class="card"><span class="card__icon" data-icon="sun"></span><h3>6 Reading Themes</h3><p>Day, Warm Paper (cream #fef9ef), Sepia, Dark (Catppuccin), AMOLED (pure black), and Night Reading.</p></div>
+    <div class="card"><span class="card__icon" data-icon="eye"></span><h3>Blue Light &amp; Brightness</h3><p>Adjust the blue light reduction filter or dim screen brightness below hardware minimums for night study.</p></div>
+    <div class="card"><span class="card__icon" data-icon="target"></span><h3>Focus Mode</h3><p>Applies a subtle vignette around page edges to minimize peripheral distractions.</p></div>
+    <div class="card"><span class="card__icon" data-icon="clock"></span><h3>20-20-20 Eye Care Timer</h3><p>Optional automated reminder every 20 minutes to rest your eyes and prevent digital eye strain.</p></div>
+  </div>
+
+  <h2 id="study-integration">Productivity &amp; analytics integration</h2>
+  <p>Reading is treated as an active study activity. When you finish a reading session in the reader:</p>
+  <ul class="checklist">
+    <li data-icon="check"><span><strong>Study sessions:</strong> Time spent reading automatically logs as a study session with method <code>reading</code>.</span></li>
+    <li data-icon="check"><span><strong>Daily targets &amp; streaks:</strong> Reading minutes count toward your daily study target and maintain your study streak.</span></li>
+    <li data-icon="check"><span><strong>Subject tracking:</strong> If the book is linked to a subject, the time is attributed directly to that subject's syllabus analytics.</span></li>
+    <li data-icon="check"><span><strong>XP rewards:</strong> You earn experience points for every minute of focused reading.</span></li>
+  </ul>
+</main>
+</body>
+</html>

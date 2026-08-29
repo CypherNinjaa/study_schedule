@@ -11,15 +11,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dexie": "^4.4.5",
+    "epubjs": "^0.3.93",
     "idb-keyval": "^6.2.1",
     "lucide-react": "^0.469.0",
+    "pdfjs-dist": "^6.3.289",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "recharts": "^2.15.0",
     "tailwind-merge": "^2.6.0",
+    "three": "^0.185.1",
     "zustand": "^5.0.2"
   },
   "devDependencies": {
@@ -27,6 +33,7 @@
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^6.0.4",
     "autoprefixer": "^10.4.20",
     "oxlint": "^1.75.0",

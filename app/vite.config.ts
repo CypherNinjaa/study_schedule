@@ -54,6 +54,10 @@ export default defineConfig({
         manualChunks(id: string) {
           if (!id.includes('node_modules')) return undefined;
           if (id.includes('recharts') || id.includes('d3-')) return 'charts';
+          if (id.includes('three') || id.includes('@react-three')) return 'three';
+          if (id.includes('pdfjs-dist')) return 'pdf-reader';
+          if (id.includes('epubjs')) return 'epub-reader';
+          if (id.includes('dexie')) return 'dexie';
           if (id.includes('react') || id.includes('zustand') || id.includes('date-fns')) return 'vendor';
           return undefined;
         },

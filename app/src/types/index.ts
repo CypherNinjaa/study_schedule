@@ -487,6 +487,8 @@ export interface AppData {
   exams: Exam[];
   studyMaterials: StudyMaterial[];
   pomodoroLog: PomodoroRound[];
+  /** Bookshelf reader preferences and categories */
+  bookshelfSettings?: import('./bookshelf').BookshelfSettings;
   lastUpdated: ISOInstant;
 }
 

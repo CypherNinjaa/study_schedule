@@ -10,6 +10,7 @@ export type RouteId =
   | 'study'
   | 'exams'
   | 'materials'
+  | 'library'
   | 'habits'
   | 'goals'
   | 'analytics'
@@ -26,6 +27,7 @@ export const ROUTES: RouteId[] = [
   'study',
   'exams',
   'materials',
+  'library',
   'habits',
   'goals',
   'analytics',

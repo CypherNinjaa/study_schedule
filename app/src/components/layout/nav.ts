@@ -35,6 +35,7 @@ export const NAV: { id: RouteId; label: string; icon: typeof LayoutDashboard }[]
   { id: 'study', label: 'Study', icon: BookOpen },
   { id: 'exams', label: 'Exams', icon: FileCheck },
   { id: 'materials', label: 'Materials', icon: FolderOpen },
+  { id: 'library', label: 'Library', icon: Library },
   { id: 'habits', label: 'Habits', icon: Repeat },
   { id: 'goals', label: 'Goals', icon: Target },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
