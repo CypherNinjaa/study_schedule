@@ -4,6 +4,8 @@
 
 ![Productivity OS Banner](https://img.shields.io/badge/Productivity%20OS-Local--First%20Workspace-6366f1?style=for-the-badge&logo=rocket&logoColor=white)
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-cypherninjaa.github.io%2Fstudy__schedule-success?style=for-the-badge&logo=githubpages&logoColor=white)](https://cypherninjaa.github.io/study_schedule/)
+
 **The private, local-first academic command center & productivity operating system for students and developers.**
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
@@ -16,7 +18,7 @@
 [![PWA](https://img.shields.io/badge/PWA-Offline%20Ready-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-[Features](#-key-features) • [Why Productivity OS?](#-why-productivity-os) • [Documentation](#-interactive-documentation) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Shortcuts](#-keyboard-shortcuts) • [Philosophy](#-local-first-philosophy)
+[🌐 Live Demo](https://cypherninjaa.github.io/study_schedule/) • [📖 Live Documentation](https://cypherninjaa.github.io/study_schedule/docs/) • [Features](#-key-features) • [Why Productivity OS?](#-why-productivity-os) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Shortcuts](#-keyboard-shortcuts)
 
 </div>
 
