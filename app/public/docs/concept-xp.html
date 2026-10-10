@@ -62,22 +62,27 @@ priority bonus:  low +0   medium +2   high +5   critical +8</code></pre>
   </div>
   <p>Your dashboard shows your current level, a progress bar toward the next one, and how much XP remains. When you cross a threshold, a brief <strong>Level up!</strong> celebration appears.</p>
 
-  <h2 id="anti-farming">Why you can't farm XP</h2>
-  <p>Gamification is worthless if you can game it. The app awards XP based on real <em>state transitions</em>, not repeated clicks. Every award is recorded once against a unique key in a ledger.</p>
+  <h2 id="anti-farming">Why you can't farm XP (Bidirectional ledger)</h2>
+  <p>Gamification is worthless if you can game it. The app implements a strict <strong>bidirectional ledger</strong> with idempotency and immediate revocation:</p>
+  <ul>
+    <li><strong>Credit on completion:</strong> Completing a task, habit, or study session records a unique ledger entry and credits XP with a subtle green <code>+XP</code> cue.</li>
+    <li><strong>Revocation on unchecking:</strong> If you uncheck a habit, uncomplete a task, or delete a study block, the app automatically revokes the previously awarded XP. An amber <code>-XP</code> cue notifies you of the rollback.</li>
+    <li><strong>Zero infinite loops:</strong> Toggling a habit or task repeatedly will not increment your score — every re-completion only restores the balance rather than stacking infinite rewards.</li>
+    <li><strong>Penalty deductions:</strong> Skipping habits or losing streaks applies configured penalties cleanly to the ledger without corrupting all-time statistics.</li>
+  </ul>
   <div class="callout callout--info">
     <span class="callout__icon" data-icon="shield"></span>
     <div class="callout__body">
-      <p><strong>Example:</strong> Completing a task grants its XP once. If you un-complete it and complete it again, no new XP is granted — the ledger already recorded that task's completion. The same idempotent rule applies to study sessions, Pomodoros, habits, daily goals, and achievements.</p>
+      <p><strong>Integrity first:</strong> Your total level and progress bar always accurately reflect verified work. Even if you edit history or uncheck mistakes, your XP ledger maintains a sound mathematical balance.</p>
     </div>
   </div>
-  <p>This means your level always reflects work you genuinely did. It also means XP totals stay stable and correct even if you edit history or re-import a file.</p>
 
   <h2 id="where-you-see-it">Where you see XP</h2>
   <ul>
-    <li><strong>Dashboard</strong> — current level, XP progress bar, and today's XP.</li>
-    <li><strong>Floating "+XP" cues</strong> — a subtle animation when you earn points.</li>
-    <li><strong>Analytics</strong> — XP progression over time.</li>
-    <li><strong>Daily &amp; weekly reviews</strong> — XP earned in the period.</li>
+    <li><strong>Dashboard</strong> — current level, XP progress bar, and today's XP tally.</li>
+    <li><strong>Floating indicators</strong> — subtle animated cues in the bottom corner (green <code>+XP</code> on earnings, amber <code>-XP</code> on revocations).</li>
+    <li><strong>Analytics</strong> — XP progression curves over time.</li>
+    <li><strong>Daily &amp; weekly reviews</strong> — XP earned and milestones reached during the period.</li>
   </ul>
   <p>Related: <a href="concept-streaks.html">Streaks &amp; freezes</a> and <a href="guide-achievements.html">Achievements</a>.</p>
 </main>

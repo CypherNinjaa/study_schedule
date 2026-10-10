@@ -29,16 +29,18 @@
     <li><strong>In-page links</strong> — many pages link to related places, like a task pointing to its subject.</li>
   </ul>
 
-  <h2 id="save-indicator">The save indicator</h2>
-  <p>You never press "save" — the app does it for you. A small indicator in the top bar always tells you the current state:</p>
+  <h2 id="save-indicator">The save indicator &amp; file controls</h2>
+  <p>You never press "save" — the app autosaves continuously. The top bar features dedicated storage controls:</p>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>State</th><th>Meaning</th></tr></thead>
+      <thead><tr><th>Control / State</th><th>Meaning</th></tr></thead>
       <tbody>
         <tr><td><span class="pill pill--ok">Saved</span></td><td>Everything is written to your file or browser storage. You're safe to close the tab.</td></tr>
         <tr><td><span class="pill">Saving…</span></td><td>A change is being written right now. This takes a fraction of a second.</td></tr>
-        <tr><td><span class="pill pill--warn">Unsaved changes</span></td><td>A recent change is queued and about to save automatically.</td></tr>
-        <tr><td><span class="pill pill--warn">File disconnected</span></td><td>The app lost write access to your file. Your data is still safe in the browser — click to reconnect.</td></tr>
+        <tr><td><span class="pill pill--warn">Browser only</span></td><td>Data is currently persisted in your browser's IndexedDB. Connect a local file to sync to disk.</td></tr>
+        <tr><td><span class="pill pill--warn">File disconnected</span></td><td>The browser lost write access to your file. Click to grant permission and reconnect.</td></tr>
+        <tr><td><strong>Create file</strong></td><td>Button in the header to initialize a new JSON workspace file on disk.</td></tr>
+        <tr><td><strong>Load file</strong></td><td>Button in the header to open and load an existing JSON file from your machine.</td></tr>
       </tbody>
     </table>
   </div>

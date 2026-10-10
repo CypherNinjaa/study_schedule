@@ -53,6 +53,14 @@
     </table>
   </div>
 
+  <h2 id="topbar-controls">TopBar file controls</h2>
+  <p>The top navigation bar provides three dedicated controls for effortless file management:</p>
+  <ul>
+    <li><strong>Status badge:</strong> Displays your active persistence state (e.g. <code>Browser only</code> or <code>Saved ✓</code>). Hovering reveals tooltip details regarding autosave status.</li>
+    <li><strong>Create file:</strong> Opens the native OS file picker to initialize and connect a new JSON workspace file on disk.</li>
+    <li><strong>Load file:</strong> Reconnects or switches to an existing productivity JSON file without overwriting your current data.</li>
+  </ul>
+
   <h2 id="disconnected">"File disconnected" — what it means</h2>
   <p>Browsers sometimes drop write permission to a file — for instance after a restart, or if the file was moved. When that happens the indicator shows <span class="pill pill--warn">File disconnected</span>. Nothing is lost: the app keeps saving to its in-browser mirror in the meantime.</p>
   <p>To restore the direct file connection, click the indicator (or use <strong>Reconnect</strong> in Settings) and grant permission again. The app compares the file on disk with its mirror and keeps whichever is newer, so you never lose the latest work.</p>

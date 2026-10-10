@@ -16,7 +16,7 @@
 [![PWA](https://img.shields.io/badge/PWA-Offline%20Ready-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-[Features](#-key-features) • [Why Productivity OS?](#-why-productivity-os) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Shortcuts](#-keyboard-shortcuts) • [Philosophy](#-local-first-philosophy)
+[Features](#-key-features) • [Why Productivity OS?](#-why-productivity-os) • [Documentation](#-interactive-documentation) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Shortcuts](#-keyboard-shortcuts) • [Philosophy](#-local-first-philosophy)
 
 </div>
 
@@ -100,6 +100,21 @@ Most student productivity apps fail in one of two ways:
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Testing**: [Vitest](https://vitest.dev/) (Unit and integration suites)
 - **Packaging**: [Vite PWA Plugin](https://vite-pwa-org.netlify.app/) (Service Worker offline caching)
+
+---
+
+## 📚 Interactive Documentation
+
+Productivity OS includes a full suite of self-contained, offline-first documentation guides available at [`app/public/docs/`](app/public/docs/index.html) (or accessed live in-app at [http://localhost:5173/study_schedule/docs/](http://localhost:5173/study_schedule/docs/)):
+
+- **[Documentation Portal](app/public/docs/index.html)**: Complete table of contents and onboarding guides.
+- **[Exams & Syllabus Scope Guide](app/public/docs/guide-exams.html)**: Selective module/topic filtering, PYQ checklists, and countdown badges.
+- **[XP & Fair Ledger System](app/public/docs/concept-xp.html)**: Quadratic leveling formula, anti-farming state ledger, and immediate XP revocation upon unchecking.
+- **[Habit Tracking & Consistency](app/public/docs/guide-habits.html)**: Streaks, GitHub-style heatmaps, inverse habits, and penalty rules.
+- **[Storage & Autosave Architecture](app/public/docs/concept-storage.html)**: Local JSON persistence, File System Access API, and browser IndexedDB mirror.
+- **[Interface & Navigation Tour](app/public/docs/interface.html)**: Top bar controls (Status badge, Create file, Load file) and keyboard navigation.
+- **[3D Flipbook & Library Guide](app/public/docs/guide-library.html)**: Three.js interactive mesh, dynamic PDF/EPUB rendering, and reading trackers.
+- **[Deep Study & Pomodoro System](app/public/docs/guide-study.html)**: Interval modes, Picture-in-Picture floaters, and wall-clock pause protection.
 
 ---
 
