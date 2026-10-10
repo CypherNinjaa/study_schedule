@@ -43,7 +43,7 @@ export function isFuture(date: ISODate, from: ISODate = todayISO()): boolean {
   return date > from;
 }
 
-/** True when `date` equals today's ISO date. */
-export function isToday(date: ISODate): boolean {
-  return date === todayISO();
+/** True when `date` equals today's ISO date (or `from`). */
+export function isToday(date: ISODate, from: ISODate = todayISO()): boolean {
+  return date === from;
 }

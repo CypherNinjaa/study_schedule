@@ -122,6 +122,76 @@ export function awardXP(
   return opts.amount;
 }
 
+/**
+ * Revokes previously awarded XP for an action, keyed by its stable `refKey`.
+ *
+ * Removes the key from `awarded` so it can be earned again if the user re-completes the action,
+ * subtracts the amount from `data.xp.total` (clamped to 0),
+ * adjusts the daily log's `xpEarned`, and logs a deduction entry in `entries`.
+ *
+ * Returns the amount actually deducted (0 if none had been awarded or invalid).
+ */
+export function revokeXP(
+  data: AppData,
+  opts: { source: XPSource; refKey: string; amount?: number; label: string; date: ISODate },
+): number {
+  const previouslyAwarded = data.xp.awarded[opts.refKey];
+  const amountToRevoke = previouslyAwarded !== undefined ? previouslyAwarded : (opts.amount ?? 0);
+  if (amountToRevoke <= 0) return 0;
+
+  delete data.xp.awarded[opts.refKey];
+  data.xp.total = Math.max(0, data.xp.total - amountToRevoke);
+
+  const entry: XPEntry = {
+    id: uid('xp'),
+    date: opts.date,
+    at: new Date().toISOString(),
+    source: opts.source,
+    refKey: `revoke:${opts.refKey}`,
+    amount: -amountToRevoke,
+    label: opts.label,
+  };
+  data.xp.entries.push(entry);
+
+  const log = data.dailyLogs.find((l) => l.date === opts.date);
+  if (log) log.xpEarned = Math.max(0, log.xpEarned - amountToRevoke);
+
+  return amountToRevoke;
+}
+
+/**
+ * Directly applies an XP penalty deduction (e.g. for bad habits, distraction excess).
+ *
+ * Subtracts the amount from `data.xp.total` (clamped to 0),
+ * adjusts the daily log's `xpEarned`, and appends a penalty entry.
+ *
+ * Returns the amount deducted.
+ */
+export function applyPenaltyXP(
+  data: AppData,
+  opts: { refKey: string; amount: number; label: string; date: ISODate },
+): number {
+  if (opts.amount <= 0) return 0;
+  const penalty = opts.amount;
+  data.xp.total = Math.max(0, data.xp.total - penalty);
+
+  const entry: XPEntry = {
+    id: uid('xp'),
+    date: opts.date,
+    at: new Date().toISOString(),
+    source: 'penalty',
+    refKey: opts.refKey,
+    amount: -penalty,
+    label: opts.label,
+  };
+  data.xp.entries.push(entry);
+
+  const log = data.dailyLogs.find((l) => l.date === opts.date);
+  if (log) log.xpEarned = Math.max(0, log.xpEarned - penalty);
+
+  return penalty;
+}
+
 /** XP earned on a given date, computed from the ledger. */
 export function xpOnDate(data: AppData, date: ISODate): number {
   let total = 0;

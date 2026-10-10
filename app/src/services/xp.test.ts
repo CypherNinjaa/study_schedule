@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createDefaultData } from '@/data/defaults';
-import { awardXP, levelFromXP, taskXP, xpForLevel, xpInRange } from '@/services/xp';
+import { applyPenaltyXP, awardXP, levelFromXP, revokeXP, taskXP, xpForLevel, xpInRange } from '@/services/xp';
 
 const NOW = '2026-01-01T00:00:00.000Z';
 
@@ -55,9 +55,93 @@ describe('anti-farming XP ledger (§13)', () => {
   });
 });
 
+describe('XP revocation & penalty deduction', () => {
+  it('deducts XP and clears refKey so user cannot farm unlimited XP', () => {
+    const data = createDefaultData(NOW);
+    // 1. Check habit -> award XP
+    const granted = awardXP(data, {
+      source: 'habit',
+      refKey: 'habit:h1:2026-01-01',
+      amount: 10,
+      label: 'Exercise',
+      date: '2026-01-01',
+    });
+    expect(granted).toBe(10);
+    expect(data.xp.total).toBe(10);
+
+    // 2. Uncheck habit -> revoke XP
+    const revoked = revokeXP(data, {
+      source: 'habit',
+      refKey: 'habit:h1:2026-01-01',
+      amount: 10,
+      label: 'Exercise (unchecked)',
+      date: '2026-01-01',
+    });
+    expect(revoked).toBe(10);
+    expect(data.xp.total).toBe(0);
+    expect(data.xp.awarded['habit:h1:2026-01-01']).toBeUndefined();
+
+    // 3. Re-check habit -> can earn it again honestly
+    const reGranted = awardXP(data, {
+      source: 'habit',
+      refKey: 'habit:h1:2026-01-01',
+      amount: 10,
+      label: 'Exercise',
+      date: '2026-01-01',
+    });
+    expect(reGranted).toBe(10);
+    expect(data.xp.total).toBe(10);
+
+    // 4. Repeated check while already checked yields 0
+    const duplicate = awardXP(data, {
+      source: 'habit',
+      refKey: 'habit:h1:2026-01-01',
+      amount: 10,
+      label: 'Exercise',
+      date: '2026-01-01',
+    });
+    expect(duplicate).toBe(0);
+    expect(data.xp.total).toBe(10);
+
+    // 5. Uncheck again -> drops back to 0
+    revokeXP(data, {
+      source: 'habit',
+      refKey: 'habit:h1:2026-01-01',
+      amount: 10,
+      label: 'Exercise (unchecked)',
+      date: '2026-01-01',
+    });
+    expect(data.xp.total).toBe(0);
+  });
+
+  it('clamps total XP to 0 on excessive deduction or penalty', () => {
+    const data = createDefaultData(NOW);
+    data.xp.total = 5;
+    applyPenaltyXP(data, {
+      refKey: 'pen:test',
+      amount: 20,
+      label: 'Distraction penalty',
+      date: '2026-01-01',
+    });
+    expect(data.xp.total).toBe(0);
+  });
+
+  it('correctly calculates net XP in date range after awards and revocations', () => {
+    const data = createDefaultData(NOW);
+    awardXP(data, { source: 'task', refKey: 'task:1', amount: 25, label: 'Task 1', date: '2026-01-01' });
+    awardXP(data, { source: 'habit', refKey: 'habit:1', amount: 10, label: 'Habit 1', date: '2026-01-01' });
+    expect(xpInRange(data, '2026-01-01', '2026-01-01')).toBe(35);
+
+    // Revoke habit
+    revokeXP(data, { source: 'habit', refKey: 'habit:1', amount: 10, label: 'Habit 1 (unchecked)', date: '2026-01-01' });
+    expect(xpInRange(data, '2026-01-01', '2026-01-01')).toBe(25);
+  });
+});
+
 describe('task XP weighting (§13)', () => {
   it('scales with difficulty and priority', () => {
     expect(taskXP(1, 'low')).toBeLessThan(taskXP(5, 'critical'));
     expect(taskXP(3, 'high')).toBeGreaterThan(taskXP(3, 'low'));
   });
 });
+

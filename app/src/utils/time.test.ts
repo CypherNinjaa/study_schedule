@@ -27,6 +27,7 @@ describe('Date & Time helpers', () => {
     expect(isFuture('2026-08-21', '2026-08-20')).toBe(true);
     expect(isFuture('2026-08-19', '2026-08-20')).toBe(false);
 
-    expect(isToday('2026-08-20')).toBe(true);
+    expect(isToday('2026-08-20', '2026-08-20')).toBe(true);
+    expect(isToday('2026-08-21', '2026-08-20')).toBe(false);
   });
 });

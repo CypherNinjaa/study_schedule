@@ -78,9 +78,14 @@ export function XPFloats() {
       {floats.map((f) => (
         <span
           key={f.id}
-          className="animate-xp-float rounded-full border border-accent/30 bg-accent-soft px-3 py-1 text-sm font-semibold text-accent shadow-card"
+          className={cn(
+            'animate-xp-float rounded-full border px-3 py-1 text-sm font-semibold shadow-card',
+            f.amount > 0
+              ? 'border-accent/30 bg-accent-soft text-accent'
+              : 'border-danger/30 bg-danger/10 text-danger',
+          )}
         >
-          +{f.amount} {f.label}
+          {f.amount > 0 ? `+${f.amount}` : f.amount} {f.label}
         </span>
       ))}
     </div>

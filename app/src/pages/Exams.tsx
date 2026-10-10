@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
+  AlertCircle,
+  BookOpen,
   Calendar,
   CheckCircle2,
   Clock,
@@ -8,11 +10,12 @@ import {
   GraduationCap,
   MapPin,
   Plus,
+  Search,
   Trash2,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import type { Exam, ExamSyllabusItem, HHMM, ISODate } from '@/types';
+import type { Exam, ExamSyllabusItem, HHMM, ISODate, Topic } from '@/types';
 import {
   addExamSyllabusItem,
   createExam,
@@ -358,6 +361,9 @@ function ExamCard({
                 ) : (
                   exam.syllabus.map((item) => {
                     const isChecked = exam.syllabusChecked.includes(item.id);
+                    const topicInfo = subject?.topics.find(
+                      (t) => t.id === item.topicId || t.title.toLowerCase() === item.text.toLowerCase(),
+                    );
                     return (
                       <div
                         key={item.id}
@@ -374,14 +380,21 @@ function ExamCard({
                             {item.text}
                           </span>
                         </label>
-                        <button
-                          type="button"
-                          className="opacity-0 group-hover:opacity-100 text-muted hover:text-danger p-0.5"
-                          onClick={() => removeExamSyllabusItem(exam.id, item.id)}
-                          title="Remove item"
-                        >
-                          <Trash2 size={12} />
-                        </button>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {topicInfo?.module && (
+                            <span className="text-[10px] text-muted/70 bg-elevated/70 border border-line/40 px-1.5 py-0.5 rounded truncate max-w-[120px]">
+                              {topicInfo.module}
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            className="opacity-0 group-hover:opacity-100 text-muted hover:text-danger p-0.5"
+                            onClick={() => removeExamSyllabusItem(exam.id, item.id)}
+                            title="Remove item"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
                       </div>
                     );
                   })
@@ -391,7 +404,7 @@ function ExamCard({
               <form onSubmit={handleAddSyllabus} className="flex gap-1.5 pt-2 border-t border-line/40">
                 <input
                   type="text"
-                  placeholder="Add topic or module..."
+                  placeholder="Add custom topic or note..."
                   value={newSyllabusText}
                   onChange={(e) => setNewSyllabusText(e.target.value)}
                   className="input input-sm flex-1 text-xs py-1"
@@ -412,6 +425,35 @@ function ExamCard({
    Add / Edit Exam Modal
 ------------------------------------------------------------------ */
 
+interface ModuleGroup {
+  name: string;
+  topics: Topic[];
+}
+
+function IndeterminateCheckbox({
+  checked,
+  indeterminate,
+  onChange,
+  className,
+}: {
+  checked: boolean;
+  indeterminate: boolean;
+  onChange: () => void;
+  className?: string;
+}) {
+  return (
+    <input
+      type="checkbox"
+      checked={checked}
+      ref={(el) => {
+        if (el) el.indeterminate = indeterminate;
+      }}
+      onChange={onChange}
+      className={className}
+    />
+  );
+}
+
 function ExamDialog({ exam, onClose }: { exam: Exam | null; onClose: () => void }) {
   const data = useData();
   const toast = useFeedbackStore((s) => s.toast);
@@ -424,20 +466,196 @@ function ExamDialog({ exam, onClose }: { exam: Exam | null; onClose: () => void 
   const [venue, setVenue] = useState(exam?.venue ?? '');
   const [notes, setNotes] = useState(exam?.notes ?? '');
 
-  // Auto-populate syllabus topics from subject if creating new exam and subject selected
+  // Selected topics from subject for syllabus coverage
+  const [selectedTopicIds, setSelectedTopicIds] = useState<Set<string>>(() => {
+    const ids = new Set<string>();
+    if (exam && exam.subjectId) {
+      const sub = data.subjects.find((s) => s.id === exam.subjectId);
+      if (sub) {
+        exam.syllabus.forEach((item) => {
+          if (item.topicId) {
+            ids.add(item.topicId);
+          } else {
+            const match = sub.topics.find(
+              (t) => t.title.toLowerCase() === item.text.toLowerCase(),
+            );
+            if (match) ids.add(match.id);
+          }
+        });
+      }
+    } else if (!exam && subjectId) {
+      const sub = data.subjects.find((s) => s.id === subjectId);
+      sub?.topics.forEach((t) => ids.add(t.id));
+    }
+    return ids;
+  });
+
+  const [topicSearch, setTopicSearch] = useState('');
+  const [collapsedModules, setCollapsedModules] = useState<Set<string>>(new Set());
+
+  const selectedSubject = useMemo(
+    () => (subjectId ? data.subjects.find((s) => s.id === subjectId) : null),
+    [data.subjects, subjectId],
+  );
+
+  // Group topics by module
+  const moduleGroups = useMemo<ModuleGroup[]>(() => {
+    if (!selectedSubject || selectedSubject.topics.length === 0) return [];
+
+    const map = new Map<string, Topic[]>();
+    for (const topic of selectedSubject.topics) {
+      const modName = topic.module?.trim() || 'General Topics';
+      if (!map.has(modName)) {
+        map.set(modName, []);
+      }
+      map.get(modName)!.push(topic);
+    }
+
+    return Array.from(map.entries()).map(([name, topics]) => ({
+      name,
+      topics,
+    }));
+  }, [selectedSubject]);
+
+  // Filter module groups by search query
+  const filteredGroups = useMemo(() => {
+    if (!topicSearch.trim()) return moduleGroups;
+    const q = topicSearch.trim().toLowerCase();
+
+    return moduleGroups
+      .map((group) => {
+        const matchesGroupName = group.name.toLowerCase().includes(q);
+        const matchingTopics = group.topics.filter(
+          (t) => matchesGroupName || t.title.toLowerCase().includes(q),
+        );
+        return {
+          name: group.name,
+          topics: matchingTopics,
+        };
+      })
+      .filter((group) => group.topics.length > 0);
+  }, [moduleGroups, topicSearch]);
+
   const handleSubjectChange = (newSubjectId: string) => {
     setSubjectId(newSubjectId);
+    const sub = data.subjects.find((s) => s.id === newSubjectId);
     if (!exam && newSubjectId) {
-      const sub = data.subjects.find((s) => s.id === newSubjectId);
       if (sub && !title) {
         setTitle(`${sub.name} Examination`);
       }
     }
+    // Select all topics of the new subject by default
+    if (sub && sub.topics.length > 0) {
+      setSelectedTopicIds(new Set(sub.topics.map((t) => t.id)));
+    } else {
+      setSelectedTopicIds(new Set());
+    }
+    setTopicSearch('');
+  };
+
+  const handleSelectAll = () => {
+    if (!selectedSubject) return;
+    setSelectedTopicIds(new Set(selectedSubject.topics.map((t) => t.id)));
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedTopicIds(new Set());
+  };
+
+  const toggleGroup = (group: ModuleGroup) => {
+    const allSelected = group.topics.every((t) => selectedTopicIds.has(t.id));
+    setSelectedTopicIds((prev) => {
+      const next = new Set(prev);
+      if (allSelected) {
+        group.topics.forEach((t) => next.delete(t.id));
+      } else {
+        group.topics.forEach((t) => next.add(t.id));
+      }
+      return next;
+    });
+  };
+
+  const toggleTopic = (topicId: string) => {
+    setSelectedTopicIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(topicId)) {
+        next.delete(topicId);
+      } else {
+        next.add(topicId);
+      }
+      return next;
+    });
+  };
+
+  const toggleCollapseModule = (moduleName: string) => {
+    setCollapsedModules((prev) => {
+      const next = new Set(prev);
+      if (next.has(moduleName)) {
+        next.delete(moduleName);
+      } else {
+        next.add(moduleName);
+      }
+      return next;
+    });
   };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !date) return;
+
+    let syllabusItems: ExamSyllabusItem[] = [];
+    let updatedChecked: string[] = [];
+
+    if (subjectId && selectedSubject) {
+      const selectedTopicsList = selectedSubject.topics.filter((t) =>
+        selectedTopicIds.has(t.id),
+      );
+
+      if (exam) {
+        // Map existing syllabus items to preserve original ID and checked status
+        const existingTopicMap = new Map<string, ExamSyllabusItem>();
+        exam.syllabus.forEach((item) => {
+          if (item.topicId) existingTopicMap.set(item.topicId, item);
+          else existingTopicMap.set(item.text.toLowerCase(), item);
+        });
+
+        syllabusItems = selectedTopicsList.map((t) => {
+          const existing =
+            existingTopicMap.get(t.id) || existingTopicMap.get(t.title.toLowerCase());
+          if (existing) return existing;
+          return {
+            id: t.id,
+            text: t.title,
+            topicId: t.id,
+          };
+        });
+
+        // Also preserve custom items manually added to this exam that aren't subject topics
+        const subjectTopicIds = new Set(selectedSubject.topics.map((t) => t.id));
+        const subjectTopicTitles = new Set(
+          selectedSubject.topics.map((t) => t.title.toLowerCase()),
+        );
+        const customItems = exam.syllabus.filter(
+          (item) =>
+            (!item.topicId && !subjectTopicTitles.has(item.text.toLowerCase())) ||
+            (item.topicId && !subjectTopicIds.has(item.topicId)),
+        );
+        syllabusItems.push(...customItems);
+
+        const validIds = new Set(syllabusItems.map((item) => item.id));
+        updatedChecked = exam.syllabusChecked.filter((id) => validIds.has(id));
+      } else {
+        syllabusItems = selectedTopicsList.map((t) => ({
+          id: t.id,
+          text: t.title,
+          topicId: t.id,
+        }));
+        updatedChecked = [];
+      }
+    } else {
+      syllabusItems = exam?.syllabus ?? [];
+      updatedChecked = exam?.syllabusChecked ?? [];
+    }
 
     const payload = {
       title: title.trim(),
@@ -447,42 +665,36 @@ function ExamDialog({ exam, onClose }: { exam: Exam | null; onClose: () => void 
       durationMinutes: Math.max(0, Number(durationMinutes) || 0),
       venue: venue.trim(),
       notes: notes.trim(),
-      syllabus: exam?.syllabus ?? [],
-      syllabusChecked: exam?.syllabusChecked ?? [],
+      syllabus: syllabusItems,
+      syllabusChecked: updatedChecked,
     };
 
     if (exam) {
       updateExam(exam.id, payload);
-      toast({ kind: 'success', title: 'Exam updated' });
-    } else {
-      // Auto-import subject topics if any exist
-      let syllabusItems: ExamSyllabusItem[] = [];
-      if (subjectId) {
-        const sub = data.subjects.find((s) => s.id === subjectId);
-        if (sub && sub.topics.length > 0) {
-          syllabusItems = sub.topics.map((t) => ({
-            id: t.id,
-            text: t.title,
-            topicId: t.id,
-          }));
-        }
-      }
-      createExam({
-        ...payload,
-        syllabus: syllabusItems,
-        syllabusChecked: [],
+      toast({
+        kind: 'success',
+        title: 'Exam updated',
+        message:
+          syllabusItems.length > 0
+            ? `${syllabusItems.length} topics in preparation checklist`
+            : undefined,
       });
+    } else {
+      createExam(payload);
       toast({
         kind: 'success',
         title: 'Exam scheduled',
-        message: `${syllabusItems.length} topics imported into preparation checklist`,
+        message:
+          syllabusItems.length > 0
+            ? `${syllabusItems.length} topics included in preparation checklist`
+            : 'Scheduled with empty preparation checklist',
       });
     }
     onClose();
   };
 
   return (
-    <Modal open onClose={onClose} title={exam ? 'Edit Exam' : 'Schedule Exam'}>
+    <Modal open onClose={onClose} title={exam ? 'Edit Exam' : 'Schedule Exam'} size="lg">
       <form onSubmit={submit} className="space-y-4 p-4">
         <div>
           <label className="block label">Exam Title *</label>
@@ -526,6 +738,152 @@ function ExamDialog({ exam, onClose }: { exam: Exam | null; onClose: () => void 
             />
           </div>
         </div>
+
+        {/* Topic and Module syllabus selector when subject is chosen */}
+        {selectedSubject && (
+          <div className="rounded-card border border-line bg-surface/70 p-3.5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <BookOpen size={16} className="text-accent shrink-0" />
+                <div>
+                  <span className="text-xs font-semibold text-ink">Exam Syllabus & Topics</span>
+                  <span className="hidden sm:inline ml-2 text-[11px] text-muted">
+                    Choose which modules and topics are in this exam
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="chip text-[11px] font-medium py-0.5 px-2">
+                  {selectedTopicIds.size} of {selectedSubject.topics.length} selected
+                </span>
+                <button
+                  type="button"
+                  className="btn-ghost btn-xs text-xs px-2 py-0.5"
+                  onClick={handleSelectAll}
+                  title="Select all topics"
+                >
+                  Select all
+                </button>
+                <button
+                  type="button"
+                  className="btn-ghost btn-xs text-xs px-2 py-0.5 text-muted hover:text-danger"
+                  onClick={handleDeselectAll}
+                  title="Clear all selected topics"
+                >
+                  Clear all
+                </button>
+              </div>
+            </div>
+
+            {selectedSubject.topics.length === 0 ? (
+              <p className="text-xs text-muted italic p-2 rounded bg-elevated/40 border border-line/50">
+                This subject has no topics in its syllabus yet. You can schedule the exam and add topics directly to the checklist later.
+              </p>
+            ) : (
+              <>
+                {selectedSubject.topics.length > 5 && (
+                  <div className="relative">
+                    <Search
+                      size={13}
+                      className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+                    />
+                    <input
+                      type="text"
+                      value={topicSearch}
+                      onChange={(e) => setTopicSearch(e.target.value)}
+                      placeholder="Search topics or modules..."
+                      className="input input-sm pl-7 text-xs h-8 w-full"
+                    />
+                  </div>
+                )}
+
+                <div className="max-h-60 overflow-y-auto space-y-2.5 pr-1 divide-y divide-line/30">
+                  {filteredGroups.length === 0 ? (
+                    <p className="text-xs text-muted text-center py-4 italic">
+                      No topics match &ldquo;{topicSearch}&rdquo;
+                    </p>
+                  ) : (
+                    filteredGroups.map((group) => {
+                      const selectedInGroup = group.topics.filter((t) =>
+                        selectedTopicIds.has(t.id),
+                      ).length;
+                      const isAllGroupSelected =
+                        group.topics.length > 0 && selectedInGroup === group.topics.length;
+                      const isGroupPartiallySelected =
+                        selectedInGroup > 0 && !isAllGroupSelected;
+                      const isCollapsed = collapsedModules.has(group.name);
+
+                      return (
+                        <div key={group.name} className="pt-2 first:pt-0 space-y-1.5">
+                          <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-elevated/60 border border-line/60">
+                            <label className="flex items-center gap-2 cursor-pointer min-w-0 flex-1 select-none">
+                              <IndeterminateCheckbox
+                                checked={isAllGroupSelected}
+                                indeterminate={isGroupPartiallySelected}
+                                onChange={() => toggleGroup(group)}
+                                className="rounded border-line text-accent focus:ring-accent"
+                              />
+                              <span className="font-semibold text-xs text-ink truncate">
+                                {group.name}
+                              </span>
+                            </label>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className="text-[10px] tabular px-1.5 py-0.5 rounded bg-surface border border-line/50 text-muted">
+                                {selectedInGroup}/{group.topics.length}
+                              </span>
+                              <button
+                                type="button"
+                                className="btn-ghost btn-xs h-6 w-6 p-0 text-muted hover:text-ink"
+                                onClick={() => toggleCollapseModule(group.name)}
+                                title={isCollapsed ? 'Expand module' : 'Collapse module'}
+                              >
+                                {isCollapsed ? <ChevronDown size={13} /> : <ChevronUp size={13} />}
+                              </button>
+                            </div>
+                          </div>
+
+                          {!isCollapsed && (
+                            <div className="pl-6 pr-1 grid grid-cols-1 sm:grid-cols-2 gap-1 animate-fade-in">
+                              {group.topics.map((t) => {
+                                const isChecked = selectedTopicIds.has(t.id);
+                                return (
+                                  <label
+                                    key={t.id}
+                                    className={cn(
+                                      'flex items-center gap-2 p-1.5 rounded-md cursor-pointer text-xs transition-colors hover:bg-elevated/50',
+                                      isChecked ? 'text-ink font-medium bg-elevated/20' : 'text-muted',
+                                    )}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={isChecked}
+                                      onChange={() => toggleTopic(t.id)}
+                                      className="rounded border-line text-accent focus:ring-accent"
+                                    />
+                                    <span className="truncate" title={t.title}>
+                                      {t.title}
+                                    </span>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                {selectedTopicIds.size === 0 && (
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs">
+                    <AlertCircle size={14} className="shrink-0" />
+                    <span>0 topics selected. The exam will be scheduled without initial checklist items.</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
         <div className="grid gap-3 sm:grid-cols-3">
           <div>

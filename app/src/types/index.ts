@@ -317,7 +317,8 @@ export type XPSource =
   | 'weekly_goal'
   | 'goal_completed'
   | 'achievement'
-  | 'daily_review';
+  | 'daily_review'
+  | 'penalty';
 
 export interface XPEntry {
   id: string;

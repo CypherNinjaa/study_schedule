@@ -3,6 +3,8 @@ import {
   Check,
   Cloud,
   CloudOff,
+  FilePlus,
+  FolderOpen,
   Loader2,
   Menu,
   Moon,
@@ -31,6 +33,7 @@ function SaveIndicator() {
   const storageMode = useDataStore((s) => s.storageMode);
   const reconnect = useDataStore((s) => s.reconnectFile);
   const connect = useDataStore((s) => s.connectNewFile);
+  const openExisting = useDataStore((s) => s.openExistingFile);
 
   if (saveState === 'disconnected') {
     return (
@@ -52,10 +55,30 @@ function SaveIndicator() {
 
   if (storageMode !== 'file') {
     return (
-      <button type="button" onClick={() => void connect()} className="btn-ghost btn-sm gap-1.5" title="Save to a JSON file on your computer">
-        <Cloud size={14} /> <span className="hidden sm:inline">Browser only</span>
-        <span className="font-semibold text-accent">Create data file</span>
-      </button>
+      <div className="flex items-center gap-1.5">
+        <span className="chip gap-1.5 text-xs text-muted" title="Data is currently kept in browser storage only">
+          <Cloud size={13} className="text-muted" />
+          <span className="hidden md:inline">Browser only</span>
+        </span>
+        <button
+          type="button"
+          onClick={() => void connect()}
+          className="btn-ghost btn-xs sm:btn-sm gap-1 text-xs font-semibold text-accent hover:bg-accent-soft"
+          title="Create a new JSON data file on your computer"
+        >
+          <FilePlus size={14} />
+          <span className="hidden sm:inline">Create file</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => void openExisting()}
+          className="btn-ghost btn-xs sm:btn-sm gap-1 text-xs font-medium text-ink hover:bg-elevated"
+          title="Open and load an existing JSON data file"
+        >
+          <FolderOpen size={14} className="text-muted" />
+          <span className="hidden sm:inline">Load file</span>
+        </button>
+      </div>
     );
   }
 

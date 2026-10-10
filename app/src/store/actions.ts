@@ -24,7 +24,7 @@ import type {
 } from '@/types';
 import { uid } from '@/utils/misc';
 import { diffDaysISO, minutesToHHMM, startOfWeekISO, todayISO, toISODate } from '@/utils/date';
-import { awardXP, studySessionXP, taskXP, XP_RULES } from '@/services/xp';
+import { applyPenaltyXP, awardXP, revokeXP, studySessionXP, taskXP, XP_RULES } from '@/services/xp';
 import { ensureLog } from '@/services/rollup';
 import { applyStreakFreeze, removeStreakFreeze, type FreezeResult } from '@/services/streaks';
 import { useDataStore, type MutateOpts } from './useDataStore';
@@ -120,6 +120,14 @@ export function setTaskStatus(id: string, status: TaskStatus): void {
         if (granted > 0) task.xpAwarded = granted;
       } else if (status !== 'completed' && wasCompleted) {
         task.completedAt = null;
+        revokeXP(d, {
+          source: 'task',
+          refKey: `task:${task.id}`,
+          amount: task.xpAwarded || taskXP(task.difficulty, task.priority),
+          label: `${task.title} (reopened)`,
+          date: task.date,
+        });
+        task.xpAwarded = 0;
       }
     },
     { date: snapshot.date },
@@ -130,6 +138,16 @@ export function deleteTask(id: string): void {
   const snapshot = useDataStore.getState().data?.tasks.find((t) => t.id === id);
   mutate(
     (d) => {
+      const task = d.tasks.find((t) => t.id === id);
+      if (task && (task.status === 'completed' || task.xpAwarded > 0 || d.xp.awarded[`task:${task.id}`])) {
+        revokeXP(d, {
+          source: 'task',
+          refKey: `task:${task.id}`,
+          amount: task.xpAwarded || taskXP(task.difficulty, task.priority),
+          label: `${task.title} (deleted)`,
+          date: task.date,
+        });
+      }
       d.tasks = d.tasks.filter((t) => t.id !== id);
     },
     { date: snapshot?.date },
@@ -260,6 +278,16 @@ export function deleteStudySession(id: string): void {
   const existing = useDataStore.getState().data?.studySessions.find((s) => s.id === id);
   mutate(
     (d) => {
+      const session = d.studySessions.find((s) => s.id === id);
+      if (session) {
+        revokeXP(d, {
+          source: 'study_session',
+          refKey: `session:${id}`,
+          amount: studySessionXP(session.minutes),
+          label: `${session.topic || 'Study session'} (deleted)`,
+          date: session.date,
+        });
+      }
       d.studySessions = d.studySessions.filter((s) => s.id !== id);
     },
     { date: existing?.date },
@@ -324,14 +352,22 @@ export function toggleHabit(habitId: string, date: ISODate): void {
       const habit = d.habits.find((h) => h.id === habitId);
       if (!habit) return;
       const doneIdx = log.habitsDone.indexOf(habitId);
+      const refKey = `habit:${habitId}:${date}`;
       if (doneIdx >= 0) {
         log.habitsDone.splice(doneIdx, 1);
+        revokeXP(d, {
+          source: 'habit',
+          refKey,
+          amount: habit.xp,
+          label: `${habit.name} (unchecked)`,
+          date,
+        });
       } else {
         log.habitsDone.push(habitId);
         log.habitsSkipped = log.habitsSkipped.filter((h) => h !== habitId);
         awardXP(d, {
           source: 'habit',
-          refKey: `habit:${habitId}:${date}`,
+          refKey,
           amount: habit.xp,
           label: habit.name,
           date,
@@ -346,8 +382,33 @@ export function skipHabit(habitId: string, date: ISODate): void {
   mutate(
     (d) => {
       const log = ensureLog(d, date);
+      const habit = d.habits.find((h) => h.id === habitId);
+      const wasDone = log.habitsDone.includes(habitId);
       log.habitsDone = log.habitsDone.filter((h) => h !== habitId);
       if (!log.habitsSkipped.includes(habitId)) log.habitsSkipped.push(habitId);
+      if (wasDone && habit) {
+        revokeXP(d, {
+          source: 'habit',
+          refKey: `habit:${habitId}:${date}`,
+          amount: habit.xp,
+          label: `${habit.name} (skipped)`,
+          date,
+        });
+      }
+    },
+    { date },
+  );
+}
+
+export function deductPenalty(amount: number, reason: string, date: ISODate = todayISO()): void {
+  mutate(
+    (d) => {
+      applyPenaltyXP(d, {
+        refKey: `penalty:${uid('pen')}`,
+        amount,
+        label: reason,
+        date,
+      });
     },
     { date },
   );

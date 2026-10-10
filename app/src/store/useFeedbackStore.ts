@@ -55,7 +55,7 @@ export const useFeedbackStore = create<FeedbackState>((set, get) => ({
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 
   floatXP: (amount, label) => {
-    if (amount <= 0) return;
+    if (amount === 0) return;
     const float: XPFloat = { id: uid('xpf'), amount, label };
     set((s) => ({ xpFloats: [...s.xpFloats, float] }));
     setTimeout(() => get().clearXPFloat(float.id), 1700);

@@ -70,7 +70,7 @@ export const useDataStore = create<DataState>((set, get) => {
   const announce = (result: RollupResult, silent: boolean) => {
     if (silent) return;
     const fb = useFeedbackStore.getState();
-    if (result.xpGained > 0) fb.floatXP(result.xpGained, 'XP');
+    if (result.xpGained !== 0) fb.floatXP(result.xpGained, 'XP');
     if (result.unlocked.length > 0) fb.queueAchievements(result.unlocked);
     if (result.leveledUpTo !== null) fb.showLevelUp(result.leveledUpTo);
   };
