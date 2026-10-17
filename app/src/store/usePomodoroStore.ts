@@ -276,11 +276,14 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
 
     const endedAt = new Date().toISOString();
     const startMs = startedAt ? new Date(startedAt).getTime() : Date.now() - 60_000;
-    const elapsedSeconds = Math.max(60, Math.round((Date.now() - startMs) / 1000));
+    const wallElapsed = Math.max(60, Math.round((Date.now() - startMs) / 1000));
+    const timerElapsed = Math.max(60, get().displayTotal - get().remaining);
+    const elapsedSeconds = Math.max(wallElapsed, timerElapsed);
     const minutes = Math.max(1, Math.round(elapsedSeconds / 60));
+    const logDate = useDataStore.getState().activeDate || todayISO();
 
     logPomodoroRound({
-      date: todayISO(),
+      date: logDate,
       startedAt: startedAt ?? new Date(Date.now() - elapsedSeconds * 1000).toISOString(),
       endedAt,
       minutes,
@@ -318,6 +321,7 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
       method,
       startedAt,
       scheduledTotal,
+      displayTotal,
     } = get();
     if (!running || deadline === null) return;
 
@@ -327,10 +331,10 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
     if (left === 0) {
       const endedAt = new Date().toISOString();
 
-      // Actual elapsed = wall clock from startedAt to now.
-      const startMs = startedAt ? new Date(startedAt).getTime() : Date.now() - scheduledTotal * 1000;
-      const elapsedSeconds = Math.round((Date.now() - startMs) / 1000);
-      const minutes = Math.max(1, Math.round(elapsedSeconds / 60));
+      // Log the committed session duration when the countdown finishes.
+      const committedSeconds = Math.max(displayTotal, scheduledTotal, 60);
+      const minutes = Math.max(1, Math.round(committedSeconds / 60));
+      const logDate = useDataStore.getState().activeDate || todayISO();
 
       const appSettings = useDataStore.getState().data?.settings.pomodoro;
       const soundEnabled = appSettings?.soundEnabled ?? true;
@@ -340,13 +344,19 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
       const breakMinutes = appSettings?.breakMinutes ?? 5;
       const longBreakMinutes = appSettings?.longBreakMinutes ?? 15;
 
+      const activeSubj = useDataStore
+        .getState()
+        .data?.subjects.find((s) => s.id === subjectId);
+      const defaultTopic =
+        label.trim() || (activeSubj ? `${activeSubj.name} — Focus round` : 'Focus round');
+
       logPomodoroRound({
-        date: todayISO(),
-        startedAt: startedAt ?? new Date(Date.now() - elapsedSeconds * 1000).toISOString(),
+        date: logDate,
+        startedAt: startedAt ?? new Date(Date.now() - committedSeconds * 1000).toISOString(),
         endedAt,
         minutes,
         subjectId: subjectId || null,
-        label: phase === 'focus' ? label.trim() || 'Focus round' : PHASE_LABEL[phase],
+        label: phase === 'focus' ? defaultTopic : PHASE_LABEL[phase],
         method: phase === 'focus' ? method : null,
         taskId: null,
         kind: phase === 'focus' ? 'focus' : 'break',
@@ -370,8 +380,8 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
 
         toast({
           kind: 'success',
-          title: `Round ${done} done`,
-          message: `${minutes} min logged as study time · +${XP_RULES.pomodoro} XP`,
+          title: `Session auto-logged · ${minutes} min`,
+          message: `Round ${done} completed · +${XP_RULES.pomodoro} Pomodoro XP`,
         });
 
         if (autoStartNext) {

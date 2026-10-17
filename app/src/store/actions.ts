@@ -304,6 +304,7 @@ export function logPomodoroRound(round: Omit<PomodoroRound, 'id'>): void {
       const id = uid('pomo');
       d.pomodoroLog.push({ ...round, id });
       if (round.kind === 'focus') {
+        const sessId = uid('sess');
         awardXP(d, {
           source: 'pomodoro',
           refKey: `pomodoro:${id}`,
@@ -319,7 +320,7 @@ export function logPomodoroRound(round: Omit<PomodoroRound, 'id'>): void {
 
         // A focus round is study time, so it is also recorded as a session.
         d.studySessions.push({
-          id: uid('sess'),
+          id: sessId,
           date: round.date,
           subjectId: round.subjectId,
           topicId: null,
@@ -334,6 +335,14 @@ export function logPomodoroRound(round: Omit<PomodoroRound, 'id'>): void {
           taskId: round.taskId,
           fromPomodoro: true,
           createdAt: new Date().toISOString(),
+        });
+
+        awardXP(d, {
+          source: 'study_session',
+          refKey: `session:${sessId}`,
+          amount: studySessionXP(round.minutes),
+          label: round.label || 'Focus round',
+          date: round.date,
         });
       }
     },

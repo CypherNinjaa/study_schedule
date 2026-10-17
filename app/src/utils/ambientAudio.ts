@@ -129,3 +129,71 @@ export function playAmbientSound(type: AmbientSoundType, volume = 0.12): void {
 export function getActiveAmbientSound(): AmbientSoundType {
   return activeSound;
 }
+
+/**
+ * Plays a soft, delicate "crystallize" harmonic shimmer on each minute boundary.
+ */
+export function playCrystallizeChime(): void {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    // Glassy pentatonic/crystalline harmonics (E6, B6, F#7, E7)
+    const partials: [number, number, number, number][] = [
+      [1318.5, 0.0, 0.045, 0.42],
+      [1975.5, 0.04, 0.035, 0.48],
+      [2637.0, 0.08, 0.025, 0.55],
+      [2959.9, 0.13, 0.018, 0.62],
+    ];
+
+    partials.forEach(([freq, delay, peakGain, duration]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + delay);
+      // Slight upward crystal pitch bend
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.006, now + delay + duration);
+
+      gain.gain.setValueAtTime(0.0001, now + delay);
+      gain.gain.exponentialRampToValueAtTime(peakGain, now + delay + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + duration);
+
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now + delay);
+      osc.stop(now + delay + duration + 0.02);
+    });
+  } catch {
+    // Audio must never interrupt timer execution
+  }
+}
+
+/**
+ * Plays a subtle quantum collapse + supernova shimmer when a round finishes.
+ */
+export function playSupernovaBurst(): void {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    // Collapse sweep followed by crystalline chord
+    const sweepOsc = ctx.createOscillator();
+    const sweepGain = ctx.createGain();
+    sweepOsc.type = 'triangle';
+    sweepOsc.frequency.setValueAtTime(520, now);
+    sweepOsc.frequency.exponentialRampToValueAtTime(140, now + 0.25);
+    sweepOsc.frequency.exponentialRampToValueAtTime(880, now + 0.65);
+
+    sweepGain.gain.setValueAtTime(0.0001, now);
+    sweepGain.gain.exponentialRampToValueAtTime(0.06, now + 0.05);
+    sweepGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+
+    sweepOsc.connect(sweepGain).connect(ctx.destination);
+    sweepOsc.start(now);
+    sweepOsc.stop(now + 0.72);
+  } catch {
+    // ignore
+  }
+}
+
