@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CheckCircle2, Code2, Flame, Sparkles, Timer, TrendingDown, TrendingUp, Trophy } from 'lucide-react';
+import { CalendarCheck, CheckCircle2, Code2, Flame, Timer, TrendingDown, TrendingUp, Trophy } from 'lucide-react';
 import { useUiStore } from '@/store/useUiStore';
 import { useData, useIndex } from '@/hooks/useMetrics';
 import { Modal } from '@/components/ui/Modal';
@@ -53,7 +53,7 @@ export function WeeklyReview() {
     >
       {review.activeDays === 0 ? (
         <div className="py-6 text-center">
-          <Sparkles size={22} className="mx-auto text-muted" />
+          <CalendarCheck size={20} className="mx-auto text-muted" />
           <p className="mt-2 text-sm text-ink">Nothing was tracked last week.</p>
           <p className="mt-1 text-xs text-muted">
             Log a session or tick a habit this week and your next review will have something to show.
@@ -82,7 +82,7 @@ export function WeeklyReview() {
 
           {review.wins.length > 0 && (
             <div>
-              <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-faint">What went well</p>
+              <p className="mb-1.5 text-xs font-medium text-muted">What went well</p>
               <ul className="space-y-1.5">
                 {review.wins.map((w, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-ink">
@@ -96,7 +96,7 @@ export function WeeklyReview() {
 
           {review.watch.length > 0 && (
             <div>
-              <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-faint">Worth a look</p>
+              <p className="mb-1.5 text-xs font-medium text-muted">Worth a look</p>
               <ul className="space-y-1.5">
                 {review.watch.map((w, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-muted">

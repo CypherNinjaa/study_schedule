@@ -98,7 +98,7 @@ export function Dashboard() {
       {/* Page Header */}
       <header className="flex flex-wrap items-end justify-between gap-4 pb-1">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-ink md:text-3xl">
+          <h1 className="text-2xl font-serif font-medium tracking-tight text-ink md:text-3xl">
             {formatDateLong(today)}
           </h1>
           <p className="mt-1 text-sm text-muted tabular">

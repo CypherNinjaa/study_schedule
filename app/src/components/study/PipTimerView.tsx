@@ -40,34 +40,28 @@ interface RgbTheme {
 
 const RGB_THEMES: RgbTheme[] = [
   {
-    id: 'cyber',
-    name: 'Cyber Chroma',
-    stops: ['#ff007f', '#7928ca', '#0070f3', '#00dfd8'],
-    glow: 'rgba(121, 40, 202, 0.4)',
+    id: 'amber',
+    name: 'Desk Amber',
+    stops: ['#e58b4a', '#d97706', '#b45309', '#e58b4a'],
+    glow: 'rgba(229, 139, 74, 0.12)',
   },
   {
-    id: 'aurora',
-    name: 'Aurora Neon',
-    stops: ['#00f5a0', '#00d9f5', '#6366f1', '#ec4899'],
-    glow: 'rgba(0, 217, 245, 0.4)',
+    id: 'sage',
+    name: 'Forest Sage',
+    stops: ['#10b981', '#15803d', '#047857', '#10b981'],
+    glow: 'rgba(16, 185, 129, 0.12)',
   },
   {
-    id: 'sunset',
-    name: 'Sunset Blaze',
-    stops: ['#ff3366', '#ff6b35', '#f7c544', '#7928ca'],
-    glow: 'rgba(255, 107, 53, 0.4)',
+    id: 'slate',
+    name: 'Graphite Ink',
+    stops: ['#94a3b8', '#64748b', '#475569', '#94a3b8'],
+    glow: 'rgba(148, 163, 184, 0.12)',
   },
   {
-    id: 'matrix',
-    name: 'Emerald Matrix',
-    stops: ['#10b981', '#06b6d4', '#3b82f6', '#8b5cf6'],
-    glow: 'rgba(16, 185, 129, 0.4)',
-  },
-  {
-    id: 'galaxy',
-    name: 'Galactic Violet',
-    stops: ['#8b5cf6', '#d946ef', '#3b82f6', '#06b6d4'],
-    glow: 'rgba(217, 70, 239, 0.4)',
+    id: 'teal',
+    name: 'Deep Teal',
+    stops: ['#14b8a6', '#0f766e', '#115e59', '#14b8a6'],
+    glow: 'rgba(20, 184, 166, 0.12)',
   },
 ];
 
@@ -333,8 +327,8 @@ export function PipTimerView({ onReturnToTab }: { onReturnToTab: () => void }) {
               className={cn(
                 'flex h-7 w-7 items-center justify-center rounded-full shadow transition-all active:scale-90',
                 running
-                  ? 'border border-indigo-400/60 bg-indigo-500/20 text-indigo-300'
-                  : 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-indigo-500/30',
+                  ? 'border border-amber-400/50 bg-amber-500/20 text-amber-300'
+                  : 'bg-[#eceae5] text-[#141518] hover:bg-white',
               )}
               onClick={toggle}
               title={running ? 'Pause timer' : 'Start focus timer'}

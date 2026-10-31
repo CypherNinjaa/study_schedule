@@ -17,7 +17,7 @@ import { addDaysISO, lastNDays, todayISO, weekdayName } from '@/utils/date';
 import { cn, pct } from '@/utils/misc';
 
 
-const PALETTE = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#a855f7', '#ec4899', '#14b8a6'];
+const PALETTE = ['#d97706', '#0f766e', '#15803d', '#b45309', '#c2410c', '#475569', '#9f1239', '#334155'];
 const ICONS = ['Check', 'BookOpen', 'Code2', 'Activity', 'Sun', 'Droplet', 'Heart', 'Bookmark', 'Moon', 'Flame', 'Shield', 'PenTool'];
 
 export function Habits() {

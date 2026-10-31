@@ -270,35 +270,27 @@ export function FloatingPomodoroWidget() {
                 type="button"
                 onClick={() => setMinimized(false)}
                 className={cn(
-                  'flex items-center gap-2 rounded-full border px-3.5 py-2 shadow-pop backdrop-blur-md transition-all hover:scale-105',
+                  'flex items-center gap-2 rounded-full border px-3.5 py-2 shadow-card backdrop-blur-md transition-colors',
                   alerting
-                    ? 'bg-surface/95 text-warn border-warn/60 ring-2 ring-warn/40 animate-pulse'
+                    ? 'bg-surface text-warn border-warn/40 ring-1 ring-warn/30'
                     : phase === 'focus'
-                      ? 'bg-surface/95 text-accent border-accent/40 shadow-accent/10'
-                      : 'bg-surface/95 text-ok border-ok/40 shadow-ok/10',
+                      ? 'bg-surface text-accent border-accent/30'
+                      : 'bg-surface text-ok border-ok/30',
                 )}
                 title="Expand Focus Timer Widget"
               >
-                <span className="relative flex h-2.5 w-2.5 items-center justify-center">
-                  {running && (
-                    <span
-                      className={cn(
-                        'absolute inline-flex h-full w-full animate-ping rounded-full opacity-75',
-                        alerting ? 'bg-warn' : phase === 'focus' ? 'bg-accent' : 'bg-ok',
-                      )}
-                    />
-                  )}
+                <span className="relative flex h-2 w-2 items-center justify-center">
                   <span
                     className={cn(
-                      'relative inline-flex h-2 w-2 rounded-full',
+                      'inline-flex h-2 w-2 rounded-full',
                       alerting ? 'bg-warn' : phase === 'focus' ? 'bg-accent' : 'bg-ok',
                     )}
                   />
                 </span>
                 <span className="text-xs font-semibold tabular text-ink">
-                  {alerting ? 'Done!' : `${mm}:${ss}`}
+                  {alerting ? 'Done' : `${mm}:${ss}`}
                 </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider opacity-80">
+                <span className="text-[11px] text-muted">
                   {alerting ? 'Time up' : PHASE_LABEL[phase]}
                 </span>
                 <Maximize2 size={13} className="ml-1 text-muted hover:text-ink" />
@@ -426,19 +418,11 @@ export function FloatingPomodoroWidget() {
               >
                 <div className="flex items-center gap-1.5 min-w-0 flex-1">
                   <GripHorizontal size={14} className="text-muted/60 shrink-0" />
-                  {/* Glowing Pulse Dot */}
+                  {/* Status Dot */}
                   <span className="relative flex h-2 w-2 shrink-0 items-center justify-center">
-                    {running && (
-                      <span
-                        className={cn(
-                          'absolute inline-flex h-full w-full animate-ping rounded-full opacity-75',
-                          alerting ? 'bg-warn' : phase === 'focus' ? 'bg-accent' : 'bg-ok',
-                        )}
-                      />
-                    )}
                     <span
                       className={cn(
-                        'relative inline-flex h-1.5 w-1.5 rounded-full',
+                        'inline-flex h-2 w-2 rounded-full',
                         alerting ? 'bg-warn' : phase === 'focus' ? 'bg-accent' : 'bg-ok',
                       )}
                     />

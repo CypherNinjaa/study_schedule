@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, Sparkles } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useDataStore } from '@/store/useDataStore';
 import { useUiStore } from '@/store/useUiStore';
 import { useData, useDayMetrics, useIndex, useScore } from '@/hooks/useMetrics';
@@ -100,7 +100,7 @@ export function Today() {
             <div className="p-2">
               {tasks.length === 0 ? (
                 <EmptyState
-                  icon={<Sparkles size={20} />}
+                  icon={<CalendarDays size={20} />}
                   title="No tasks for this day"
                   message="Plan two or three meaningful things rather than a long list."
                   action={

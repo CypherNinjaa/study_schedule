@@ -117,7 +117,7 @@ export function StatCard({
   label,
   value,
   hint,
-  tone,
+  tone: _tone,
   onClick,
 }: {
   icon?: ReactNode;
@@ -133,22 +133,19 @@ export function StatCard({
       type={onClick ? 'button' : undefined}
       onClick={onClick}
       className={cn(
-        'card flex items-start gap-3 p-4 text-left',
-        onClick && 'transition-colors hover:bg-elevated',
+        'card flex items-start gap-3 p-4 text-left transition-colors',
+        onClick && 'hover:bg-elevated',
       )}
     >
       {icon && (
-        <span
-          className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-ctl"
-          style={{ background: `rgb(${tone ?? 'var(--accent)'} / 0.12)`, color: `rgb(${tone ?? 'var(--accent)'})` }}
-        >
+        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-ctl bg-elevated border border-line/50 text-muted">
           {icon}
         </span>
       )}
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-xs font-medium text-muted">{label}</p>
         <p className="mt-0.5 truncate text-xl font-semibold tabular text-ink">{value}</p>
-        {hint && <p className="mt-0.5 truncate text-xs text-muted">{hint}</p>}
+        {hint && <p className="mt-0.5 truncate text-xs text-muted tabular">{hint}</p>}
       </div>
     </Wrapper>
   );
@@ -197,10 +194,10 @@ export function PageHeader({
   action?: ReactNode;
 }) {
   return (
-    <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
+    <header className="mb-4 flex flex-wrap items-end justify-between gap-3 pb-1 border-b border-line/40">
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold tracking-tight text-ink md:text-2xl">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
+        <h1 className="text-2xl font-serif font-medium tracking-tight text-ink md:text-3xl">{title}</h1>
+        {subtitle && <p className="mt-1 text-xs text-muted tabular">{subtitle}</p>}
       </div>
       {action && <div className="flex shrink-0 flex-wrap items-center gap-2">{action}</div>}
     </header>

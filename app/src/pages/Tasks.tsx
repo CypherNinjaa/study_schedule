@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ListFilter, Plus, Search, Sparkles } from 'lucide-react';
+import { ListFilter, Plus, Search } from 'lucide-react';
 import type { Task, TaskCategory, TaskPriority } from '@/types';
 import { useData } from '@/hooks/useMetrics';
 import { useUiStore } from '@/store/useUiStore';
@@ -168,7 +168,7 @@ export function Tasks() {
         <Card>
           <div className="p-2">
             <EmptyState
-              icon={<Sparkles size={20} />}
+              icon={<Search size={20} />}
               title="Nothing matches"
               message={query || category || subjectId ? 'Try widening the filters.' : 'Add a task to get started.'}
               action={
