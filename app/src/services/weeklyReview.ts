@@ -7,6 +7,7 @@ import {
   type MetricsIndex,
 } from '@/services/metrics';
 import { addDaysISO, startOfWeekISO, todayISO, weekdayName } from '@/utils/date';
+import { roundNumber } from '@/utils/misc';
 
 export interface ReviewLine {
   tone: 'positive' | 'neutral' | 'warning';
@@ -34,7 +35,7 @@ export interface WeeklyReview {
 
 function trend(prev: number, cur: number): number | null {
   if (prev <= 0) return cur > 0 ? 100 : null;
-  return ((cur - prev) / prev) * 100;
+  return roundNumber(((cur - prev) / prev) * 100, 2);
 }
 
 /**

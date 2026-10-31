@@ -10,7 +10,7 @@ import {
   startOfWeekISO,
   weekdayOf,
 } from '@/utils/date';
-import { clamp, mean, pct, sum } from '@/utils/misc';
+import { clamp, mean, pct, roundNumber, sum } from '@/utils/misc';
 
 /**
  * Study/coding minutes have a single documented rule:
@@ -272,8 +272,8 @@ export function computeRangeMetrics(
     sessions: sum(days.map((d) => d.sessions)),
     pomodoros: sum(days.map((d) => d.pomodoros)),
     xpEarned: sum(days.map((d) => d.xpEarned)),
-    avgSleepMinutes: sleeps.length ? mean(sleeps) : null,
-    avgScore: scored.length ? mean(scored) : 0,
+    avgSleepMinutes: sleeps.length ? roundNumber(mean(sleeps), 2) : null,
+    avgScore: scored.length ? roundNumber(mean(scored), 2) : 0,
     activeDays: days.filter((d) => d.hasAnyActivity).length,
   };
 }
@@ -459,7 +459,7 @@ export function subjectStats(data: AppData, from?: ISODate, to?: ISODate): Subje
       targetProgress: pct(minutes, subject.targetMinutes),
       assignmentsOpen: subject.assignments.filter((a) => !a.done).length,
       lastStudied: dates.length ? (dates[dates.length - 1] ?? null) : null,
-      avgConcentration: conc.length ? mean(conc) : null,
+      avgConcentration: conc.length ? roundNumber(mean(conc), 2) : null,
     };
   });
 }
@@ -488,6 +488,6 @@ export function weekdayAverages(data: AppData, days: DayMetrics[]): { day: Weekd
     buckets.set(wd, list);
   }
   return [...buckets.entries()]
-    .map(([day, scores]) => ({ day, avgScore: mean(scores), count: scores.length }))
+    .map(([day, scores]) => ({ day, avgScore: roundNumber(mean(scores), 2), count: scores.length }))
     .sort((a, b) => b.avgScore - a.avgScore);
 }

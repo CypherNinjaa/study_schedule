@@ -339,7 +339,7 @@ function ExamCard({
           </div>
 
           <div className="mt-1.5">
-            <ProgressBar value={prepProgress} tone="accent" />
+            <ProgressBar value={prepProgress / 100} tone="accent" />
           </div>
 
           <div className="mt-2 flex items-center justify-between">
