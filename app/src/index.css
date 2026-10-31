@@ -8,47 +8,47 @@
  */
 @layer base {
   :root {
-    --bg: 249 250 251;
-    --surface: 255 255 255;
-    --elevated: 246 247 249;
-    --line: 229 231 235;
-    --ink: 17 24 39;
-    --muted: 107 114 128;
-    --faint: 156 163 175;
-    --accent: 79 70 229;
-    --accent-soft: 238 242 255;
+    --bg: 247 245 240;
+    --surface: 254 253 250;
+    --elevated: 240 237 230;
+    --line: 224 220 211;
+    --ink: 28 25 22;
+    --muted: 105 98 88;
+    --faint: 158 150 138;
+    --accent: 217 119 6;
+    --accent-soft: 254 243 199;
 
-    --c-study: 79 70 229;
-    --c-code: 6 148 162;
-    --c-college: 217 119 6;
-    --c-rel: 219 39 119;
-    --c-sleep: 124 58 237;
-    --c-exercise: 22 163 74;
+    --c-study: 217 119 6;
+    --c-code: 13 148 136;
+    --c-college: 180 83 9;
+    --c-rel: 190 24 93;
+    --c-sleep: 109 76 160;
+    --c-exercise: 21 128 61;
     --c-warn: 202 138 4;
     --c-danger: 220 38 38;
-    --c-ok: 22 163 74;
+    --c-ok: 21 128 61;
   }
 
   [data-theme='dark'] {
-    --bg: 12 14 20;
-    --surface: 20 23 31;
-    --elevated: 28 32 42;
-    --line: 39 44 57;
-    --ink: 237 240 245;
-    --muted: 148 156 172;
-    --faint: 105 113 130;
-    --accent: 129 140 248;
-    --accent-soft: 30 33 56;
+    --bg: 19 20 22;
+    --surface: 25 26 29;
+    --elevated: 34 35 39;
+    --line: 45 47 53;
+    --ink: 236 234 228;
+    --muted: 154 150 141;
+    --faint: 108 104 96;
+    --accent: 229 139 74;
+    --accent-soft: 46 36 28;
 
-    --c-study: 129 140 248;
-    --c-code: 45 212 191;
-    --c-college: 251 191 36;
-    --c-rel: 244 114 182;
-    --c-sleep: 167 139 250;
-    --c-exercise: 74 222 128;
-    --c-warn: 250 204 21;
-    --c-danger: 248 113 113;
-    --c-ok: 74 222 128;
+    --c-study: 229 139 74;
+    --c-code: 45 180 160;
+    --c-college: 234 160 50;
+    --c-rel: 224 100 150;
+    --c-sleep: 160 130 200;
+    --c-exercise: 74 190 120;
+    --c-warn: 234 179 8;
+    --c-danger: 239 68 68;
+    --c-ok: 74 190 120;
   }
 
   * {

@@ -3,19 +3,17 @@ import { Lightbulb } from 'lucide-react';
 import { useData, useIndex } from '@/hooks/useMetrics';
 import { computeInsights, type InsightTone } from '@/services/insights';
 import { Card, CardHeader } from '@/components/ui/Primitives';
-import { LucideIcon } from '@/components/ui/Celebrations';
 import { todayISO } from '@/utils/date';
 import { cn } from '@/utils/misc';
 
-const TONE: Record<InsightTone, string> = {
-  positive: 'bg-ok/12 text-ok',
-  neutral: 'bg-accent/12 text-accent',
-  warning: 'bg-warn/12 text-warn',
+const TONE_PIPS: Record<InsightTone, string> = {
+  positive: 'bg-ok',
+  neutral: 'bg-accent',
+  warning: 'bg-warn',
 };
 
 /**
- * Insights are computed locally from the user's own numbers — no model, no
- * network call, nothing leaves the device.
+ * Insights are computed locally from the user's own numbers.
  */
 export function InsightList({ limit }: { limit?: number }) {
   const data = useData();
@@ -26,31 +24,26 @@ export function InsightList({ limit }: { limit?: number }) {
   return (
     <Card>
       <CardHeader
-        title="What your data says"
+        title="Observations"
         subtitle={
           all.length === 0
-            ? 'A few days of tracking and patterns start showing up here'
-            : `${all.length} observation${all.length === 1 ? '' : 's'}, computed on this device`
+            ? 'Patterns appear here as sessions and habits are recorded'
+            : `${all.length} observation${all.length === 1 ? '' : 's'} based on your recent activity`
         }
       />
       {shown.length === 0 ? (
-        <div className="flex items-center gap-3 px-4 py-6 text-sm text-muted">
-          <Lightbulb size={18} className="shrink-0 text-muted" />
-          Log study time, tick a few habits and finish some tasks — patterns need data to appear.
+        <div className="flex items-center gap-3 px-4 py-5 text-sm text-muted">
+          <Lightbulb size={16} className="shrink-0 text-muted" />
+          <span>Log study sessions and complete habits to see patterns emerge.</span>
         </div>
       ) : (
         <ul className="divide-y divide-line">
           {shown.map((insight) => (
-            <li key={insight.id} className="flex items-start gap-3 px-4 py-3">
-              <span
-                className={cn(
-                  'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-ctl',
-                  TONE[insight.tone],
-                )}
-              >
-                <LucideIcon name={insight.icon} size={16} />
+            <li key={insight.id} className="flex items-start gap-3.5 px-4 py-3">
+              <span className="mt-2 flex h-2 w-2 shrink-0 items-center justify-center">
+                <span className={cn('h-1.5 w-1.5 rounded-full', TONE_PIPS[insight.tone])} />
               </span>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-ink">{insight.title}</p>
                 <p className="mt-0.5 text-xs leading-relaxed text-muted">{insight.detail}</p>
               </div>

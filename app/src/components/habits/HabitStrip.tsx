@@ -15,11 +15,11 @@ export function HabitStrip({ date }: { date: ISODate }) {
   const done = new Set(log?.habitsDone ?? []);
 
   if (due.length === 0) {
-    return <p className="px-1 py-2 text-sm text-muted">No habits due today. Enjoy the gap.</p>;
+    return <p className="px-1 py-2 text-sm text-muted">No habits due today.</p>;
   }
 
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className="flex flex-wrap gap-2">
       {due.map((habit) => {
         const isDone = done.has(habit.id);
         return (
@@ -29,24 +29,24 @@ export function HabitStrip({ date }: { date: ISODate }) {
             aria-pressed={isDone}
             onClick={() => toggleHabit(habit.id, date)}
             className={cn(
-              'flex items-center gap-2 rounded-ctl border px-2.5 py-1.5 text-sm transition-colors',
+              'flex items-center gap-2 rounded-ctl border px-2.5 py-1.5 text-xs transition-colors',
               isDone
                 ? 'border-transparent text-white'
-                : 'border-line text-muted hover:border-accent hover:text-ink',
+                : 'border-line bg-surface text-muted hover:border-line hover:text-ink hover:bg-elevated',
             )}
             style={isDone ? { background: habit.color } : undefined}
           >
             <span
               className={cn(
-                'flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border',
+                'flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] border',
                 isDone ? 'border-white/60 bg-white/20' : 'border-line',
               )}
             >
-              {isDone && <Check size={11} strokeWidth={3} />}
+              {isDone && <Check size={10} strokeWidth={2.5} />}
             </span>
-            <Glyph name={habit.icon} size={14} className={isDone ? 'text-white' : undefined} />
-            <span className="max-w-[10rem] truncate">{habit.name}</span>
-            {habit.inverse && <span className="text-[10px] uppercase opacity-70">avoid</span>}
+            <Glyph name={habit.icon} size={13} className={isDone ? 'text-white' : undefined} />
+            <span className="max-w-[11rem] truncate">{habit.name}</span>
+            {habit.inverse && <span className="text-[10px] text-faint">Avoid</span>}
           </button>
         );
       })}
