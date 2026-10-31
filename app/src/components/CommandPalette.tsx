@@ -19,7 +19,7 @@ import { usePomodoroStore } from '@/store/usePomodoroStore';
 import { useDataStore } from '@/store/useDataStore';
 import { useUiStore, type RouteId } from '@/store/useUiStore';
 import { NAV, openDocs } from '@/components/layout/nav';
-import { updateSettings } from '@/store/actions';
+import { toggleThemeWithTransition } from '@/utils/themeTransition';
 import { relativeDayLabel } from '@/utils/date';
 import { cn } from '@/utils/misc';
 
@@ -117,7 +117,7 @@ export function CommandPalette() {
         label: resolvedTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme',
         group: 'Settings',
         icon: resolvedTheme === 'dark' ? Sun : Moon,
-        run: () => updateSettings({ theme: resolvedTheme === 'dark' ? 'light' : 'dark' }),
+        run: () => toggleThemeWithTransition(resolvedTheme === 'dark' ? 'light' : 'dark'),
       },
       {
         id: 'act:save',

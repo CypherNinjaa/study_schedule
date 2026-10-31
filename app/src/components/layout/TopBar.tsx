@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useDataStore, type SaveState } from '@/store/useDataStore';
 import { useUiStore } from '@/store/useUiStore';
-import { updateSettings } from '@/store/actions';
+import { toggleThemeWithTransition } from '@/utils/themeTransition';
 import { NAV } from './nav';
 import { cn } from '@/utils/misc';
 
@@ -133,9 +133,9 @@ export function TopBar() {
 
         <button
           type="button"
-          className="btn-icon"
+          className="btn-icon transition-transform duration-300 hover:rotate-45"
           aria-label={resolved === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          onClick={() => updateSettings({ theme: resolved === 'dark' ? 'light' : 'dark' })}
+          onClick={(e) => toggleThemeWithTransition(resolved === 'dark' ? 'light' : 'dark', e)}
           title={theme === 'system' ? 'Following your system theme' : undefined}
         >
           {resolved === 'dark' ? <Sun size={18} /> : <Moon size={18} />}

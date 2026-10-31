@@ -180,3 +180,61 @@
     font-variant-numeric: tabular-nums;
   }
 }
+
+/* ==========================================================================
+   Circular View Transition for Theme Switching (as seen on harshitr.me)
+   ========================================================================== */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 2;
+  clip-path: circle(0px at var(--theme-x, 50vw) var(--theme-y, 50vh));
+  animation: theme-reveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes theme-reveal {
+  0% {
+    clip-path: circle(0px at var(--theme-x, 50vw) var(--theme-y, 50vh));
+  }
+  45% {
+    clip-path: circle(45vmax at var(--theme-x, 50vw) var(--theme-y, 50vh));
+  }
+  to {
+    clip-path: circle(150vmax at var(--theme-x, 50vw) var(--theme-y, 50vh));
+  }
+}
+
+::view-transition-group(root) {
+  animation: none;
+}
+
+::view-transition-image-pair(root) {
+  isolation: auto;
+}
+
+/* Fallback smooth transition for browsers or preferences without View Transitions */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.25s ease !important;
+  transition-delay: 0s !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+    clip-path: none !important;
+  }
+}
+

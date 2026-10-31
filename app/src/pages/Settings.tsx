@@ -20,6 +20,7 @@ import { useUiStore } from '@/store/useUiStore';
 import { useData } from '@/hooks/useMetrics';
 import { Card, CardHeader, PageHeader } from '@/components/ui/Primitives';
 import { confirmAction } from '@/utils/confirm';
+import { toggleThemeWithTransition } from '@/utils/themeTransition';
 import { formatMinutes } from '@/utils/date';
 import { cn } from '@/utils/misc';
 
@@ -52,7 +53,7 @@ export function Settings() {
                     key={t.value}
                     type="button"
                     aria-pressed={s.theme === t.value}
-                    onClick={() => updateSettings({ theme: t.value })}
+                    onClick={(e) => toggleThemeWithTransition(t.value, e)}
                     className={cn(
                       'flex items-center gap-1.5 rounded-ctl border px-3 py-2 text-sm transition-colors',
                       s.theme === t.value
