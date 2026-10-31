@@ -326,9 +326,9 @@ export function Dashboard() {
       <StreakCards />
 
       {/* Daily Itinerary & Habits */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid items-stretch gap-4 lg:grid-cols-2">
         {/* Today's Plan */}
-        <Card>
+        <Card className="flex h-full flex-col">
           <CardHeader
             title="Today's plan"
             subtitle={
@@ -348,7 +348,7 @@ export function Dashboard() {
               </button>
             }
           />
-          <div className="p-3">
+          <div className="flex flex-1 flex-col justify-center p-3">
             {todaysTasks.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-elevated text-muted">
@@ -386,9 +386,9 @@ export function Dashboard() {
         </Card>
 
         {/* Classes, Exams & Habits */}
-        <div className="space-y-4">
+        <div className="flex h-full flex-col gap-4">
           {nextClass && (
-            <Card className="p-4">
+            <Card className="shrink-0 p-4">
               <div className="flex items-center justify-between border-b border-line pb-2.5">
                 <span className="text-xs font-medium text-muted">Next class</span>
                 <span className="text-xs text-muted tabular">
@@ -412,7 +412,7 @@ export function Dashboard() {
           )}
 
           {nextExam && (
-            <Card className="p-4">
+            <Card className="shrink-0 p-4">
               <div className="flex items-start justify-between">
                 <div>
                   <span className="text-xs font-medium text-muted">Next exam</span>
@@ -444,7 +444,7 @@ export function Dashboard() {
             </Card>
           )}
 
-          <Card>
+          <Card className="flex flex-1 flex-col justify-between">
             <CardHeader
               title="Daily habits"
               subtitle={
@@ -462,8 +462,28 @@ export function Dashboard() {
                 </button>
               }
             />
-            <div className="p-4">
+            <div className="flex flex-1 flex-col justify-between p-4">
               <HabitStrip date={today} />
+              <div className="mt-4 flex items-center justify-between border-t border-line/60 pt-3 text-xs text-muted">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-24 overflow-hidden rounded-full bg-line/60">
+                    <div
+                      className="h-full rounded-full bg-accent transition-[width] duration-300"
+                      style={{
+                        width: `${habitsDue.length > 0 ? Math.round((day.habitsDone / habitsDue.length) * 100) : 0}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="tabular font-medium text-ink">
+                    {habitsDue.length > 0 ? Math.round((day.habitsDone / habitsDue.length) * 100) : 0}% done
+                  </span>
+                </div>
+                <span className="text-[11px] text-muted">
+                  {habitsDue.length - day.habitsDone > 0
+                    ? `${habitsDue.length - day.habitsDone} remaining today`
+                    : 'All habits completed!'}
+                </span>
+              </div>
             </div>
           </Card>
         </div>

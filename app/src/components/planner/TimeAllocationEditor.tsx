@@ -6,6 +6,7 @@ import { useData, useDayMetrics, useIndex } from '@/hooks/useMetrics';
 import { Card, CardHeader, ProgressBar } from '@/components/ui/Primitives';
 import { timeAllocation } from '@/services/metrics';
 import { durationBetween, formatMinutes } from '@/utils/date';
+import { cn } from '@/utils/misc';
 
 const FIELDS: { key: keyof TimeAllocation; label: string; hint: string }[] = [
   { key: 'study', label: 'Study', hint: 'On top of logged sessions' },
@@ -34,7 +35,7 @@ const SEGMENT_COLOR: Record<string, string> = {
 };
 
 /** Where the 24 hours went, plus the manual entry that feeds it. */
-export function TimeAllocationEditor({ date }: { date: ISODate }) {
+export function TimeAllocationEditor({ date, className }: { date: ISODate; className?: string }) {
   const data = useData();
   const index = useIndex();
   const metrics = useDayMetrics(date);
@@ -64,14 +65,14 @@ export function TimeAllocationEditor({ date }: { date: ISODate }) {
   };
 
   return (
-    <Card>
+    <Card className={cn('flex flex-col justify-between h-full', className)}>
       <CardHeader
         title="Where the day went"
         subtitle={`${formatMinutes(totalTracked)} tracked · ${formatMinutes(alloc.free)} unaccounted`}
       />
 
-      <div className="px-4 pt-3">
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-line" role="img" aria-label="Time allocation">
+      <div className="px-3.5 pt-2.5">
+        <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-line" role="img" aria-label="Time allocation">
           {segments.map(([key, minutes]) => (
             <span
               key={key}
@@ -80,11 +81,11 @@ export function TimeAllocationEditor({ date }: { date: ISODate }) {
             />
           ))}
         </div>
-        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+        <div className="mt-1.5 flex flex-wrap gap-x-2.5 gap-y-0.5">
           {segments.map(([key, minutes]) => (
             <span key={key} className="flex items-center gap-1 text-[10px] text-muted">
               <span
-                className="h-2 w-2 rounded-full"
+                className="h-1.5 w-1.5 rounded-full"
                 style={{ background: SEGMENT_COLOR[key] ?? 'rgb(var(--muted))' }}
               />
               {key} {formatMinutes(minutes, { short: true })}
@@ -93,26 +94,26 @@ export function TimeAllocationEditor({ date }: { date: ISODate }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 px-4 pt-4">
+      <div className="grid grid-cols-2 gap-2 px-3.5 pt-3">
         <label className="block">
-          <span className="label flex items-center gap-1">
-            <Moon size={12} /> Slept at
+          <span className="label text-[11px] mb-1 flex items-center gap-1">
+            <Moon size={11} /> Slept at
           </span>
           <input
             type="time"
-            className="input"
+            className="input py-1 text-xs"
             value={sleptAt}
             onChange={(e) => setSleptAt(e.target.value)}
             onBlur={() => commitSleep(wokeAt, sleptAt)}
           />
         </label>
         <label className="block">
-          <span className="label flex items-center gap-1">
-            <Sun size={12} /> Woke at
+          <span className="label text-[11px] mb-1 flex items-center gap-1">
+            <Sun size={11} /> Woke at
           </span>
           <input
             type="time"
-            className="input"
+            className="input py-1 text-xs"
             value={wokeAt}
             onChange={(e) => setWokeAt(e.target.value)}
             onBlur={() => commitSleep(wokeAt, sleptAt)}
@@ -121,48 +122,39 @@ export function TimeAllocationEditor({ date }: { date: ISODate }) {
       </div>
 
       {metrics.sleepMinutes !== null && (
-        <div className="px-4 pt-3">
+        <div className="px-3.5 pt-2">
           <div className="flex items-baseline justify-between text-xs">
-            <span className="text-muted">Sleep</span>
-            <span className="tabular text-ink">
-              {formatMinutes(metrics.sleepMinutes)} of {formatMinutes(data.settings.targets.sleep)}
+            <span className="text-muted text-[11px]">Sleep</span>
+            <span className="tabular text-ink text-[11px]">
+              {formatMinutes(metrics.sleepMinutes)} / {formatMinutes(data.settings.targets.sleep)}
             </span>
           </div>
           <ProgressBar
-            className="mt-1.5"
+            className="mt-1 h-1"
             value={metrics.sleepMinutes / data.settings.targets.sleep}
             tone={metrics.sleepMinutes < data.settings.targets.sleep - 60 ? 'warn' : 'ok'}
             label="Sleep against target"
           />
-          {metrics.sleepMinutes < data.settings.targets.sleep - 60 && (
-            <p className="mt-1 text-[11px] text-muted">
-              Short of your own target. Worth noting when you look back at how much you got done.
-            </p>
-          )}
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-2 p-4 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-1.5 p-3.5 pt-2.5">
         {FIELDS.map((f) => (
           <label key={f.key} className="block">
-            <span className="label" title={f.hint}>
+            <span className="label text-[10px] mb-0.5 truncate" title={f.hint}>
               {f.label}
             </span>
             <input
               type="number"
               min={0}
               step={5}
-              className="input tabular"
+              className="input py-1 px-2 text-xs tabular h-7"
               value={log?.minutes[f.key] ?? 0}
               onChange={(e) => setDayMinutes(date, f.key, Number(e.target.value) || 0)}
             />
           </label>
         ))}
       </div>
-      <p className="px-4 pb-4 text-[11px] leading-relaxed text-muted">
-        Minutes, not hours. Relationship time is recorded exactly like any other category — it is yours, it stays on
-        this device, and nothing here judges it.
-      </p>
     </Card>
   );
 }

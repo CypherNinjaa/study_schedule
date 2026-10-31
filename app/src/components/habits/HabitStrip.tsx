@@ -6,8 +6,8 @@ import { habitsDueOn } from '@/services/metrics';
 import { Glyph } from '@/components/ui/Celebrations';
 import { cn } from '@/utils/misc';
 
-/** Compact one-tap habit row, shared by the dashboard and the Today page. */
-export function HabitStrip({ date }: { date: ISODate }) {
+/** One-tap habit strip, shared by the dashboard and the Today page. */
+export function HabitStrip({ date, className }: { date: ISODate; className?: string }) {
   const data = useData();
   const index = useIndex();
   const due = habitsDueOn(data.habits, date);
@@ -19,7 +19,7 @@ export function HabitStrip({ date }: { date: ISODate }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className={cn('flex flex-wrap gap-2', className)}>
       {due.map((habit) => {
         const isDone = done.has(habit.id);
         return (
@@ -45,7 +45,7 @@ export function HabitStrip({ date }: { date: ISODate }) {
               {isDone && <Check size={10} strokeWidth={2.5} />}
             </span>
             <Glyph name={habit.icon} size={13} className={isDone ? 'text-white' : undefined} />
-            <span className="max-w-[11rem] truncate">{habit.name}</span>
+            <span className="max-w-[10.5rem] truncate font-medium">{habit.name}</span>
             {habit.inverse && <span className="text-[10px] text-faint">Avoid</span>}
           </button>
         );

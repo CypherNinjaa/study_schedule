@@ -39,13 +39,14 @@ export function ProgressBar({
   className,
   label,
 }: {
-  /** 0..1 */
+  /** 0..1 or 0..100 */
   value: number;
   tone?: 'accent' | 'study' | 'code' | 'exercise' | 'warn' | 'danger' | 'ok';
   className?: string;
   label?: string;
 }) {
-  const pctVal = Math.round(Math.min(1, Math.max(0, value)) * 100);
+  const normalized = value > 1 ? value / 100 : value;
+  const pctVal = Math.round(Math.min(1, Math.max(0, normalized)) * 100);
   const tones: Record<string, string> = {
     accent: 'bg-accent',
     study: 'bg-study',

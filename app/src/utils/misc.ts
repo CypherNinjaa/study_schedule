@@ -16,6 +16,11 @@ export function clamp(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
 }
 
+export function roundNumber(n: number, decimals = 2): number {
+  const factor = 10 ** decimals;
+  return Math.round(n * factor) / factor;
+}
+
 export function sum(ns: number[]): number {
   return ns.reduce((a, b) => a + b, 0);
 }
@@ -24,9 +29,9 @@ export function mean(ns: number[]): number {
   return ns.length === 0 ? 0 : sum(ns) / ns.length;
 }
 
-export function pct(part: number, whole: number): number {
+export function pct(part: number, whole: number, decimals = 2): number {
   if (whole <= 0) return 0;
-  return clamp((part / whole) * 100, 0, 100);
+  return roundNumber(clamp((part / whole) * 100, 0, 100), decimals);
 }
 
 export function groupBy<T, K extends string>(items: T[], key: (t: T) => K): Record<K, T[]> {
@@ -56,10 +61,10 @@ export function debounce<A extends unknown[]>(fn: (...a: A) => void, ms: number)
   return wrapped;
 }
 
-/** Percentage change from a to b, guarding divide-by-zero. */
-export function trendPct(prev: number, next: number): number | null {
+/** Percentage change from a to b, guarding divide-by-zero. Returns max 2 decimals by default. */
+export function trendPct(prev: number, next: number, decimals = 2): number | null {
   if (prev === 0) return next === 0 ? 0 : null;
-  return ((next - prev) / prev) * 100;
+  return roundNumber(((next - prev) / prev) * 100, decimals);
 }
 
 export function titleCase(s: string): string {

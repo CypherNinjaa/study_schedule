@@ -4,7 +4,6 @@ import { useDataStore } from '@/store/useDataStore';
 import { useUiStore } from '@/store/useUiStore';
 import { useData, useDayMetrics, useIndex, useScore } from '@/hooks/useMetrics';
 import { Card, CardHeader, PageHeader, ProgressBar } from '@/components/ui/Primitives';
-import { EmptyState } from '@/components/ui/ConfirmDialog';
 import { TaskRow } from '@/components/tasks/TaskRow';
 import { HabitStrip } from '@/components/habits/HabitStrip';
 import { DayTimeline } from '@/components/planner/DayTimeline';
@@ -77,99 +76,148 @@ export function Today() {
         }
       />
 
-      <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr]">
-        <div className="space-y-3">
-          <Card>
-            <CardHeader
-              title="Timeline"
-              subtitle="Classes come from your timetable; time-blocked tasks sit alongside them"
-            />
-            <DayTimeline date={activeDate} />
-          </Card>
+      {/* Row 1: Daily Schedule & Productivity Score */}
+      <div className="grid items-stretch gap-4 lg:grid-cols-[1.3fr_1fr]">
+        <Card className="flex h-full flex-col">
+          <DayTimeline date={activeDate} />
+        </Card>
 
-          <Card>
-            <CardHeader
-              title="Tasks"
-              subtitle={
-                tasks.length === 0 ? 'Nothing planned' : `${day.tasksCompleted} of ${tasks.length} done`
-              }
-              action={
-                open.length > 0 ? <span className="chip">{open.length} open</span> : undefined
-              }
-            />
-            <div className="p-2">
-              {tasks.length === 0 ? (
-                <EmptyState
-                  icon={<CalendarDays size={20} />}
-                  title="No tasks for this day"
-                  message="Plan two or three meaningful things rather than a long list."
-                  action={
-                    <button
-                      type="button"
-                      className="btn-primary btn-sm gap-1.5"
-                      onClick={() => openQuickAdd(activeDate)}
-                    >
-                      <Plus size={15} /> Add a task
-                    </button>
-                  }
-                />
-              ) : (
-                <div className="space-y-0.5">
-                  {tasks.map((task) => (
-                    <TaskRow key={task.id} task={task} />
-                  ))}
-                </div>
-              )}
-            </div>
-          </Card>
-
-          <Card>
-            <CardHeader title="Habits" subtitle={`${day.habitsDone} of ${day.habitsDue} due today`} />
-            <div className="p-3">
-              <HabitStrip date={activeDate} />
-            </div>
-          </Card>
-        </div>
-
-        <div className="space-y-3">
-          <Card>
-            <CardHeader
-              title={`Score ${score.total}`}
-              subtitle={`${score.label} · every component is shown, nothing hidden`}
-            />
-            <ul className="divide-y divide-line">
-              {score.components.map((c) => (
-                <li key={c.key} className="px-4 py-2.5">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="text-sm text-ink">{c.label}</span>
+        <Card className="flex h-full flex-col">
+          <CardHeader
+            title={`Score ${score.total}`}
+            subtitle={`${score.label} · daily productivity breakdown`}
+            action={
+              <span
+                className={cn(
+                  'chip tabular text-[11px] font-semibold',
+                  score.total >= 80 ? 'border-ok/30 text-ok' : score.total >= 50 ? 'border-accent/30 text-accent' : 'border-warn/30 text-warn',
+                )}
+              >
+                {score.total}/100
+              </span>
+            }
+          />
+          <div className="grid flex-1 grid-cols-2 gap-2 p-3">
+            {score.components.map((c) => (
+              <div key={c.key} className="flex flex-col justify-between rounded-md border border-line/60 bg-surface/50 p-2.5 text-xs">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="truncate font-medium text-ink">{c.label}</span>
                     <span
                       className={cn(
-                        'text-xs tabular',
+                        'tabular text-[11px] font-semibold',
                         c.points < 0 ? 'text-danger' : c.max > 0 && c.points >= c.max * 0.9 ? 'text-ok' : 'text-muted',
                       )}
                     >
                       {c.points > 0 ? '+' : ''}
                       {c.points}
-                      {c.max > 0 && ` / ${c.max}`}
+                      {c.max > 0 && `/${c.max}`}
                     </span>
                   </div>
                   {c.max > 0 && (
                     <ProgressBar
-                      className="mt-1.5"
+                      className="mt-1.5 h-1"
                       value={c.points / c.max}
                       tone={c.points >= c.max * 0.9 ? 'ok' : 'accent'}
                       label={`${c.label} score`}
                     />
                   )}
-                  <p className="mt-1 text-[11px] text-muted">{c.detail}</p>
-                </li>
-              ))}
-            </ul>
-          </Card>
+                </div>
+                <p className="mt-1.5 truncate text-[10px] text-muted" title={c.detail}>
+                  {c.detail}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
 
-          <TimeAllocationEditor date={activeDate} />
-          <DailyReview date={activeDate} />
-        </div>
+      {/* Row 2: Daily Execution — Tasks & Habits to check off */}
+      <div className="grid items-stretch gap-4 lg:grid-cols-[1.3fr_1fr]">
+        <Card className="flex h-full flex-col">
+          <CardHeader
+            title="Tasks"
+            subtitle={
+              tasks.length === 0 ? 'Nothing planned' : `${day.tasksCompleted} of ${tasks.length} done`
+            }
+            action={
+              <div className="flex items-center gap-1.5">
+                {open.length > 0 && <span className="chip px-1.5 py-0 text-[10px]">{open.length} open</span>}
+                <button
+                  type="button"
+                  className="btn-ghost btn-sm h-6 gap-1 px-2 text-xs text-accent hover:text-accent"
+                  onClick={() => openQuickAdd(activeDate)}
+                >
+                  <Plus size={12} /> Add
+                </button>
+              </div>
+            }
+          />
+          <div className="flex flex-1 flex-col justify-center p-3">
+            {tasks.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-6 text-center">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-elevated text-muted">
+                  <CalendarDays size={16} />
+                </span>
+                <p className="mt-2 text-xs font-medium text-ink">No tasks planned for today</p>
+                <p className="mt-0.5 max-w-xs text-[11px] text-muted">
+                  Plan two or three meaningful priorities rather than a long list.
+                </p>
+                <button
+                  type="button"
+                  className="btn-outline btn-sm mt-3 gap-1.5 text-xs"
+                  onClick={() => openQuickAdd(activeDate)}
+                >
+                  <Plus size={13} className="text-muted" /> Add task
+                </button>
+              </div>
+            ) : (
+              <div className="max-h-[220px] space-y-1 overflow-y-auto pr-0.5">
+                {tasks.map((task) => (
+                  <TaskRow key={task.id} task={task} />
+                ))}
+              </div>
+            )}
+          </div>
+        </Card>
+
+        <Card className="flex h-full flex-col justify-between">
+          <CardHeader
+            title="Daily habits"
+            subtitle={day.habitsDue > 0 ? `${day.habitsDone} of ${day.habitsDue} due today` : 'No habits due today'}
+          />
+          <div className="flex flex-1 flex-col justify-between p-3.5">
+            <HabitStrip date={activeDate} />
+            {day.habitsDue > 0 && (
+              <div className="mt-3 flex items-center justify-between border-t border-line/60 pt-2.5 text-xs text-muted">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-20 overflow-hidden rounded-full bg-line/60">
+                    <div
+                      className="h-full rounded-full bg-accent transition-[width] duration-300"
+                      style={{
+                        width: `${Math.round((day.habitsDone / day.habitsDue) * 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="tabular font-medium text-ink">
+                    {Math.round((day.habitsDone / day.habitsDue) * 100)}% done
+                  </span>
+                </div>
+                <span className="text-[11px] text-muted">
+                  {day.habitsDue - day.habitsDone > 0
+                    ? `${day.habitsDue - day.habitsDone} remaining today`
+                    : 'All habits completed!'}
+                </span>
+              </div>
+            )}
+          </div>
+        </Card>
+      </div>
+
+      {/* Row 3: 24-Hour Time Accounting & Evening Reflection */}
+      <div className="grid items-stretch gap-4 lg:grid-cols-[1.3fr_1fr]">
+        <TimeAllocationEditor date={activeDate} className="h-full" />
+        <DailyReview date={activeDate} className="h-full" />
       </div>
 
       {data.schedule.holidays.includes(activeDate) && (

@@ -240,7 +240,8 @@ export default function Analytics() {
 
 function formatTrend(t: number | null): string {
   if (t === null || t === 0) return '';
-  return ` · ${t > 0 ? '+' : ''}${t}% vs previous`;
+  const rounded = Math.round(t * 100) / 100;
+  return ` · ${rounded > 0 ? '+' : ''}${rounded}% vs previous`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -342,7 +343,7 @@ function SubjectCharts({ from, to }: { from: ISODate; to: ISODate }) {
                   fill="rgb(var(--accent))"
                   fillOpacity={0.24}
                 />
-                <Tooltip contentStyle={tooltipStyle()} formatter={(v: number) => `${v}%`} />
+                <Tooltip contentStyle={tooltipStyle()} formatter={(v: number) => `${Math.round(v * 100) / 100}%`} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
@@ -363,7 +364,7 @@ function WeekdayChart() {
     const range = computeRangeMetrics(data, addDaysISO(today, -89), today, index);
     return weekdayAverages(data, range.days).map((r) => ({
       day: weekdayName(r.day, true),
-      score: r.avgScore,
+      score: Math.round(r.avgScore * 100) / 100,
       count: r.count,
     }));
   }, [data, index, today]);
@@ -376,7 +377,7 @@ function WeekdayChart() {
         title="Best day of the week"
         subtitle={
           best
-            ? `${weekdayNameFull(best.day)} averages ${best.score} over the last 90 days`
+            ? `${weekdayNameFull(best.day)} averages ${Math.round(best.score * 100) / 100} over the last 90 days`
             : 'Average score by weekday, last 90 days'
         }
       />

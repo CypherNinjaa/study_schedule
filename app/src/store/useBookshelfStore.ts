@@ -142,7 +142,7 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
     for (let i = 0; i < files.length; i++) {
       const result = await importBookFromFile(files[i]);
       results.push(result);
-      set({ importProgress: ((i + 1) / files.length) * 100 });
+      set({ importProgress: Math.round((((i + 1) / files.length) * 100) * 100) / 100 });
     }
 
     // Reload books from DB

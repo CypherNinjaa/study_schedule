@@ -358,8 +358,8 @@ function DayView({ date, onAddEvent }: { date: ISODate; onAddEvent: () => void }
             </button>
           }
         />
-        <div className="p-3">
-          <DayTimeline date={date} />
+        <div className="p-2">
+          <DayTimeline date={date} showHeader={false} />
         </div>
       </Card>
 
