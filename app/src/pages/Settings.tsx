@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import {
   AlertTriangle,
+  Cloud,
   Download,
+  ExternalLink,
   FileJson,
   FolderOpen,
+  Link2Off,
+  Loader2,
   Monitor,
   Moon,
   RefreshCw,
@@ -16,6 +20,7 @@ import type { Targets, ThemeMode } from '@/types';
 import { updateProfile, updateSettings } from '@/store/actions';
 import { useDataStore } from '@/store/useDataStore';
 import { useFeedbackStore } from '@/store/useFeedbackStore';
+import { useSyncStore } from '@/store/useSyncStore';
 import { useUiStore } from '@/store/useUiStore';
 import { useData } from '@/hooks/useMetrics';
 import { Card, CardHeader, PageHeader } from '@/components/ui/Primitives';
@@ -38,6 +43,7 @@ export function Settings() {
     <div className="animate-fade-in space-y-4">
       <PageHeader title="Settings" subtitle="Your data, your defaults — all of it editable" />
       <StorageCard />
+      <CloudSyncCard />
       <ProfileCard />
 
       <Card>
@@ -160,6 +166,170 @@ function Toggle({
         {hint && <span className="mt-0.5 block text-[11px] text-muted">{hint}</span>}
       </span>
     </label>
+  );
+}
+
+function CloudSyncCard() {
+  const config = useSyncStore((st) => st.config);
+  const status = useSyncStore((st) => st.status);
+  const error = useSyncStore((st) => st.error);
+  const hasPendingPush = useSyncStore((st) => st.hasPendingPush);
+  const connect = useSyncStore((st) => st.connect);
+  const disconnect = useSyncStore((st) => st.disconnect);
+  const setAutoSync = useSyncStore((st) => st.setAutoSync);
+  const syncNow = useSyncStore((st) => st.syncNow);
+
+  const [tokenInput, setTokenInput] = useState('');
+  const [gistIdInput, setGistIdInput] = useState('');
+
+  const handleConnect = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await connect(tokenInput, gistIdInput);
+    if (res.ok) {
+      setTokenInput('');
+      setGistIdInput('');
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader
+        title="Cloud sync (GitHub Gist)"
+        subtitle="Free automatic backup & multi-device sync using your own secret GitHub Gist"
+      />
+      <div className="space-y-3 p-4">
+        {!config ? (
+          <form onSubmit={(e) => void handleConnect(e)} className="space-y-3">
+            <div className="rounded-ctl border border-line bg-elevated/70 p-3 text-xs text-muted space-y-1.5">
+              <p className="font-medium text-ink">How to connect in 30 seconds (100% free):</p>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>
+                  <a
+                    href="https://github.com/settings/tokens/new?scopes=gist&description=Study%20Schedule%20Sync"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 font-medium text-accent hover:underline"
+                  >
+                    Generate a GitHub Token <ExternalLink size={11} />
+                  </a>{' '}
+                  (the <code className="rounded bg-surface px-1 py-0.5 text-[11px]">gist</code> scope is pre-selected).
+                </li>
+                <li>Paste the token below and click Connect — a private secret Gist is created automatically.</li>
+                <li>On another browser/device, paste the same token and it will find & restore your data automatically.</li>
+              </ol>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="label">GitHub Personal Access Token</span>
+                <input
+                  type="password"
+                  className="input text-xs"
+                  placeholder="ghp_... or github_pat_..."
+                  value={tokenInput}
+                  onChange={(e) => setTokenInput(e.target.value)}
+                  autoComplete="off"
+                />
+              </label>
+              <label className="block">
+                <span className="label">Existing Gist ID (optional)</span>
+                <input
+                  type="text"
+                  className="input text-xs"
+                  placeholder="Leave blank to auto-detect or create"
+                  value={gistIdInput}
+                  onChange={(e) => setGistIdInput(e.target.value)}
+                />
+              </label>
+            </div>
+
+            {error && <p className="text-xs text-danger">{error}</p>}
+
+            <button
+              type="submit"
+              className="btn-primary btn-sm gap-1.5"
+              disabled={!tokenInput.trim() || status === 'syncing'}
+            >
+              {status === 'syncing' ? <Loader2 size={14} className="animate-spin" /> : <Cloud size={14} />}
+              Connect & Sync
+            </button>
+          </form>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <Cloud size={16} className="text-accent" />
+              <span className="font-medium text-ink">Secret Gist</span>
+              <code className="rounded bg-elevated px-1.5 py-0.5 text-[11px] text-muted">
+                {config.gistId.slice(0, 10)}…
+              </code>
+              <span
+                className={cn(
+                  'chip',
+                  status === 'synced' && 'text-ok',
+                  status === 'syncing' && 'text-accent',
+                  status === 'error' && 'text-danger',
+                )}
+              >
+                {status === 'syncing'
+                  ? 'Syncing…'
+                  : hasPendingPush
+                    ? 'Queued…'
+                    : status === 'error'
+                      ? 'Sync error'
+                      : 'Synced'}
+              </span>
+              {config.lastSyncedAt && (
+                <span className="text-[11px] text-muted">
+                  last synced {new Date(config.lastSyncedAt).toLocaleTimeString()}
+                </span>
+              )}
+            </div>
+
+            {error && <p className="text-xs text-danger">{error}</p>}
+
+            <Toggle
+              checked={config.autoSync}
+              onChange={(v) => setAutoSync(v)}
+              title="Auto-sync automatically"
+              hint="Automatically pulls newer cloud data on startup and pushes local changes a few seconds after saving."
+            />
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                className="btn-primary btn-sm gap-1.5"
+                disabled={status === 'syncing'}
+                onClick={() => void syncNow('auto')}
+              >
+                {status === 'syncing' ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                Sync now
+              </button>
+              <button
+                type="button"
+                className="btn-outline btn-sm gap-1.5"
+                disabled={status === 'syncing'}
+                onClick={() => void syncNow('pull')}
+              >
+                <Download size={14} /> Pull from cloud
+              </button>
+              {config.htmlUrl && (
+                <a
+                  href={config.htmlUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-outline btn-sm gap-1.5"
+                >
+                  <ExternalLink size={14} /> View Gist
+                </a>
+              )}
+              <button type="button" className="btn-outline btn-sm gap-1.5 text-danger" onClick={disconnect}>
+                <Link2Off size={14} /> Disconnect
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </Card>
   );
 }
 

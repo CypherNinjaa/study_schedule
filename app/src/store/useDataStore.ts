@@ -5,6 +5,7 @@ import { runRollup, type RollupResult } from '@/services/rollup';
 import { todayISO } from '@/utils/date';
 import * as fs from '@/services/fileStorage';
 import { useFeedbackStore } from './useFeedbackStore';
+import { registerSyncDataBridge, useSyncStore } from './useSyncStore';
 
 export type SaveState = 'idle' | 'dirty' | 'saving' | 'saved' | 'disconnected' | 'error';
 
@@ -87,6 +88,11 @@ export const useDataStore = create<DataState>((set, get) => {
     activeDate: todayISO(),
 
     boot: async () => {
+      const maybeAutoSync = () => {
+        const sync = useSyncStore.getState();
+        if (sync.config?.autoSync) void sync.syncNow('auto', true);
+      };
+
       // 1. Try the remembered file handle (silent if permission still granted).
       const handle = await fs.loadStoredHandle();
       if (handle) {
@@ -110,6 +116,7 @@ export const useDataStore = create<DataState>((set, get) => {
                 duration: 7000,
               });
             }
+            maybeAutoSync();
             return;
           }
           if (result.status === 'corrupted') {
@@ -125,6 +132,7 @@ export const useDataStore = create<DataState>((set, get) => {
             saveState: 'disconnected',
             bootPhase: mirror?.data?.profile.onboarded ? 'ready' : 'welcome',
           });
+          maybeAutoSync();
           return;
         }
       }
@@ -140,11 +148,13 @@ export const useDataStore = create<DataState>((set, get) => {
           saveState: 'saved',
           lastSavedAt: mirror.data.lastUpdated,
         });
+        maybeAutoSync();
         return;
       }
 
       // 3. Genuine first run.
       set({ data: createDefaultData(), storageMode: null, bootPhase: 'welcome', saveState: 'idle' });
+      maybeAutoSync();
     },
 
     setActiveDate: (date) => set({ activeDate: date }),
@@ -185,6 +195,7 @@ export const useDataStore = create<DataState>((set, get) => {
           const res = await fs.saveFile(data);
           if (res.status === 'saved') {
             set({ saveState: 'saved', lastSavedAt: new Date().toISOString(), saveError: null });
+            useSyncStore.getState().scheduleAutoPush();
           } else if (res.status === 'denied' || res.status === 'no-file') {
             set({ saveState: 'disconnected', saveError: res.message ?? null });
           } else {
@@ -201,6 +212,7 @@ export const useDataStore = create<DataState>((set, get) => {
 
         await fs.saveLocalMirror(data);
         set({ saveState: 'saved', lastSavedAt: new Date().toISOString(), saveError: null });
+        useSyncStore.getState().scheduleAutoPush();
       });
 
       return savingChain;
@@ -344,6 +356,23 @@ export const useDataStore = create<DataState>((set, get) => {
       await get().saveNow();
     },
   };
+});
+
+registerSyncDataBridge({
+  getData: () => useDataStore.getState().data,
+  applyRemoteData: async (remoteData) => {
+    useDataStore.setState({
+      data: remoteData,
+      bootPhase: remoteData.profile.onboarded ? 'ready' : 'welcome',
+      saveState: 'saved',
+      lastSavedAt: remoteData.lastUpdated,
+      saveError: null,
+    });
+    await fs.saveLocalMirror(remoteData);
+    if (useDataStore.getState().storageMode === 'file' && fs.getHandle()) {
+      await fs.saveFile(remoteData);
+    }
+  },
 });
 
 /** Flush pending writes when the tab goes away. */
