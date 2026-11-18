@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Settings &amp; data</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link rel="stylesheet" href="assets/styles.css">
   <script defer src="assets/nav.js"></script>
   <script defer src="assets/app.js"></script>
@@ -15,6 +16,7 @@
 
   <h2 id="profile">Profile &amp; routine</h2>
   <dl class="kv">
+    <dt>Custom avatar</dt><dd>Upload any image as your profile avatar in <strong>About you</strong> — it is automatically compressed to 128×128 so your JSON backup stays fast and lightweight.</dd>
     <dt>About you</dt><dd>Name, course, and the details used to personalise the app.</dd>
     <dt>Daily routine</dt><dd>Your usual wake and sleep times — these power the early-wake streak and sleep factor.</dd>
     <dt>Targets</dt><dd>Daily study-hours goal, coding target, and other personal benchmarks the rings and score measure against.</dd>
@@ -22,22 +24,23 @@
 
   <h2 id="preferences">Preferences</h2>
   <ul>
-    <li><strong>Theme</strong> — light or dark, matching your surroundings and the time of day.</li>
+    <li><strong>Theme</strong> — light, dark, or system, with a smooth circular reveal transition radiating from the toggle button.</li>
     <li><strong>Pomodoro</strong> — pick a <a href="guide-study.html">preset</a> or set custom focus/break lengths and rounds before a long break.</li>
     <li><strong>Streak freezes</strong> — see your available freeze and how the weekly grant works (<a href="concept-streaks.html">details</a>).</li>
     <li><strong>Notifications &amp; reminders</strong> — local, on-device nudges only.</li>
   </ul>
 
-  <h2 id="data">Your data controls</h2>
-  <p>This is the heart of the local-first promise. You own the file, and these tools make that real:</p>
+  <h2 id="data">Your data &amp; Cloud sync controls</h2>
+  <p>Keep your data locally, sync automatically via your private GitHub Gist, or both:</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Action</th><th>What it does</th></tr></thead>
       <tbody>
+        <tr><td>Cloud sync (GitHub Gist)</td><td>Connect your GitHub token (<code>gist</code> scope) to auto-create or restore a secret Gist. Includes <strong>Sync now</strong>, <strong>Pull from cloud</strong>, <strong>Upload JSON to Gist</strong>, and <strong>Auto-sync automatically</strong>.</td></tr>
+        <tr><td>Upload JSON to Gist</td><td>Import an existing <code>.json</code> backup file directly into the app and push it straight to your connected GitHub Gist.</td></tr>
         <tr><td>Export / backup</td><td>Save a copy of your entire data file whenever you want — before a big change, or just for safekeeping.</td></tr>
-        <tr><td>Import</td><td>Load a previously exported file, e.g. to restore or move to another device.</td></tr>
-        <tr><td>Reconnect file</td><td>Re-link your data file if the browser lost access (see <a href="concept-storage.html">Storage</a>).</td></tr>
-        <tr><td>Storage mode</td><td>See whether you're using a real file or the browser mirror, and switch if your browser supports it.</td></tr>
+        <tr><td>Import from file</td><td>Load a previously exported local file into your current workspace.</td></tr>
+        <tr><td>Reconnect file</td><td>Re-link your local data file if the browser lost access (see <a href="concept-storage.html">Storage</a>).</td></tr>
       </tbody>
     </table>
   </div>

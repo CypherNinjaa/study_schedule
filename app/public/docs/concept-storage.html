@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Storage &amp; autosave</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link rel="stylesheet" href="assets/styles.css">
   <script defer src="assets/nav.js"></script>
   <script defer src="assets/app.js"></script>
@@ -32,33 +33,42 @@
   </ol>
   <p>Writes are also flushed when you switch away from the tab or close it, so a change made a split second before closing still lands safely.</p>
 
-  <h2 id="two-modes">The two storage modes</h2>
-  <p>Depending on your browser and your choice during setup, the app saves in one of two ways:</p>
+  <h2 id="two-modes">Storage &amp; sync modes</h2>
+  <p>You can save locally, sync to your own private GitHub Gist, or combine both:</p>
 
-  <h3>File mode (recommended)</h3>
-  <p>Available in Chrome and Edge on desktop. Using the browser's File System Access API, the app writes directly to the <code>.json</code> file you chose. The file on disk is always the source of truth, and a copy is also mirrored inside the browser as a safety net.</p>
+  <h3>1. Cloud Sync (GitHub Gist — automatic &amp; multi-device)</h3>
+  <p>Works in <strong>any browser</strong> on desktop or mobile. Connect a GitHub Personal Access Token (<code>gist</code> scope) during onboarding or in <a href="guide-settings.html">Settings → Cloud sync</a>. Your data automatically syncs to a private secret Gist (<code>productivity-data.json</code>):</p>
+  <ul>
+    <li><strong>Auto-pull on startup:</strong> Checks your Gist when you open the app and loads newer data from other devices automatically.</li>
+    <li><strong>Auto-push on changes:</strong> Debounces edits (4 seconds after saving locally) and pushes automatically in the background, or flushes immediately when you switch tabs.</li>
+    <li><strong>Private &amp; safe:</strong> Your GitHub token stays only in <code>localStorage</code> on your device and is never included in the synced JSON file.</li>
+  </ul>
 
-  <h3>Browser mode (fallback)</h3>
-  <p>If your browser can't write files directly, or you chose "just use this browser," your data is stored inside the browser using IndexedDB. It's still private and persists between sessions — but it lives in that browser profile, so it won't appear if you switch browsers or clear site data. In this mode, use <strong>Download backup</strong> regularly and keep the file somewhere safe.</p>
+  <h3>2. File mode (local JSON on disk)</h3>
+  <p>Available in Chrome and Edge on desktop. Using the browser's File System Access API, the app writes directly to the <code>.json</code> file you chose. A copy is also mirrored inside IndexedDB as a safety net.</p>
+
+  <h3>3. Browser mode (IndexedDB fallback)</h3>
+  <p>If you skip both GitHub Gist and a local file, your data is stored inside the browser using IndexedDB. Use <strong>Export backup</strong> regularly if you don't have Gist sync enabled.</p>
 
   <div class="table-wrap">
     <table>
-      <thead><tr><th></th><th>File mode</th><th>Browser mode</th></tr></thead>
+      <thead><tr><th></th><th>GitHub Gist sync</th><th>File mode</th><th>Browser mode</th></tr></thead>
       <tbody>
-        <tr><td>Where data lives</td><td>A file you chose on disk</td><td>Inside the browser (IndexedDB)</td></tr>
-        <tr><td>Browsers</td><td>Chrome, Edge (desktop)</td><td>Any browser</td></tr>
-        <tr><td>Survives clearing browser data</td><td>Yes — the file remains</td><td>No — export backups</td></tr>
-        <tr><td>Easy to move between devices</td><td>Yes — copy the file</td><td>Export, then import elsewhere</td></tr>
+        <tr><td>Where data lives</td><td>Your private secret GitHub Gist + browser cache</td><td>A <code>.json</code> file you chose on disk</td><td>Inside the browser (IndexedDB)</td></tr>
+        <tr><td>Browsers</td><td>Any browser / mobile</td><td>Chrome, Edge (desktop)</td><td>Any browser</td></tr>
+        <tr><td>Survives clearing browser data</td><td>Yes — auto-restores with token</td><td>Yes — the file remains</td><td>No — export backups</td></tr>
+        <tr><td>Multi-device sync</td><td>Automatic (auto-pull &amp; auto-push)</td><td>Manual (copy or cloud-synced folder)</td><td>Export, then import elsewhere</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h2 id="topbar-controls">TopBar file controls</h2>
-  <p>The top navigation bar provides three dedicated controls for effortless file management:</p>
+  <h2 id="topbar-controls">Dynamic TopBar sync indicator</h2>
+  <p>The status pill in the top bar updates dynamically as your data saves:</p>
   <ul>
-    <li><strong>Status badge:</strong> Displays your active persistence state (e.g. <code>Browser only</code> or <code>Saved ✓</code>). Hovering reveals tooltip details regarding autosave status.</li>
-    <li><strong>Create file:</strong> Opens the native OS file picker to initialize and connect a new JSON workspace file on disk.</li>
-    <li><strong>Load file:</strong> Reconnects or switches to an existing productivity JSON file without overwriting your current data.</li>
+    <li><code>Saving to local file…</code> / <code>Saving locally…</code> — writing changes to disk or IndexedDB.</li>
+    <li><code>Saved locally · Queued for Gist</code> — waiting a few seconds to batch edits before pushing to GitHub.</li>
+    <li><code>Saving to Gist…</code> — uploading your updated JSON to your secret Gist.</li>
+    <li><code>Synced to Gist</code> or <code>Saved · Local &amp; Gist</code> — everything is up to date. Click the pill anytime to trigger an immediate sync check.</li>
   </ul>
 
   <h2 id="disconnected">"File disconnected" — what it means</h2>

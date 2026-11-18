@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quick start</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link rel="stylesheet" href="assets/styles.css">
   <script defer src="assets/nav.js"></script>
   <script defer src="assets/app.js"></script>
@@ -33,12 +34,13 @@
     </li>
     <li>
       <h3>Choose where your data lives</h3>
-      <p>This is the most important step. You have three choices:</p>
+      <p>Rely completely on GitHub Gist cloud sync, use a local JSON file, or use both — skip whichever you don't need:</p>
       <ul>
-        <li><strong>Create a data file</strong> — pick a location like <code>Documents/Study Productivity/productivity-data.json</code>. Everything autosaves there from now on. <em>(Chrome/Edge only.)</em></li>
-        <li><strong>Open an existing data file</strong> — continue from a file you set up before, perhaps on another device.</li>
-        <li><strong>Just use this browser for now</strong> — start immediately; your data is kept safely inside the browser. You can connect a file later from Settings.</li>
+        <li><strong>Rely on GitHub Gist (skip local file)</strong> — paste a GitHub Personal Access Token (with the <code>gist</code> scope) to automatically create or restore your private secret Gist and auto-sync across devices.</li>
+        <li><strong>Create / Open a local data file (skip Gist)</strong> — pick a location like <code>Documents/Study Productivity/productivity-data.json</code> on your computer. Everything autosaves there offline. <em>(Chrome/Edge only.)</em></li>
+        <li><strong>Just use this browser for now</strong> — start immediately with IndexedDB storage; you can connect GitHub Gist or a local file later from Settings.</li>
       </ul>
+      <p><em>Returning user?</em> Click <strong>Returning user? Restore from GitHub Gist</strong> on the welcome screen, paste your token, and your entire workspace restores automatically.</p>
     </li>
     <li>
       <h3>Your name</h3>
