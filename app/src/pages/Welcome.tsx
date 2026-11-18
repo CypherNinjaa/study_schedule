@@ -151,9 +151,81 @@ export function Welcome() {
             <Step
               icon={<HardDrive size={22} />}
               title="Where should your data live?"
-              blurb="Your data is saved as a plain JSON file on your own computer. You can back it up, move it, or read it in any text editor."
+              blurb="Rely completely on GitHub Gist cloud sync, use a local JSON file on your computer, or use both — skip whichever you don't need."
             >
               <div className="mt-4 space-y-2">
+                <button
+                  type="button"
+                  className={cn(
+                    'btn-outline w-full justify-start gap-3 py-3',
+                    (showGistBox || syncConfig) && 'border-accent bg-accent-soft/40',
+                  )}
+                  onClick={() => setShowGistBox((v) => !v)}
+                >
+                  <Cloud size={18} className="text-accent" />
+                  <span className="text-left">
+                    <span className="block text-sm font-medium text-ink">
+                      Rely on GitHub Gist (skip local file)
+                    </span>
+                    <span className="block text-xs text-muted">
+                      Auto-sync in the cloud or restore an existing backup with your token
+                    </span>
+                  </span>
+                </button>
+
+                {showGistBox && (
+                  <form
+                    className="space-y-2.5 rounded-ctl border border-line bg-elevated/70 p-3.5"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const res = await connectGist(gistToken, gistId);
+                      if (res.ok && !storageMode) {
+                        await continueLocalOnly();
+                      }
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-medium text-ink">GitHub Gist Cloud Sync</span>
+                      <a
+                        href="https://github.com/settings/tokens/new?scopes=gist&description=Study%20Schedule%20Sync"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-accent hover:underline"
+                      >
+                        Get token <ExternalLink size={10} />
+                      </a>
+                    </div>
+                    <input
+                      type="password"
+                      className="input text-xs"
+                      placeholder="Paste GitHub Personal Access Token (ghp_...)"
+                      value={gistToken}
+                      onChange={(e) => setGistToken(e.target.value)}
+                      autoComplete="off"
+                    />
+                    <input
+                      type="text"
+                      className="input text-xs"
+                      placeholder="Gist ID (optional — leave blank to auto-detect)"
+                      value={gistId}
+                      onChange={(e) => setGistId(e.target.value)}
+                    />
+                    {syncError && <p className="text-xs text-danger">{syncError}</p>}
+                    <button
+                      type="submit"
+                      className="btn-primary btn-sm w-full gap-1.5"
+                      disabled={!gistToken.trim() || syncStatus === 'syncing'}
+                    >
+                      {syncStatus === 'syncing' ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <Cloud size={14} />
+                      )}
+                      Connect &amp; Sync with Gist
+                    </button>
+                  </form>
+                )}
+
                 <button
                   type="button"
                   className="btn-outline w-full justify-start gap-3 py-3"
@@ -162,7 +234,7 @@ export function Welcome() {
                 >
                   <FileJson size={18} className="text-accent" />
                   <span className="text-left">
-                    <span className="block text-sm font-medium text-ink">Create a data file</span>
+                    <span className="block text-sm font-medium text-ink">Create a local data file (skip Gist)</span>
                     <span className="block text-xs text-muted">e.g. Documents/Study Productivity/productivity-data.json</span>
                   </span>
                 </button>
@@ -174,99 +246,32 @@ export function Welcome() {
                 >
                   <FolderOpen size={18} className="text-accent" />
                   <span className="text-left">
-                    <span className="block text-sm font-medium text-ink">Open an existing data file</span>
-                    <span className="block text-xs text-muted">Continue from a previous setup or another device</span>
+                    <span className="block text-sm font-medium text-ink">Open an existing local data file</span>
+                    <span className="block text-xs text-muted">Continue from a previous local file</span>
                   </span>
                 </button>
                 <button type="button" className="btn-ghost w-full justify-start gap-3 py-3" onClick={() => void continueLocalOnly()}>
                   <HardDrive size={18} />
                   <span className="text-left">
                     <span className="block text-sm font-medium text-ink">Just use this browser for now</span>
-                    <span className="block text-xs text-muted">You can connect a file later from Settings</span>
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className={cn(
-                    'btn-outline w-full justify-start gap-3 py-3',
-                    showGistBox && 'border-accent bg-accent-soft/40',
-                  )}
-                  onClick={() => setShowGistBox((v) => !v)}
-                >
-                  <Cloud size={18} className="text-accent" />
-                  <span className="text-left">
-                    <span className="block text-sm font-medium text-ink">Restore or sync with GitHub Gist</span>
-                    <span className="block text-xs text-muted">
-                      Returning user? Enter your Gist token to auto-sync your data
-                    </span>
+                    <span className="block text-xs text-muted">Skip both — you can connect Gist or a file later in Settings</span>
                   </span>
                 </button>
               </div>
 
-              {showGistBox && (
-                <form
-                  className="mt-3 space-y-2.5 rounded-ctl border border-line bg-elevated/70 p-3.5"
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    await connectGist(gistToken, gistId);
-                  }}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-medium text-ink">GitHub Gist Cloud Sync</span>
-                    <a
-                      href="https://github.com/settings/tokens/new?scopes=gist&description=Study%20Schedule%20Sync"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] font-medium text-accent hover:underline"
-                    >
-                      Get token <ExternalLink size={10} />
-                    </a>
-                  </div>
-                  <input
-                    type="password"
-                    className="input text-xs"
-                    placeholder="Paste GitHub Personal Access Token (ghp_...)"
-                    value={gistToken}
-                    onChange={(e) => setGistToken(e.target.value)}
-                    autoComplete="off"
-                  />
-                  <input
-                    type="text"
-                    className="input text-xs"
-                    placeholder="Gist ID (optional — leave blank to auto-detect)"
-                    value={gistId}
-                    onChange={(e) => setGistId(e.target.value)}
-                  />
-                  {syncError && <p className="text-xs text-danger">{syncError}</p>}
-                  <button
-                    type="submit"
-                    className="btn-primary btn-sm w-full gap-1.5"
-                    disabled={!gistToken.trim() || syncStatus === 'syncing'}
-                  >
-                    {syncStatus === 'syncing' ? (
-                      <Loader2 size={14} className="animate-spin" />
-                    ) : (
-                      <Cloud size={14} />
-                    )}
-                    Connect & Restore Data
-                  </button>
-                </form>
-              )}
-
               {syncConfig && (
                 <p className="mt-3 flex items-center gap-1.5 text-xs text-ok">
-                  <Check size={14} /> Connected to GitHub Gist ({syncConfig.gistId.slice(0, 8)}…). Auto-sync enabled.
+                  <Check size={14} /> Connected to GitHub Gist ({syncConfig.gistId.slice(0, 8)}…). Local file skipped — click Next to continue.
                 </p>
               )}
-              {!isFileSystemAccessSupported() && (
+              {!isFileSystemAccessSupported() && !syncConfig && (
                 <p className="mt-3 rounded-ctl bg-warn/10 px-3 py-2 text-xs text-warn">
-                  This browser can't write files directly. Chrome or Edge support it. Your data will be kept safely in
-                  this browser meanwhile, and you can export a backup any time.
+                  This browser can't write local files directly, so you can rely on GitHub Gist or in-browser storage instead.
                 </p>
               )}
-              {storageMode && (
+              {storageMode && !syncConfig && (
                 <p className="mt-3 flex items-center gap-1.5 text-xs text-ok">
-                  <Check size={14} /> {storageMode === 'file' ? 'File connected.' : 'Using in-browser storage.'}
+                  <Check size={14} /> {storageMode === 'file' ? 'Local file connected.' : 'Using in-browser storage.'}
                 </p>
               )}
             </Step>

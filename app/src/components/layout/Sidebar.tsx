@@ -13,6 +13,7 @@ export function Sidebar() {
   const toggle = useUiStore((s) => s.toggleSidebar);
   const xpTotal = useDataStore((s) => s.data?.xp.total ?? 0);
   const name = useDataStore((s) => s.data?.profile.name ?? '');
+  const avatar = useDataStore((s) => s.data?.profile.avatar ?? null);
 
   const lvl = levelFromXP(xpTotal);
 
@@ -24,9 +25,17 @@ export function Sidebar() {
       )}
     >
       <div className={cn('flex h-14 items-center gap-2 border-b border-line px-3', collapsed && 'justify-center')}>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-ctl bg-accent text-sm font-bold text-white">
-          {name ? name.charAt(0).toUpperCase() : 'P'}
-        </div>
+        {avatar ? (
+          <img
+            src={avatar}
+            alt={name || 'Avatar'}
+            className="h-8 w-8 shrink-0 rounded-ctl border border-line object-cover"
+          />
+        ) : (
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-ctl bg-accent text-sm font-bold text-white">
+            {name ? name.charAt(0).toUpperCase() : 'P'}
+          </div>
+        )}
         {!collapsed && (
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-ink">{name || 'Productivity OS'}</p>

@@ -89,6 +89,7 @@ export function createDefaultData(now: string = new Date().toISOString()): AppDa
     version: SCHEMA_VERSION,
     profile: {
       name: '',
+      avatar: null,
       college: 'Amity Institute of Information Technology, Amity University Patna',
       course: 'BCA-V (A)',
       batch: '2024-2028',

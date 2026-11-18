@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { AppData } from '@/types';
 import { createDefaultData } from '@/data/defaults';
+import { parseJSON, validateAndMigrate } from '@/services/schema';
 import * as gist from '@/services/gistSync';
 import { useFeedbackStore } from './useFeedbackStore';
 
@@ -31,6 +32,7 @@ interface SyncState {
   disconnect: () => void;
   setAutoSync: (enabled: boolean) => void;
   syncNow: (mode?: 'auto' | 'push' | 'pull', silent?: boolean) => Promise<void>;
+  uploadJsonFileToGist: (file: File) => Promise<{ ok: boolean; error?: string }>;
   scheduleAutoPush: () => void;
   flushPendingPush: () => void;
 }
@@ -265,6 +267,53 @@ export const useSyncStore = create<SyncState>((set, get) => {
         inFlight = null;
       });
       return inFlight;
+    },
+
+    uploadJsonFileToGist: async (file) => {
+      const cfg = get().config;
+      if (!cfg) return { ok: false, error: 'Connect GitHub Gist first.' };
+
+      set({ status: 'syncing', error: null });
+      try {
+        const text = await file.text();
+        const parsed = parseJSON(text);
+        if (!parsed.ok) {
+          set({ status: 'error', error: parsed.error });
+          useFeedbackStore.getState().toast({ kind: 'error', title: 'Invalid JSON file', message: parsed.error });
+          return { ok: false, error: parsed.error };
+        }
+        const validated = validateAndMigrate(parsed.value);
+        if (!validated.ok || !validated.data) {
+          const msg = validated.errors.join(' ') || 'File is not valid Productivity OS data.';
+          set({ status: 'error', error: msg });
+          useFeedbackStore.getState().toast({ kind: 'error', title: 'Invalid data file', message: msg });
+          return { ok: false, error: msg };
+        }
+
+        const nextData: AppData = { ...validated.data, lastUpdated: new Date().toISOString() };
+        await bridge?.applyRemoteData(nextData);
+
+        const pushed = await gist.pushToGist(cfg, nextData);
+        if (!pushed.ok) {
+          set({ status: 'error', error: pushed.error });
+          useFeedbackStore.getState().toast({ kind: 'error', title: 'Upload to Gist failed', message: pushed.error });
+          return { ok: false, error: pushed.error };
+        }
+
+        persistConfig({ ...cfg, lastSyncedAt: new Date().toISOString(), htmlUrl: pushed.htmlUrl });
+        set({ status: 'synced', error: null, hasPendingPush: false });
+        useFeedbackStore.getState().toast({
+          kind: 'success',
+          title: 'JSON uploaded to GitHub Gist',
+          message: `Imported ${file.name} and synced to your secret Gist.`,
+        });
+        return { ok: true };
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'Could not read JSON file.';
+        set({ status: 'error', error: msg });
+        useFeedbackStore.getState().toast({ kind: 'error', title: 'Upload failed', message: msg });
+        return { ok: false, error: msg };
+      }
     },
 
     scheduleAutoPush: () => {

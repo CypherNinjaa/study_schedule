@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   AlertTriangle,
+  Camera,
   Cloud,
   Download,
   ExternalLink,
@@ -15,6 +16,7 @@ import {
   Sun,
   Trash2,
   Upload,
+  X,
 } from 'lucide-react';
 import type { Targets, ThemeMode } from '@/types';
 import { updateProfile, updateSettings } from '@/store/actions';
@@ -178,9 +180,11 @@ function CloudSyncCard() {
   const disconnect = useSyncStore((st) => st.disconnect);
   const setAutoSync = useSyncStore((st) => st.setAutoSync);
   const syncNow = useSyncStore((st) => st.syncNow);
+  const uploadJsonFileToGist = useSyncStore((st) => st.uploadJsonFileToGist);
 
   const [tokenInput, setTokenInput] = useState('');
   const [gistIdInput, setGistIdInput] = useState('');
+  const jsonInputRef = useRef<HTMLInputElement>(null);
 
   const handleConnect = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -312,6 +316,25 @@ function CloudSyncCard() {
               >
                 <Download size={14} /> Pull from cloud
               </button>
+              <button
+                type="button"
+                className="btn-outline btn-sm gap-1.5"
+                disabled={status === 'syncing'}
+                onClick={() => jsonInputRef.current?.click()}
+              >
+                <Upload size={14} /> Upload JSON to Gist
+              </button>
+              <input
+                ref={jsonInputRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = '';
+                  if (file) void uploadJsonFileToGist(file);
+                }}
+              />
               {config.htmlUrl && (
                 <a
                   href={config.htmlUrl}
@@ -425,41 +448,126 @@ function StorageCard() {
   );
 }
 
+/** Resizes & center-crops an uploaded image to 128x128 so it stays tiny in JSON. */
+function compressAvatar(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const size = 128;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas unsupported'));
+      const minSide = Math.min(img.width, img.height);
+      const sx = (img.width - minSide) / 2;
+      const sy = (img.height - minSide) / 2;
+      ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+      const webp = canvas.toDataURL('image/webp', 0.85);
+      resolve(webp.startsWith('data:image/webp') ? webp : canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Could not read image'));
+    };
+    img.src = url;
+  });
+}
+
 function ProfileCard() {
   const data = useData();
   const p = data.profile;
+  const toast = useFeedbackStore((st) => st.toast);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const dataUrl = await compressAvatar(file);
+      updateProfile({ avatar: dataUrl });
+      toast({ kind: 'success', title: 'Avatar updated' });
+    } catch {
+      toast({ kind: 'error', title: 'Could not load image', message: 'Please try a PNG, JPG, or WebP image.' });
+    }
+  };
+
   return (
     <Card>
       <CardHeader title="About you" subtitle="Used for headings and nothing else" />
-      <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
-        <label className="block">
-          <span className="label">Name</span>
-          <input className="input" value={p.name} onChange={(e) => updateProfile({ name: e.target.value })} />
-        </label>
-        <label className="block">
-          <span className="label">Course</span>
-          <input className="input" value={p.course} onChange={(e) => updateProfile({ course: e.target.value })} />
-        </label>
-        <label className="block">
-          <span className="label">Batch</span>
-          <input className="input" value={p.batch} onChange={(e) => updateProfile({ batch: e.target.value })} />
-        </label>
-        <label className="block sm:col-span-2">
-          <span className="label">College</span>
-          <input className="input" value={p.college} onChange={(e) => updateProfile({ college: e.target.value })} />
-        </label>
-        <label className="block">
-          <span className="label">Class teacher</span>
-          <input
-            className="input"
-            value={p.classTeacher}
-            onChange={(e) => updateProfile({ classTeacher: e.target.value })}
-          />
-        </label>
-        <label className="block">
-          <span className="label">Default room</span>
-          <input className="input" value={p.room} onChange={(e) => updateProfile({ room: e.target.value })} />
-        </label>
+      <div className="space-y-4 p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          {p.avatar ? (
+            <img
+              src={p.avatar}
+              alt={p.name || 'Avatar'}
+              className="h-12 w-12 shrink-0 rounded-ctl border border-line object-cover"
+            />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-ctl bg-accent text-lg font-bold text-white">
+              {p.name ? p.name.charAt(0).toUpperCase() : 'P'}
+            </div>
+          )}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="btn-outline btn-sm gap-1.5"
+              onClick={() => avatarInputRef.current?.click()}
+            >
+              <Camera size={14} /> {p.avatar ? 'Change avatar' : 'Upload avatar'}
+            </button>
+            {p.avatar && (
+              <button
+                type="button"
+                className="btn-ghost btn-sm gap-1 text-muted hover:text-danger"
+                onClick={() => updateProfile({ avatar: null })}
+              >
+                <X size={14} /> Remove
+              </button>
+            )}
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => void handleAvatarChange(e)}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <label className="block">
+            <span className="label">Name</span>
+            <input className="input" value={p.name} onChange={(e) => updateProfile({ name: e.target.value })} />
+          </label>
+          <label className="block">
+            <span className="label">Course</span>
+            <input className="input" value={p.course} onChange={(e) => updateProfile({ course: e.target.value })} />
+          </label>
+          <label className="block">
+            <span className="label">Batch</span>
+            <input className="input" value={p.batch} onChange={(e) => updateProfile({ batch: e.target.value })} />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className="label">College</span>
+            <input className="input" value={p.college} onChange={(e) => updateProfile({ college: e.target.value })} />
+          </label>
+          <label className="block">
+            <span className="label">Class teacher</span>
+            <input
+              className="input"
+              value={p.classTeacher}
+              onChange={(e) => updateProfile({ classTeacher: e.target.value })}
+            />
+          </label>
+          <label className="block">
+            <span className="label">Default room</span>
+            <input className="input" value={p.room} onChange={(e) => updateProfile({ room: e.target.value })} />
+          </label>
+        </div>
       </div>
     </Card>
   );

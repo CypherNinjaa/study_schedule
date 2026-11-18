@@ -12,28 +12,30 @@ import {
   Search,
   Sun,
 } from 'lucide-react';
-import { useDataStore, type SaveState } from '@/store/useDataStore';
+import { useDataStore } from '@/store/useDataStore';
+import { useSyncStore } from '@/store/useSyncStore';
 import { useUiStore } from '@/store/useUiStore';
 import { toggleThemeWithTransition } from '@/utils/themeTransition';
 import { NAV } from './nav';
 import { cn } from '@/utils/misc';
 
-const SAVE_LABEL: Record<SaveState, string> = {
-  idle: 'Up to date',
-  dirty: 'Unsaved changes',
-  saving: 'Saving…',
-  saved: 'Saved',
-  disconnected: 'File disconnected',
-  error: 'Save failed',
-};
-
 function SaveIndicator() {
   const saveState = useDataStore((s) => s.saveState);
   const fileName = useDataStore((s) => s.fileName);
   const storageMode = useDataStore((s) => s.storageMode);
+  const saveNow = useDataStore((s) => s.saveNow);
   const reconnect = useDataStore((s) => s.reconnectFile);
   const connect = useDataStore((s) => s.connectNewFile);
   const openExisting = useDataStore((s) => s.openExistingFile);
+
+  const syncConfig = useSyncStore((s) => s.config);
+  const syncStatus = useSyncStore((s) => s.status);
+  const syncError = useSyncStore((s) => s.error);
+  const hasPendingPush = useSyncStore((s) => s.hasPendingPush);
+  const syncNow = useSyncStore((s) => s.syncNow);
+
+  const hasFile = storageMode === 'file';
+  const hasGist = Boolean(syncConfig);
 
   if (saveState === 'disconnected') {
     return (
@@ -48,12 +50,12 @@ function SaveIndicator() {
   if (saveState === 'error') {
     return (
       <span className="chip gap-1.5 border-danger/40 text-danger" title="Your data is still kept in this browser.">
-        <AlertCircle size={13} /> Save failed
+        <AlertCircle size={13} /> Local save failed
       </span>
     );
   }
 
-  if (storageMode !== 'file') {
+  if (!hasFile && !hasGist) {
     return (
       <div className="flex items-center gap-1.5">
         <span className="chip gap-1.5 text-xs text-muted" title="Data is currently kept in browser storage only">
@@ -82,17 +84,61 @@ function SaveIndicator() {
     );
   }
 
+  if (hasGist && syncStatus === 'error') {
+    return (
+      <button
+        type="button"
+        onClick={() => void syncNow('auto')}
+        className="chip gap-1.5 border-danger/40 text-danger hover:bg-elevated transition-colors"
+        title={syncError ?? 'Click to retry GitHub Gist sync'}
+      >
+        <AlertCircle size={13} />
+        <span className="hidden sm:inline">Gist sync failed · Retry</span>
+      </button>
+    );
+  }
+
+  let icon = <Check size={13} className="text-ok" />;
+  let label = 'Saved';
+  let title = fileName ? `Autosaving to ${fileName}` : 'Saved';
+
+  if (saveState === 'saving') {
+    icon = <Loader2 size={13} className="animate-spin text-accent" />;
+    label = hasFile ? 'Saving to local file…' : 'Saving locally…';
+  } else if (hasGist && syncStatus === 'syncing') {
+    icon = <Loader2 size={13} className="animate-spin text-accent" />;
+    label = 'Saving to Gist…';
+    title = 'Syncing with your secret GitHub Gist';
+  } else if (saveState === 'dirty') {
+    icon = <Cloud size={13} className="text-warn" />;
+    label = hasFile ? 'Unsaved changes…' : 'Updating…';
+  } else if (hasGist && hasPendingPush) {
+    icon = <Loader2 size={13} className="animate-spin text-muted" />;
+    label = hasFile ? 'Saved locally · Queued for Gist' : 'Queued for Gist…';
+  } else if (hasFile && hasGist) {
+    icon = <Check size={13} className="text-ok" />;
+    label = 'Saved · Local & Gist';
+    title = `Local: ${fileName ?? 'file'} · Cloud: GitHub Gist (${syncConfig?.lastSyncedAt ? new Date(syncConfig.lastSyncedAt).toLocaleTimeString() : 'connected'}) — click to sync now`;
+  } else if (hasGist) {
+    icon = <Cloud size={13} className="text-ok" />;
+    label = 'Synced to Gist';
+    title = `GitHub Gist (${syncConfig?.lastSyncedAt ? new Date(syncConfig.lastSyncedAt).toLocaleTimeString() : 'connected'}) — click to sync now`;
+  } else if (hasFile) {
+    icon = <Check size={13} className="text-ok" />;
+    label = 'Saved to local';
+    title = fileName ? `Autosaving to ${fileName} — click to save now` : 'Click to save now';
+  }
+
   return (
-    <span className="chip gap-1.5" title={fileName ? `Autosaving to ${fileName}` : undefined}>
-      {saveState === 'saving' ? (
-        <Loader2 size={13} className="animate-spin" />
-      ) : saveState === 'dirty' ? (
-        <Cloud size={13} className="text-muted" />
-      ) : (
-        <Check size={13} className="text-ok" />
-      )}
-      <span className="hidden sm:inline">{SAVE_LABEL[saveState]}</span>
-    </span>
+    <button
+      type="button"
+      onClick={() => (hasGist ? void syncNow('auto') : void saveNow())}
+      className="chip gap-1.5 transition-colors hover:bg-elevated hover:text-ink cursor-pointer"
+      title={title}
+    >
+      {icon}
+      <span className="hidden sm:inline">{label}</span>
+    </button>
   );
 }
 

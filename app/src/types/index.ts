@@ -16,6 +16,7 @@ export const SCHEMA_VERSION = 1;
 
 export interface Profile {
   name: string;
+  avatar?: string | null;
   college: string;
   course: string;
   batch: string;
