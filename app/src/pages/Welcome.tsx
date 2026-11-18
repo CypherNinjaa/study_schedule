@@ -4,15 +4,19 @@ import {
   ArrowRight,
   Check,
   Clock,
+  Cloud,
+  ExternalLink,
   FileJson,
   FolderOpen,
   GraduationCap,
   HardDrive,
+  Loader2,
   Sparkles,
   Target,
   User,
 } from 'lucide-react';
 import { useDataStore } from '@/store/useDataStore';
+import { useSyncStore } from '@/store/useSyncStore';
 import { isFileSystemAccessSupported } from '@/services/fileStorage';
 import { buildSeedSubjects } from '@/data/subjects';
 import { buildSeedSemester } from '@/data/timetable';
@@ -30,7 +34,15 @@ export function Welcome() {
   const continueLocalOnly = useDataStore((s) => s.continueLocalOnly);
   const completeOnboarding = useDataStore((s) => s.completeOnboarding);
 
+  const syncConfig = useSyncStore((s) => s.config);
+  const syncStatus = useSyncStore((s) => s.status);
+  const syncError = useSyncStore((s) => s.error);
+  const connectGist = useSyncStore((s) => s.connect);
+
   const [step, setStep] = useState(0);
+  const [showGistBox, setShowGistBox] = useState(false);
+  const [gistToken, setGistToken] = useState('');
+  const [gistId, setGistId] = useState('');
   const [name, setName] = useState(data?.profile.name ?? '');
   const [wake, setWake] = useState(data?.settings.wakeTime ?? '05:00');
   const [sleep, setSleep] = useState(data?.settings.sleepTime ?? '00:00');
@@ -120,6 +132,18 @@ export function Welcome() {
                   </li>
                 ))}
               </ul>
+              <div className="mt-5 border-t border-line pt-4">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-accent hover:underline"
+                  onClick={() => {
+                    setShowGistBox(true);
+                    setStep(1);
+                  }}
+                >
+                  <Cloud size={14} /> Returning user? Restore from GitHub Gist <ArrowRight size={12} />
+                </button>
+              </div>
             </Step>
           )}
 
@@ -161,7 +185,79 @@ export function Welcome() {
                     <span className="block text-xs text-muted">You can connect a file later from Settings</span>
                   </span>
                 </button>
+                <button
+                  type="button"
+                  className={cn(
+                    'btn-outline w-full justify-start gap-3 py-3',
+                    showGistBox && 'border-accent bg-accent-soft/40',
+                  )}
+                  onClick={() => setShowGistBox((v) => !v)}
+                >
+                  <Cloud size={18} className="text-accent" />
+                  <span className="text-left">
+                    <span className="block text-sm font-medium text-ink">Restore or sync with GitHub Gist</span>
+                    <span className="block text-xs text-muted">
+                      Returning user? Enter your Gist token to auto-sync your data
+                    </span>
+                  </span>
+                </button>
               </div>
+
+              {showGistBox && (
+                <form
+                  className="mt-3 space-y-2.5 rounded-ctl border border-line bg-elevated/70 p-3.5"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    await connectGist(gistToken, gistId);
+                  }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-medium text-ink">GitHub Gist Cloud Sync</span>
+                    <a
+                      href="https://github.com/settings/tokens/new?scopes=gist&description=Study%20Schedule%20Sync"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-medium text-accent hover:underline"
+                    >
+                      Get token <ExternalLink size={10} />
+                    </a>
+                  </div>
+                  <input
+                    type="password"
+                    className="input text-xs"
+                    placeholder="Paste GitHub Personal Access Token (ghp_...)"
+                    value={gistToken}
+                    onChange={(e) => setGistToken(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <input
+                    type="text"
+                    className="input text-xs"
+                    placeholder="Gist ID (optional — leave blank to auto-detect)"
+                    value={gistId}
+                    onChange={(e) => setGistId(e.target.value)}
+                  />
+                  {syncError && <p className="text-xs text-danger">{syncError}</p>}
+                  <button
+                    type="submit"
+                    className="btn-primary btn-sm w-full gap-1.5"
+                    disabled={!gistToken.trim() || syncStatus === 'syncing'}
+                  >
+                    {syncStatus === 'syncing' ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Cloud size={14} />
+                    )}
+                    Connect & Restore Data
+                  </button>
+                </form>
+              )}
+
+              {syncConfig && (
+                <p className="mt-3 flex items-center gap-1.5 text-xs text-ok">
+                  <Check size={14} /> Connected to GitHub Gist ({syncConfig.gistId.slice(0, 8)}…). Auto-sync enabled.
+                </p>
+              )}
               {!isFileSystemAccessSupported() && (
                 <p className="mt-3 rounded-ctl bg-warn/10 px-3 py-2 text-xs text-warn">
                   This browser can't write files directly. Chrome or Edge support it. Your data will be kept safely in
