@@ -84,6 +84,20 @@ function SaveIndicator() {
     );
   }
 
+  if (hasGist && syncStatus === 'offline') {
+    return (
+      <span
+        className="chip gap-1.5 border-warn/40 text-warn"
+        title="Offline — changes are saved locally and will auto-sync when you reconnect"
+      >
+        <CloudOff size={13} />
+        <span className="hidden sm:inline">
+          {hasPendingPush ? 'Offline · Queued for Gist' : 'Offline · Saved locally'}
+        </span>
+      </span>
+    );
+  }
+
   if (hasGist && syncStatus === 'error') {
     return (
       <button

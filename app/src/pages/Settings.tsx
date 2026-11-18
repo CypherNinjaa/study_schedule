@@ -271,16 +271,21 @@ function CloudSyncCard() {
                   'chip',
                   status === 'synced' && 'text-ok',
                   status === 'syncing' && 'text-accent',
+                  status === 'offline' && 'text-warn',
                   status === 'error' && 'text-danger',
                 )}
               >
                 {status === 'syncing'
                   ? 'Syncing…'
-                  : hasPendingPush
-                    ? 'Queued…'
-                    : status === 'error'
-                      ? 'Sync error'
-                      : 'Synced'}
+                  : status === 'offline'
+                    ? hasPendingPush
+                      ? 'Offline (queued)'
+                      : 'Offline'
+                    : hasPendingPush
+                      ? 'Queued…'
+                      : status === 'error'
+                        ? 'Sync error'
+                        : 'Synced'}
               </span>
               {config.lastSyncedAt && (
                 <span className="text-[11px] text-muted">

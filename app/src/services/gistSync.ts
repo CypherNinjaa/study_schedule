@@ -10,6 +10,11 @@ export interface GistSyncConfig {
   gistId: string;
   autoSync: boolean;
   lastSyncedAt: string | null;
+  /** AppData.lastUpdated value at the last successful sync (for 3-way conflict detection) */
+  lastRemoteUpdatedAt?: string | null;
+  /** True when local edits happened while offline or before a push succeeded */
+  pendingPush?: boolean;
+  etag?: string | null;
   htmlUrl?: string;
 }
 
@@ -40,6 +45,9 @@ export function getGistConfig(): GistSyncConfig | null {
         gistId: parsed.gistId,
         autoSync: parsed.autoSync ?? true,
         lastSyncedAt: parsed.lastSyncedAt ?? null,
+        lastRemoteUpdatedAt: parsed.lastRemoteUpdatedAt ?? null,
+        pendingPush: parsed.pendingPush ?? false,
+        etag: parsed.etag ?? null,
         htmlUrl: parsed.htmlUrl,
       };
     }
@@ -127,16 +135,25 @@ export async function createSyncGist(
 
 export async function pullFromGist(
   config: Pick<GistSyncConfig, 'token' | 'gistId'>,
+  ifNoneMatch?: string | null,
 ): Promise<
-  | { ok: true; data: AppData; htmlUrl: string; updatedAt: string }
+  | { ok: true; notModified: true }
+  | { ok: true; notModified: false; data: AppData; htmlUrl: string; updatedAt: string; etag: string | null }
   | { ok: false; error: string }
 > {
   try {
+    const headers = githubHeaders(config.token);
+    if (ifNoneMatch) headers['If-None-Match'] = ifNoneMatch;
+
     const res = await fetch(`https://api.github.com/gists/${encodeURIComponent(config.gistId.trim())}`, {
-      headers: githubHeaders(config.token),
+      headers,
       cache: 'no-store',
     });
+    if (res.status === 304) {
+      return { ok: true, notModified: true };
+    }
     if (!res.ok) return { ok: false, error: await parseError(res) };
+    const etag = res.headers.get('etag');
     const gist = (await res.json()) as GitHubGistResponse;
     const file = gist.files?.[GIST_FILENAME] ?? Object.values(gist.files ?? {})[0];
     if (!file) return { ok: false, error: `Gist does not contain ${GIST_FILENAME}.` };
@@ -154,7 +171,14 @@ export async function pullFromGist(
     if (!validated.ok || !validated.data) {
       return { ok: false, error: validated.errors.join(' ') || 'Remote Gist data is invalid.' };
     }
-    return { ok: true, data: validated.data, htmlUrl: gist.html_url, updatedAt: gist.updated_at };
+    return {
+      ok: true,
+      notModified: false,
+      data: validated.data,
+      htmlUrl: gist.html_url,
+      updatedAt: gist.updated_at,
+      etag,
+    };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : 'Network error pulling from GitHub.' };
   }
@@ -163,7 +187,7 @@ export async function pullFromGist(
 export async function pushToGist(
   config: Pick<GistSyncConfig, 'token' | 'gistId'>,
   data: AppData,
-): Promise<{ ok: true; htmlUrl: string; updatedAt: string } | { ok: false; error: string }> {
+): Promise<{ ok: true; htmlUrl: string; updatedAt: string; etag: string | null } | { ok: false; error: string }> {
   try {
     const res = await fetch(`https://api.github.com/gists/${encodeURIComponent(config.gistId.trim())}`, {
       method: 'PATCH',
@@ -175,8 +199,9 @@ export async function pushToGist(
       }),
     });
     if (!res.ok) return { ok: false, error: await parseError(res) };
+    const etag = res.headers.get('etag');
     const updated = (await res.json()) as GitHubGistResponse;
-    return { ok: true, htmlUrl: updated.html_url, updatedAt: updated.updated_at };
+    return { ok: true, htmlUrl: updated.html_url, updatedAt: updated.updated_at, etag };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : 'Network error pushing to GitHub.' };
   }
