@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
-  base: '/study_schedule/',
+  base: '/',
   plugins: [
     react(),
     VitePWA({
@@ -18,8 +18,8 @@ export default defineConfig({
         theme_color: '#e58b4a',
         background_color: '#131416',
         display: 'standalone',
-        scope: '/study_schedule/',
-        start_url: '/study_schedule/',
+        scope: '/',
+        start_url: '/',
         icons: [
           {
             src: 'favicon.svg',
