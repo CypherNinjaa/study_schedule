@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { type ReactNode, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, Check, ChevronDown, Github, Minus, Star } from 'lucide-react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
 interface BenefitsAndFaqProps {
   onLaunchStudyOS: () => void;
@@ -72,7 +74,10 @@ const SUBSCRIPTIONS = [
   { id: 'reader', name: 'Cloud PDF markup & sync', yearly: 132 },
 ];
 
-const FAQS = [
+const INLINE_CODE =
+  'rounded-md border border-[#E6E3DC] bg-[#F3F1EC] px-1.5 py-0.5 font-mono text-[12.5px] text-[#141413]';
+
+const FAQS: { q: string; a: ReactNode }[] = [
   {
     q: 'Does Study Schedule work completely offline without Wi-Fi?',
     a: 'Yes. After the first visit, the Progressive Web App precaches the entire interface and 31 documentation guides. Your data writes directly to your local JSON file and browser IndexedDB mirror, and optional GitHub Gist sync queues changes automatically until you reconnect.',
@@ -83,19 +88,45 @@ const FAQS = [
   },
   {
     q: 'Where is my data stored, and can I export it anytime?',
-    a: 'Everything lives inside a clean, human-readable JSON file (`productivity-data.json`) on your disk or in IndexedDB, plus your own Secret GitHub Gist if enabled. There are zero proprietary servers, zero accounts, and zero telemetry.',
+    a: (
+      <>
+        Everything lives inside a clean, human-readable JSON file (
+        <code className={INLINE_CODE}>productivity-data.json</code>) on your disk or in IndexedDB,
+        plus your own Secret GitHub Gist if enabled. There are zero proprietary servers, zero
+        accounts, and zero telemetry.
+      </>
+    ),
   },
   {
     q: 'How does conflict resolution work across phone and laptop?',
-    a: 'When syncing with your Secret GitHub Gist, Study Schedule merges collections deterministically by record ID and `updatedAt` timestamps so tasks, Pomodoro sessions, and habits logged on separate devices combine cleanly without overwriting one another.',
+    a: (
+      <>
+        When syncing with your Secret GitHub Gist, Study Schedule merges collections
+        deterministically by record ID and <code className={INLINE_CODE}>updatedAt</code>{' '}
+        timestamps so tasks, Pomodoro sessions, and habits logged on separate devices combine
+        cleanly without overwriting one another.
+      </>
+    ),
   },
   {
     q: 'Can I install it like a native app on desktop or mobile?',
-    a: 'Yes. In Chrome, Edge, or Safari, use "Install App" or "Add to Home Screen" to launch StudyOS directly in standalone app mode at `/studyos`.',
+    a: (
+      <>
+        Yes. In Chrome, Edge, or Safari, use &ldquo;Install App&rdquo; or &ldquo;Add to Home
+        Screen&rdquo; to launch StudyOS directly in standalone app mode at{' '}
+        <code className={INLINE_CODE}>/studyos</code>.
+      </>
+    ),
   },
   {
     q: 'Is Study Schedule really free and open source?',
-    a: 'Yes — 100% MIT licensed on GitHub (`CypherNinjaa/study_schedule`). You can inspect the source, run all 51 Vitest suites locally, fork it, or contribute pull requests.',
+    a: (
+      <>
+        Yes — 100% MIT licensed on GitHub (
+        <code className={INLINE_CODE}>CypherNinjaa/study_schedule</code>). You can inspect the
+        source, run all 54 Vitest tests locally, fork it, or contribute pull requests.
+      </>
+    ),
   },
 ];
 
@@ -104,6 +135,7 @@ const FAQS = [
  * 8 (Cinematic Dark Final CTA), and 9 (FAQ Accordion & Footer).
  */
 export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [selectedSubs, setSelectedSubs] = useState<Record<string, boolean>>({
     notion: true,
     todoist: true,
@@ -117,15 +149,105 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
     0,
   );
 
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add({ reduceMotion: '(prefers-reduced-motion: reduce)' }, (ctx) => {
+        if (ctx.conditions?.reduceMotion) return;
+
+        // Bidirectional comparison section entrance
+        gsap.from('.lp-compare-reveal', {
+          y: 28,
+          autoAlpha: 0,
+          duration: 0.72,
+          stagger: 0.1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '#benefits',
+            start: 'top 84%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+
+        // Subtle scrubbed depth parallax on the savings calculator card
+        gsap.fromTo(
+          '.lp-calc-card',
+          { y: 34 },
+          {
+            y: -16,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: '.lp-calc-card',
+              start: 'top 95%',
+              end: 'bottom 20%',
+              scrub: 0.8,
+            },
+          },
+        );
+
+        // Bidirectional staggered reveal on the 4 verified open-source proof tiles
+        gsap.from('.lp-proof-card', {
+          y: 26,
+          autoAlpha: 0,
+          duration: 0.65,
+          stagger: 0.08,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.lp-proof-grid',
+            start: 'top 88%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+
+        // Scrubbed Apple-style cinematic arrival for the Dark Final CTA (works up & down)
+        gsap.fromTo(
+          '.lp-final-cta-inner',
+          { y: 54, scale: 0.92, autoAlpha: 0.2 },
+          {
+            y: 0,
+            scale: 1,
+            autoAlpha: 1,
+            ease: 'power1.out',
+            scrollTrigger: {
+              trigger: '.lp-final-cta',
+              start: 'top 92%',
+              end: 'center 56%',
+              scrub: 0.9,
+            },
+          },
+        );
+
+        // Bidirectional FAQ accordion reveal
+        gsap.from('.lp-faq-reveal', {
+          y: 24,
+          autoAlpha: 0,
+          duration: 0.7,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '#faq',
+            start: 'top 86%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      });
+
+      return () => mm.revert();
+    },
+    { scope: containerRef },
+  );
+
   return (
-    <>
+    <div ref={containerRef}>
       {/* =================================================================
           SECTION 6 (LIGHT #FBFBF9): Benefits & Honest Stack Comparison
           ================================================================= */}
-      <section id="benefits" className="border-t border-[#E6E3DC] bg-[#FBFBF9] py-24 sm:py-32">
+      <section
+        id="benefits"
+        className="scroll-mt-14 border-t border-[#E6E3DC] bg-[#FBFBF9] py-24 sm:py-32"
+      >
         <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
-          <div className="max-w-2xl">
-            <div className="text-xs font-medium text-[#D97706]">Why switch</div>
+          <div className="lp-compare-reveal max-w-2xl">
+            <div className="text-xs font-medium text-[#B45309]">Why switch</div>
             <h2 className="mt-3 font-serif text-[34px] sm:text-[48px] font-normal leading-[1.08] tracking-[-0.025em] text-[#141413]">
               Built for students who want focus, not five subscriptions
             </h2>
@@ -136,12 +258,12 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
           </div>
 
           <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)] items-start">
-            {/* Comparison Table */}
-            <div className="overflow-hidden rounded-[20px] border border-[#E6E3DC] bg-white">
+            {/* Comparison Table with Sticky Capability Column on Mobile */}
+            <div className="lp-compare-reveal relative overflow-hidden rounded-[20px] border border-[#E6E3DC] bg-white">
               <div className="overflow-x-auto">
                 <div className="min-w-[660px]">
-                  <div className="grid grid-cols-[minmax(210px,1.7fr)_1.15fr_0.85fr_0.9fr_0.85fr_0.85fr] items-center border-b border-[#E6E3DC] px-5 py-3.5 text-xs font-medium text-[#5C5952]">
-                    <div>Capability</div>
+                  <div className="grid grid-cols-[minmax(200px,1.7fr)_1.15fr_0.85fr_0.9fr_0.85fr_0.85fr] items-center border-b border-[#E6E3DC] px-5 py-3.5 text-xs font-medium text-[#5C5952]">
+                    <div className="sticky left-0 z-10 bg-white pr-3">Capability</div>
                     <div className="rounded-lg bg-[#FEF3C7] px-2.5 py-1 text-[#92400E]">
                       Study Schedule
                     </div>
@@ -154,16 +276,18 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
                     {COMPARISON_ROWS.map((row) => (
                       <div
                         key={row.capability}
-                        className="grid grid-cols-[minmax(210px,1.7fr)_1.15fr_0.85fr_0.9fr_0.85fr_0.85fr] items-center px-5 py-3.5 text-sm transition-colors hover:bg-[#FBFBF9]"
+                        className="group grid grid-cols-[minmax(200px,1.7fr)_1.15fr_0.85fr_0.9fr_0.85fr_0.85fr] items-center px-5 py-3.5 text-sm transition-colors hover:bg-[#FBFBF9]"
                       >
-                        <div className="pr-3 font-medium text-[#141413]">{row.capability}</div>
+                        <div className="sticky left-0 z-10 bg-white pr-3 font-medium text-[#141413] transition-colors group-hover:bg-[#FBFBF9]">
+                          {row.capability}
+                        </div>
                         <div className="flex items-center gap-1.5 rounded-lg bg-[#FEF3C7]/45 px-2.5 py-1.5 text-xs font-medium text-[#141413]">
                           <Check size={14} strokeWidth={2.2} className="text-[#15803D] shrink-0" />
                           <span>{row.study}</span>
                         </div>
                         {[row.notion, row.gcal, row.forest, row.todoist].map((val, idx) => (
                           <div key={idx} className="px-2 text-xs text-[#5C5952]">
-                            {val ?? <Minus size={13} className="text-[#C7C2B8]" />}
+                            {val ?? <Minus size={13} className="text-[#B8B3A8]" />}
                           </div>
                         ))}
                       </div>
@@ -171,10 +295,13 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
                   </div>
                 </div>
               </div>
+              <div className="border-t border-[#E6E3DC] bg-[#FBFBF9] px-4 py-2 text-[11px] text-[#6B665D] md:hidden">
+                Swipe horizontally to compare all tools →
+              </div>
             </div>
 
-            {/* Interactive Annual Savings Calculator */}
-            <div className="rounded-[20px] border border-[#E6E3DC] bg-white p-6 space-y-5">
+            {/* Interactive Annual Savings Calculator with Contextual CTA */}
+            <div className="lp-compare-reveal lp-calc-card lp-parallax-frame rounded-[20px] border border-[#E6E3DC] bg-white p-6 space-y-5">
               <div>
                 <h3 className="text-base font-medium text-[#141413]">Annual subscription cost</h3>
                 <p className="mt-1 text-xs text-[#5C5952]">
@@ -185,7 +312,7 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
               <div className="space-y-2 border-b border-[#E6E3DC] pb-4">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-medium text-[#141413]">Study Schedule (MIT)</span>
-                  <span className="font-mono font-medium lp-tabular text-[#D97706]">$0 / yr</span>
+                  <span className="font-mono font-medium lp-tabular text-[#B45309]">$0 / yr</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-[#F3F1EC] overflow-hidden">
                   <div className="h-full w-2.5 rounded-full bg-[#D97706]" />
@@ -203,7 +330,7 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
                         setSelectedSubs((prev) => ({ ...prev, [sub.id]: !prev[sub.id] }))
                       }
                       aria-pressed={active}
-                      className="block w-full text-left"
+                      className="block w-full rounded-lg p-1 -m-1 text-left transition-colors hover:bg-[#FBFBF9]"
                     >
                       <div className="flex items-center justify-between text-xs">
                         <span className="flex items-center gap-2">
@@ -216,7 +343,7 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
                           >
                             <Check size={11} strokeWidth={2.5} />
                           </span>
-                          <span className={active ? 'text-[#141413]' : 'text-[#8A857B] line-through'}>
+                          <span className={active ? 'text-[#141413]' : 'text-[#6B665D] line-through'}>
                             {sub.name}
                           </span>
                         </span>
@@ -235,15 +362,35 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
                 })}
               </div>
 
-              <div className="flex items-baseline justify-between border-t border-[#E6E3DC] pt-4">
-                <div>
-                  <div className="text-xs font-medium text-[#141413]">Yearly spend avoided</div>
-                  <div className="text-[11px] text-[#8A857B]">Free forever · open source</div>
+              <div className="space-y-4 border-t border-[#E6E3DC] pt-4">
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <div className="text-xs font-medium text-[#141413]">Yearly spend avoided</div>
+                    <div className="text-[11px] text-[#6B665D]">Free forever · open source</div>
+                  </div>
+                  <div className="font-mono text-3xl font-medium lp-tabular text-[#141413]">
+                    ${yearlySaved}
+                    <span className="ml-1 text-xs font-normal text-[#6B665D]">/ yr</span>
+                  </div>
                 </div>
-                <div className="font-mono text-3xl font-medium lp-tabular text-[#141413]">
-                  ${yearlySaved}
-                  <span className="ml-1 text-xs font-normal text-[#8A857B]">/ yr</span>
-                </div>
+
+                <motion.button
+                  type="button"
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={onLaunchStudyOS}
+                  className="group inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-[#141413] px-4 text-xs font-medium text-[#FBFBF9] transition-colors hover:bg-[#2A2825]"
+                >
+                  <span>
+                    {yearlySaved > 0
+                      ? `Keep $${yearlySaved}/yr — Launch StudyOS`
+                      : 'Launch StudyOS free'}
+                  </span>
+                  <ArrowUpRight
+                    size={14}
+                    className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
+                </motion.button>
               </div>
             </div>
           </div>
@@ -256,13 +403,13 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
       <section className="border-t border-[#E6E3DC] bg-[#F3F1EC] py-20 sm:py-24">
         <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
           <div className="max-w-xl">
-            <div className="text-xs font-medium text-[#D97706]">Verified engineering facts</div>
+            <div className="text-xs font-medium text-[#B45309]">Verified engineering facts</div>
             <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-normal text-[#141413]">
               Transparent code, zero inflated claims
             </h2>
           </div>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="lp-proof-grid mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 figure: 'MIT',
@@ -270,9 +417,9 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
                 detail: 'Inspect, fork, or self-host every line on GitHub',
               },
               {
-                figure: '51 / 51',
-                label: 'Passing Vitest suites',
-                detail: 'Automated tests for XP ledger, streaks, Pomodoro & merge',
+                figure: '54 / 54',
+                label: 'Passing Vitest tests',
+                detail: 'Automated tests for XP ledger, streaks, Pomodoro, routing & merge',
               },
               {
                 figure: '31',
@@ -287,7 +434,7 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-2xl border border-[#E6E3DC] bg-white p-6"
+                className="lp-proof-card lp-card-hover rounded-2xl border border-[#E6E3DC] bg-white p-6"
               >
                 <div className="font-mono text-3xl font-medium lp-tabular text-[#141413]">
                   {stat.figure}
@@ -303,8 +450,8 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
       {/* =================================================================
           SECTION 8 (CINEMATIC DARK #0C0D0F): Final Apple-Style CTA
           ================================================================= */}
-      <section className="bg-[#0C0D0F] py-28 sm:py-36 text-[#F4F2EC]">
-        <div className="mx-auto max-w-3xl px-5 sm:px-8 text-center">
+      <section className="lp-final-cta lp-dark-surface bg-[#0C0D0F] py-28 sm:py-36 text-[#F4F2EC]">
+        <div className="lp-final-cta-inner lp-parallax-frame mx-auto max-w-3xl px-5 sm:px-8 text-center">
           <h2 className="font-serif text-[38px] sm:text-[58px] font-normal leading-[1.04] tracking-[-0.03em] text-[#F4F2EC]">
             Own your study system. Free forever.
           </h2>
@@ -318,16 +465,20 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={onLaunchStudyOS}
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-[#E58B4A] px-7 text-sm font-medium text-[#131416] transition-opacity hover:opacity-95"
+              className="group inline-flex h-12 items-center gap-2 rounded-full bg-[#E58B4A] px-7 text-sm font-medium text-[#131416] transition-all hover:brightness-105"
             >
               <span>Launch StudyOS</span>
-              <ArrowUpRight size={16} strokeWidth={1.8} />
+              <ArrowUpRight
+                size={16}
+                strokeWidth={1.8}
+                className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
             </motion.button>
             <a
               href="https://github.com/CypherNinjaa/study_schedule"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-[#15171A] px-6 text-sm font-medium text-[#F4F2EC] transition-colors hover:border-white/30"
+              className="inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-[#15171A] px-6 text-sm font-medium text-[#F4F2EC] transition-colors hover:border-white/30 hover:bg-[#1B1E23]"
             >
               <Star size={15} className="text-[#E58B4A]" />
               <span>Star on GitHub</span>
@@ -339,8 +490,11 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
       {/* =================================================================
           SECTION 9 (LIGHT #FBFBF9): FAQ Accordion & Minimal Footer
           ================================================================= */}
-      <section id="faq" className="bg-[#FBFBF9] py-24 sm:py-28 border-t border-[#E6E3DC]">
-        <div className="mx-auto max-w-[920px] px-5 sm:px-8">
+      <section
+        id="faq"
+        className="scroll-mt-14 bg-[#FBFBF9] py-24 sm:py-28 border-t border-[#E6E3DC]"
+      >
+        <div className="lp-faq-reveal mx-auto max-w-[920px] px-5 sm:px-8">
           <div className="text-center">
             <h2 className="font-serif text-3xl sm:text-[42px] font-normal tracking-[-0.02em] text-[#141413]">
               Frequently asked questions
@@ -353,18 +507,22 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
           <div className="mt-12 divide-y divide-[#E6E3DC] rounded-2xl border border-[#E6E3DC] bg-white">
             {FAQS.map((item, idx) => {
               const isOpen = openFaq === idx;
+              const panelId = `lp-faq-panel-${idx}`;
+              const btnId = `lp-faq-btn-${idx}`;
               return (
                 <div key={item.q} className="px-6 py-4">
                   <button
+                    id={btnId}
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
                     aria-expanded={isOpen}
-                    className="flex w-full items-center justify-between gap-4 py-1 text-left text-[15px] font-medium text-[#141413]"
+                    aria-controls={panelId}
+                    className="flex w-full items-center justify-between gap-4 py-1 text-left text-[15px] font-medium text-[#141413] transition-colors hover:text-[#B45309]"
                   >
                     <span>{item.q}</span>
                     <ChevronDown
                       size={17}
-                      className={`shrink-0 text-[#8A857B] transition-transform duration-200 ${
+                      className={`shrink-0 text-[#6B665D] transition-transform duration-200 ${
                         isOpen ? 'rotate-180 text-[#141413]' : ''
                       }`}
                     />
@@ -372,6 +530,9 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
                   <AnimatePresence initial={false}>
                     {isOpen && (
                       <motion.div
+                        id={panelId}
+                        role="region"
+                        aria-labelledby={btnId}
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
@@ -396,7 +557,7 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
           <div className="flex items-center gap-2.5">
             <img src="/favicon.svg" alt="" className="h-5 w-5 rounded-[5px]" />
             <span className="font-medium text-[#141413]">Study Schedule</span>
-            <span className="text-[#8A857B]">· Built by Vikash (@CypherNinjaa)</span>
+            <span className="text-[#6B665D]">· Built by Vikash (@CypherNinjaa)</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-6">
@@ -425,6 +586,6 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
           </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

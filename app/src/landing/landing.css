@@ -10,6 +10,31 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Accessible keyboard focus outlines across light & dark surfaces */
+.lp-root :is(a, button, [tabindex]):focus:not(:focus-visible) {
+  outline: none;
+}
+
+.lp-root :is(a, button, [tabindex]):focus-visible {
+  outline: 2px solid #d97706;
+  outline-offset: 2px;
+}
+
+.lp-dark-surface :is(a, button, [tabindex]):focus-visible {
+  outline: 2px solid #e58b4a;
+  outline-offset: 2px;
+}
+
+/* GPU compositor hints for GSAP ScrollSmoother + scrubbed ScrollTrigger layers */
+#smooth-content {
+  will-change: transform;
+}
+
+.lp-parallax-frame,
+.lp-parallax-copy {
+  will-change: transform;
+}
+
 /* Subtle Sunsama-inspired sunrise ambient wash on the light hero canvas */
 .lp-hero-wash {
   background:
@@ -27,6 +52,15 @@
     0 1px 2px rgba(20, 20, 19, 0.04),
     0 24px 64px -20px rgba(20, 20, 19, 0.14),
     0 8px 24px -12px rgba(20, 20, 19, 0.06);
+  transition: box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+}
+
+.lp-device-frame-light:hover {
+  border-color: #d6d1c7;
+  box-shadow:
+    0 1px 2px rgba(20, 20, 19, 0.05),
+    0 30px 72px -22px rgba(20, 20, 19, 0.17),
+    0 10px 28px -12px rgba(20, 20, 19, 0.08);
 }
 
 .lp-device-frame-dark {
@@ -36,11 +70,30 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 32px 80px -24px rgba(0, 0, 0, 0.85);
+  transition: border-color 0.35s ease, box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp-device-frame-dark:hover {
+  border-color: rgba(244, 242, 236, 0.16);
+}
+
+/* Tactile hover lift for light editorial cards */
+.lp-card-hover {
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s ease,
+    box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: #d4cfc5;
+  box-shadow: 0 14px 32px -18px rgba(20, 20, 19, 0.14);
 }
 
 /* Frosted glass nav surface */
 .lp-nav-glass {
-  background: rgba(251, 251, 249, 0.82);
+  background: rgba(251, 251, 249, 0.84);
   backdrop-filter: saturate(180%) blur(18px);
   -webkit-backdrop-filter: saturate(180%) blur(18px);
 }
@@ -58,4 +111,24 @@
 
 .lp-tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* Smooth GPU-composited lens zoom inside real screenshot containers */
+.lp-closeup-img {
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform-origin 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-card-hover,
+  .lp-closeup-img,
+  .lp-device-frame-light,
+  .lp-device-frame-dark {
+    transition: none;
+  }
+  .lp-card-hover:hover {
+    transform: none;
+  }
 }
