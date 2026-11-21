@@ -1,13 +1,37 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import fs from 'node:fs';
+import path from 'node:path';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath, URL } from 'node:url';
+
+/**
+ * Emit `/studyos/index.html` and `/404.html` into `dist/` after Vite builds
+ * so GitHub Pages serves `https://study.vikashin.tech/studyos` with HTTP 200
+ * and handles direct refreshes on SPA routes cleanly.
+ */
+function emitStaticRoutes(): Plugin {
+  return {
+    name: 'emit-static-routes',
+    closeBundle() {
+      const distDir = fileURLToPath(new URL('./dist', import.meta.url));
+      const indexHtml = path.join(distDir, 'index.html');
+      if (!fs.existsSync(indexHtml)) return;
+      const html = fs.readFileSync(indexHtml, 'utf-8');
+      const studyosDir = path.join(distDir, 'studyos');
+      fs.mkdirSync(studyosDir, { recursive: true });
+      fs.writeFileSync(path.join(studyosDir, 'index.html'), html);
+      fs.writeFileSync(path.join(distDir, '404.html'), html);
+    },
+  };
+}
 
 export default defineConfig({
   base: '/',
   plugins: [
     react(),
+    emitStaticRoutes(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
@@ -19,7 +43,7 @@ export default defineConfig({
         background_color: '#131416',
         display: 'standalone',
         scope: '/',
-        start_url: '/',
+        start_url: '/studyos',
         icons: [
           {
             src: 'favicon.svg',
@@ -30,7 +54,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/docs\//, /^\/launch\.html/],
       },
     }),
   ],
@@ -49,10 +75,11 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        // Charts are heavy and only needed on Analytics, so they get their
-        // own chunk instead of blocking first paint.
+        // Heavy engines stay in dedicated chunks so `/` and `/studyos` stay fast.
         manualChunks(id: string) {
           if (!id.includes('node_modules')) return undefined;
+          if (id.includes('gsap')) return 'gsap';
+          if (id.includes('framer-motion') || id.includes('lenis')) return 'motion';
           if (id.includes('recharts') || id.includes('d3-')) return 'charts';
           if (id.includes('three') || id.includes('@react-three')) return 'three';
           if (id.includes('pdfjs-dist')) return 'pdf-reader';

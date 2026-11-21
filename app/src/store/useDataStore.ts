@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { AppData, ISODate } from '@/types';
+import { clearSetupFlag, markSetupCompleted } from '@/routing/setupStatus';
 import { createDefaultData } from '@/data/defaults';
 import { runRollup, type RollupResult } from '@/services/rollup';
 import { todayISO } from '@/utils/date';
@@ -100,6 +101,7 @@ export const useDataStore = create<DataState>((set, get) => {
         if (perm === 'granted') {
           const result = await fs.loadFromHandle();
           if (result.status === 'ok' && result.data) {
+            if (result.data.profile.onboarded) markSetupCompleted();
             set({
               data: result.data,
               storageMode: 'file',
@@ -140,6 +142,7 @@ export const useDataStore = create<DataState>((set, get) => {
       // 2. Fall back to the IndexedDB mirror.
       const mirror = await fs.loadLocalMirror();
       if (mirror?.status === 'ok' && mirror.data) {
+        if (mirror.data.profile.onboarded) markSetupCompleted();
         set({
           data: mirror.data,
           storageMode: 'local',
@@ -338,6 +341,7 @@ export const useDataStore = create<DataState>((set, get) => {
 
     resetAllData: async () => {
       const fresh = createDefaultData();
+      clearSetupFlag();
       set({ data: fresh, saveState: 'dirty', bootPhase: 'welcome' });
       await get().saveNow();
     },
@@ -352,6 +356,7 @@ export const useDataStore = create<DataState>((set, get) => {
     completeOnboarding: async () => {
       // The onboarding wizard has already written profile.onboarded via mutate;
       // this flips the app out of the welcome gate and persists the result.
+      markSetupCompleted();
       set({ bootPhase: 'ready' });
       await get().saveNow();
     },
@@ -361,6 +366,7 @@ export const useDataStore = create<DataState>((set, get) => {
 registerSyncDataBridge({
   getData: () => useDataStore.getState().data,
   applyRemoteData: async (remoteData) => {
+    if (remoteData.profile.onboarded) markSetupCompleted();
     useDataStore.setState({
       data: remoteData,
       bootPhase: remoteData.profile.onboarded ? 'ready' : 'welcome',
