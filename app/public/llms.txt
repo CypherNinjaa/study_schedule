@@ -1,0 +1,27 @@
+# Study Schedule
+
+> Study Schedule (StudyOS) is a free, open-source, local-first student productivity and study planning platform that helps college and university students organize their semester, weekly class timetable, exam syllabus scope, deep-focus Pomodoro sessions, 3D PDF/EPUB textbooks, and 24-hour daily time accounting — stored locally in one readable JSON file with optional Secret GitHub Gist sync.
+
+- Live Website: https://study.vikashin.tech/
+- Application Workspace: https://study.vikashin.tech/studyos/ (client-side PWA; private user data is stored locally and not indexed)
+- Source Code (MIT License): https://github.com/CypherNinjaa/study_schedule
+- Technology Stack: React 19, TypeScript, Vite 8 PWA, Three.js / React Three Fiber, Dexie.js (IndexedDB), File System Access API, PDF.js, ePub.js
+
+## Core Feature Pages
+
+- [Homepage — Study Schedule Overview](https://study.vikashin.tech/): Complete overview of the local-first student productivity platform, interactive 3D workspace preview, feature chapters, comparison matrix, and FAQ.
+- [Study Planner](https://study.vikashin.tech/study-planner/): Daily study planner with 24-hour time accounting, transparent 0–100 productivity score, wall-clock Picture-in-Picture Pomodoro, and subject time tracking.
+- [Semester Planner](https://study.vikashin.tech/semester-planner/): Plan an entire academic term with credit-weighted subjects, recurring class schedules, exam milestones, and long-term progress analytics.
+- [College Timetable Maker](https://study.vikashin.tech/timetable-maker/): Free weekly college timetable builder supporting Monday–Sunday recurring lectures, lab tags, room numbers, and faculty details.
+- [Exam Planner & Syllabus Scope](https://study.vikashin.tech/exam-planner/): Track upcoming midterms and finals, scope only the exact chapters being tested, and measure syllabus readiness percentages.
+
+## Student Study Guides
+
+- [Study Guides Hub](https://study.vikashin.tech/guides/): Practical, research-grounded guides on semester planning, active recall, exam prep, and sustainable focus systems.
+- [How to Plan an Entire College Semester in 15 Minutes](https://study.vikashin.tech/guides/how-to-plan-a-semester/): Step-by-step 3-layer semester planning system connecting recurring classes, exam scopes, and 24-hour daily budgets.
+- [Active Recall vs. Passive Learning](https://study.vikashin.tech/guides/active-recall-vs-passive-learning/): Practical comparison of retrieval practice vs. passive re-reading and a repeatable 3-step active recall workflow for exams.
+- [How to Use the Pomodoro Technique for Studying Without Breaking Flow](https://study.vikashin.tech/guides/how-to-use-pomodoro-for-studying/): How to adapt focus sprints to task friction, handle interruptions with exact time logging, and avoid common timer pitfalls.
+
+## Offline Documentation
+
+- [Documentation Index](https://study.vikashin.tech/docs/index.html): 31 bundled offline guides covering local JSON storage, Secret GitHub Gist conflict resolution, daily score calculation, streaks, XP, and keyboard shortcuts.

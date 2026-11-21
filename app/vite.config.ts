@@ -1,28 +1,22 @@
 /// <reference types="vitest/config" />
-import fs from 'node:fs';
 import path from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath, URL } from 'node:url';
+import { generateSeoPages } from './scripts/generateSeoPages.mjs';
 
 /**
- * Emit `/studyos/index.html` and `/404.html` into `dist/` after Vite builds
- * so GitHub Pages serves `https://study.vikashin.tech/studyos` with HTTP 200
- * and handles direct refreshes on SPA routes cleanly.
+ * Emit static SEO feature pages, editorial study guides, `sitemap.xml`,
+ * `noindex` `/studyos/index.html`, and branded `/404.html` into `dist/` after Vite builds
+ * so GitHub Pages serves every public URL as clean crawlable HTTP 200 HTML.
  */
 function emitStaticRoutes(): Plugin {
   return {
     name: 'emit-static-routes',
     closeBundle() {
       const distDir = fileURLToPath(new URL('./dist', import.meta.url));
-      const indexHtml = path.join(distDir, 'index.html');
-      if (!fs.existsSync(indexHtml)) return;
-      const html = fs.readFileSync(indexHtml, 'utf-8');
-      const studyosDir = path.join(distDir, 'studyos');
-      fs.mkdirSync(studyosDir, { recursive: true });
-      fs.writeFileSync(path.join(studyosDir, 'index.html'), html);
-      fs.writeFileSync(path.join(distDir, '404.html'), html);
+      generateSeoPages(path.resolve(distDir));
     },
   };
 }
@@ -38,12 +32,12 @@ export default defineConfig({
       manifest: {
         name: 'Study Schedule',
         short_name: 'StudySchedule',
-        description: 'Personal Study Schedule & Productivity OS',
+        description: 'Local-First Student Study Planner, Timetable & Productivity OS',
         theme_color: '#e58b4a',
         background_color: '#131416',
         display: 'standalone',
         scope: '/',
-        start_url: '/studyos',
+        start_url: '/studyos/',
         icons: [
           {
             src: 'favicon.svg',
@@ -56,7 +50,19 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/docs\//, /^\/launch\.html/],
+        // Never intercept static SEO pages, docs, sitemaps, or crawler directives
+        navigateFallbackDenylist: [
+          /^\/docs\//,
+          /^\/launch\.html/,
+          /^\/study-planner\/?/,
+          /^\/semester-planner\/?/,
+          /^\/timetable-maker\/?/,
+          /^\/exam-planner\/?/,
+          /^\/guides(\/|$)/,
+          /^\/robots\.txt$/,
+          /^\/sitemap\.xml$/,
+          /^\/llms\.txt$/,
+        ],
       },
     }),
   ],

@@ -1,0 +1,31 @@
+# Study Schedule — Crawler & Search Indexing Policy
+# Public marketing, feature, guide, and documentation pages are open for search indexing.
+# Private client-side application workspace (/studyos) is excluded from search indexing.
+
+User-agent: *
+Allow: /
+Disallow: /studyos
+Disallow: /studyos/
+
+# Explicit search & citation engines
+User-agent: Googlebot
+Allow: /
+Disallow: /studyos
+Disallow: /studyos/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /studyos
+Disallow: /studyos/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /studyos
+Disallow: /studyos/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /studyos
+Disallow: /studyos/
+
+Sitemap: https://study.vikashin.tech/sitemap.xml

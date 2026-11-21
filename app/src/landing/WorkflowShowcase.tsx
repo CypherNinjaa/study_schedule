@@ -277,6 +277,10 @@ export function WorkflowShowcase({ onLaunchStudyOS }: WorkflowShowcaseProps) {
                   <img
                     src={currentStep.image}
                     alt={currentStep.caption}
+                    width={1440}
+                    height={900}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover"
                   />
                 </div>

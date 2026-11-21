@@ -42,7 +42,7 @@ export default function LandingPage({ onLaunchStudyOS }: LandingPageProps) {
 
   useEffect(() => {
     document.documentElement.removeAttribute('data-theme');
-    document.title = 'Study Schedule — Local-First Academic Command Center';
+    document.title = 'Study Schedule — Free Student Study Planner, Timetable & Semester OS';
 
     const mqWide = window.matchMedia('(min-width: 768px)');
     const mqReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -325,10 +325,10 @@ export default function LandingPage({ onLaunchStudyOS }: LandingPageProps) {
                     Your entire semester, in one calm place.
                   </h1>
 
-                  <p className="lp-hero-fade mx-auto mt-3.5 max-w-[580px] text-base sm:text-[17px] leading-[1.52] text-[#5C5952]">
-                    Timetable, exam syllabus scope, Three.js 3D textbook reader, wall-clock
-                    Pomodoro, and 24-hour analytics — stored locally in one JSON file with optional
-                    GitHub Gist sync.
+                  <p className="lp-hero-fade mx-auto mt-3.5 max-w-[600px] text-base sm:text-[17px] leading-[1.52] text-[#5C5952]">
+                    A free student productivity and study planning platform to organize your
+                    semester, weekly class timetable, exam syllabus scope, 3D PDF/EPUB textbooks,
+                    and 24-hour focus sessions — stored locally in one JSON file.
                   </p>
 
                   {/* Primary + Secondary CTAs */}
@@ -378,8 +378,11 @@ export default function LandingPage({ onLaunchStudyOS }: LandingPageProps) {
                           <div className="mx-auto max-w-[920px] lp-device-frame-light overflow-hidden p-2">
                             <img
                               src="/landing/screen-dashboard.webp"
-                              alt="Study Schedule Dashboard"
-                              className="w-full rounded-[16px]"
+                              alt="Study Schedule student planner dashboard displaying daily study allocation, XP progress, and consistency streaks"
+                              width={1440}
+                              height={900}
+                              fetchPriority="high"
+                              className="w-full h-auto rounded-[16px]"
                             />
                           </div>
                         }
@@ -396,8 +399,11 @@ export default function LandingPage({ onLaunchStudyOS }: LandingPageProps) {
                     <div className="mx-auto max-w-[920px] lp-device-frame-light overflow-hidden p-2">
                       <img
                         src="/landing/screen-dashboard.webp"
-                        alt="Study Schedule Dashboard interface"
-                        className="w-full rounded-[16px]"
+                        alt="Study Schedule student planner dashboard interface"
+                        width={1440}
+                        height={900}
+                        fetchPriority="high"
+                        className="w-full h-auto rounded-[16px]"
                       />
                     </div>
                   )}
@@ -429,8 +435,11 @@ export default function LandingPage({ onLaunchStudyOS }: LandingPageProps) {
                   <img
                     src="/landing/screen-dashboard.webp"
                     alt="Live Study Schedule Dashboard displaying daily study allocation, XP progress, and 6-dimension consistency streaks"
+                    width={1440}
+                    height={900}
                     loading="lazy"
-                    className="w-full rounded-[16px]"
+                    decoding="async"
+                    className="w-full h-auto rounded-[16px]"
                   />
                 </div>
 

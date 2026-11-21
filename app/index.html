@@ -5,20 +5,42 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#FBFBF9" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Study Schedule — Local-First Academic Command Center</title>
+    <title>Study Schedule — Free Student Study Planner, Timetable &amp; Semester OS</title>
     <meta
       name="description"
-      content="Plan your semester, scope exam syllabi, read PDF and EPUB textbooks in a Three.js 3D flipbook, run a Picture-in-Picture Pomodoro, and account for all 24 hours — stored locally in one JSON file with optional GitHub Gist sync."
+      content="Study Schedule is a free, local-first student productivity and study planning platform to organize your semester, weekly class timetable, exam syllabus scope, 3D textbook reader, Picture-in-Picture Pomodoro, and 24-hour study analytics."
     />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://study.vikashin.tech/" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Study Schedule — Local-First Academic Command Center" />
+    <meta property="og:site_name" content="Study Schedule" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Study Schedule — Free Student Study Planner, Timetable &amp; Semester OS" />
     <meta
       property="og:description"
-      content="Timetable, exam syllabus scope, 3D textbook reader, wall-clock Pomodoro, and 24-hour analytics in one private local JSON workspace. MIT open source."
+      content="Organize your semester, weekly timetable, exam syllabus scope, 3D PDF/EPUB textbooks, and wall-clock Pomodoro in one private local JSON workspace. Free &amp; MIT open source."
     />
     <meta property="og:url" content="https://study.vikashin.tech/" />
-    <meta property="og:image" content="https://study.vikashin.tech/landing/screen-dashboard.webp" />
+    <meta property="og:image" content="https://study.vikashin.tech/landing/og-cover.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Study Schedule local-first student study planner and semester dashboard preview"
+    />
+
+    <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Study Schedule — Free Student Study Planner &amp; Semester OS" />
+    <meta
+      name="twitter:description"
+      content="Plan your semester, class timetable, exam syllabus, 3D textbook reading, and Pomodoro focus sessions in one private local JSON file."
+    />
+    <meta name="twitter:image" content="https://study.vikashin.tech/landing/og-cover.png" />
+
+    <!-- Performance: preload LCP visual & warm font connections -->
     <link rel="preload" as="image" href="/landing/screen-dashboard.webp" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,9 +48,93 @@
       href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Structured Data (Schema.org @graph: WebSite, Organization, SoftwareApplication) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://study.vikashin.tech/#website",
+            "url": "https://study.vikashin.tech/",
+            "name": "Study Schedule",
+            "alternateName": "StudyOS",
+            "description": "Free, open-source, local-first student productivity and study planning platform for semester planning, weekly timetables, exam syllabus tracking, and deep focus.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://study.vikashin.tech/#organization",
+            "name": "Study Schedule",
+            "url": "https://study.vikashin.tech/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://study.vikashin.tech/favicon.svg"
+            },
+            "sameAs": [
+              "https://github.com/CypherNinjaa/study_schedule"
+            ]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://study.vikashin.tech/#software",
+            "name": "Study Schedule",
+            "alternateName": "StudyOS",
+            "url": "https://study.vikashin.tech/",
+            "applicationCategory": "EducationalApplication",
+            "applicationSubCategory": "Student Planner & Study Schedule Software",
+            "operatingSystem": "Web, Windows, macOS, Linux, Android, iOS (PWA)",
+            "isAccessibleForFree": true,
+            "license": "https://opensource.org/licenses/MIT",
+            "codeRepository": "https://github.com/CypherNinjaa/study_schedule",
+            "screenshot": "https://study.vikashin.tech/landing/screen-dashboard.webp",
+            "image": "https://study.vikashin.tech/landing/og-cover.png",
+            "description": "A local-first student productivity platform combining weekly college timetables, selective exam syllabus tracking, a Three.js 3D PDF and EPUB textbook reader, a Picture-in-Picture Pomodoro timer, and 24-hour daily time accounting in one readable JSON file.",
+            "featureList": [
+              "Weekly recurring Monday-to-Sunday college timetable maker with rooms and instructors",
+              "Selective exam syllabus scope tracker with readiness percentages",
+              "Interactive Three.js 3D flipbook PDF and EPUB textbook reader stored locally in IndexedDB",
+              "Wall-clock Picture-in-Picture Snake Pomodoro timer with live duration adjustment and Save Early logging",
+              "24-hour daily time accounting with transparent 0-100 productivity score",
+              "100% local JSON ownership via File System Access API with optional Secret GitHub Gist multi-device sync"
+            ],
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "publisher": {
+              "@id": "https://study.vikashin.tech/#organization"
+            }
+          }
+        ]
+      }
+    </script>
+    <!-- OPTIONAL_GOOGLE_INTEGRATIONS -->
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Prerendered crawlable semantic fallback (seamlessly replaced on React mount) -->
+      <main style="max-width:960px;margin:0 auto;padding:48px 24px;font-family:'Instrument Sans',system-ui,sans-serif;color:#141413;background:#fbfbf9;">
+        <header style="display:flex;justify-content:space-between;align-items:center;padding-bottom:24px;border-bottom:1px solid #e6e3dc;">
+          <a href="/" style="font-weight:600;color:#141413;text-decoration:none;">Study Schedule</a>
+          <nav aria-label="Primary pages" style="display:flex;gap:18px;font-size:14px;">
+            <a href="/study-planner/" style="color:#5c5952;">Study Planner</a>
+            <a href="/semester-planner/" style="color:#5c5952;">Semester Planner</a>
+            <a href="/timetable-maker/" style="color:#5c5952;">Timetable Maker</a>
+            <a href="/exam-planner/" style="color:#5c5952;">Exam Planner</a>
+            <a href="/guides/" style="color:#5c5952;">Study Guides</a>
+            <a href="/docs/index.html" style="color:#5c5952;">Docs</a>
+          </nav>
+        </header>
+        <section style="padding:48px 0;">
+          <h1 style="font-family:'Newsreader',Georgia,serif;font-size:48px;font-weight:400;line-height:1.08;">Your entire semester, in one calm place.</h1>
+          <p style="margin-top:16px;font-size:18px;line-height:1.6;color:#5c5952;">Study Schedule is a free, open-source student productivity and study planning platform that helps students organize their semester, weekly class timetable, exam syllabus scope, 3D PDF and EPUB textbooks, Picture-in-Picture Pomodoro focus sessions, and 24-hour daily time accounting — stored locally in one readable JSON file with optional Secret GitHub Gist sync.</p>
+          <p style="margin-top:20px;"><a href="/studyos/?launch=1" style="display:inline-block;padding:12px 24px;border-radius:999px;background:#141413;color:#fbfbf9;text-decoration:none;">Launch StudyOS</a></p>
+        </section>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

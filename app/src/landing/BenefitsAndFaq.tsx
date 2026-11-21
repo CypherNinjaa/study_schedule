@@ -552,37 +552,122 @@ export function BenefitsAndFaq({ onLaunchStudyOS }: BenefitsAndFaqProps) {
         </div>
       </section>
 
-      <footer className="border-t border-[#E6E3DC] bg-[#FBFBF9] py-12">
-        <div className="mx-auto flex max-w-[1280px] flex-col gap-6 px-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 text-xs text-[#5C5952]">
-          <div className="flex items-center gap-2.5">
-            <img src="/favicon.svg" alt="" className="h-5 w-5 rounded-[5px]" />
-            <span className="font-medium text-[#141413]">Study Schedule</span>
-            <span className="text-[#6B665D]">· Built by Vikash (@CypherNinjaa)</span>
-          </div>
+      <footer className="border-t border-[#E6E3DC] bg-[#FBFBF9] py-16">
+        <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] text-xs text-[#5C5952]">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <img src="/favicon.svg" alt="" width={20} height={20} className="h-5 w-5 rounded-[5px]" />
+                <span className="text-sm font-medium text-[#141413]">Study Schedule</span>
+              </div>
+              <p className="mt-3 max-w-xs leading-relaxed text-[#6B665D]">
+                Free, open-source, local-first student study planner for semesters, recurring
+                timetables, exam syllabus scope, and deep focus. Built by Vikash (@CypherNinjaa).
+              </p>
+            </div>
 
-          <div className="flex flex-wrap items-center gap-6">
-            <button
-              type="button"
-              onClick={onLaunchStudyOS}
-              className="transition-colors hover:text-[#141413]"
-            >
-              Open StudyOS
-            </button>
-            <a href="/docs/index.html" className="transition-colors hover:text-[#141413]">
-              Offline docs
-            </a>
-            <a href="/launch.html" className="transition-colors hover:text-[#141413]">
-              Launch film
-            </a>
-            <a
-              href="https://github.com/CypherNinjaa/study_schedule"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 transition-colors hover:text-[#141413]"
-            >
-              <Github size={14} />
-              GitHub (MIT)
-            </a>
+            <div>
+              <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#141413]">
+                Planners
+              </div>
+              <ul className="mt-3 space-y-2.5">
+                <li>
+                  <a href="/study-planner/" className="transition-colors hover:text-[#141413]">
+                    Study Planner
+                  </a>
+                </li>
+                <li>
+                  <a href="/semester-planner/" className="transition-colors hover:text-[#141413]">
+                    Semester Planner
+                  </a>
+                </li>
+                <li>
+                  <a href="/timetable-maker/" className="transition-colors hover:text-[#141413]">
+                    College Timetable Maker
+                  </a>
+                </li>
+                <li>
+                  <a href="/exam-planner/" className="transition-colors hover:text-[#141413]">
+                    Exam Planner &amp; Syllabus Scope
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#141413]">
+                Study Guides
+              </div>
+              <ul className="mt-3 space-y-2.5">
+                <li>
+                  <a href="/guides/" className="transition-colors hover:text-[#141413]">
+                    All Student Guides
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/guides/how-to-plan-a-semester/"
+                    className="transition-colors hover:text-[#141413]"
+                  >
+                    Plan a Semester in 15 Minutes
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/guides/active-recall-vs-passive-learning/"
+                    className="transition-colors hover:text-[#141413]"
+                  >
+                    Active Recall vs. Passive Learning
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/guides/how-to-use-pomodoro-for-studying/"
+                    className="transition-colors hover:text-[#141413]"
+                  >
+                    Pomodoro Technique for Studying
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#141413]">
+                Workspace &amp; Open Source
+              </div>
+              <ul className="mt-3 space-y-2.5">
+                <li>
+                  <button
+                    type="button"
+                    onClick={onLaunchStudyOS}
+                    className="transition-colors hover:text-[#141413]"
+                  >
+                    Launch StudyOS
+                  </button>
+                </li>
+                <li>
+                  <a href="/docs/index.html" className="transition-colors hover:text-[#141413]">
+                    Offline Documentation (31)
+                  </a>
+                </li>
+                <li>
+                  <a href="/llms.txt" className="transition-colors hover:text-[#141413]">
+                    llms.txt
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/CypherNinjaa/study_schedule"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 transition-colors hover:text-[#141413]"
+                  >
+                    <Github size={14} />
+                    GitHub (MIT License)
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </footer>

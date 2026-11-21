@@ -19,6 +19,15 @@ function resolvePathRoute(pathname: string): SurfaceRoute {
   return 'landing';
 }
 
+function isExplicitLaunchIntent(): boolean {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('launch') === '1';
+  } catch {
+    return false;
+  }
+}
+
 function isExplicitLandingView(): boolean {
   try {
     const params = new URLSearchParams(window.location.search);
@@ -59,8 +68,13 @@ function RouteFallback({ dark }: { dark?: boolean }) {
 export function RootRouter() {
   const [route, setRoute] = useState<SurfaceRoute>(() => {
     const initial = resolvePathRoute(window.location.pathname);
+    if (initial === 'studyos' && isExplicitLaunchIntent()) {
+      markEnteredStudyOS();
+      window.history.replaceState(null, '', `/studyos/${window.location.hash}`);
+      return 'studyos';
+    }
     if (initial === 'landing' && !isExplicitLandingView() && hasFastSetupFlag()) {
-      window.history.replaceState(null, '', `/studyos${window.location.hash}`);
+      window.history.replaceState(null, '', `/studyos/${window.location.hash}`);
       return 'studyos';
     }
     return initial;

@@ -158,7 +158,10 @@ function ProductCloseupFrame({
           <img
             src={current.image}
             alt={current.alt}
+            width={1440}
+            height={900}
             loading="lazy"
+            decoding="async"
             className="lp-closeup-img h-full w-full object-cover"
             style={{
               transform: `scale(${current.scale})`,

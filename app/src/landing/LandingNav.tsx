@@ -82,6 +82,12 @@ export function LandingNav({
             );
           })}
           <a
+            href="/guides/"
+            className="py-1 transition-colors hover:text-[#141413]"
+          >
+            Guides
+          </a>
+          <a
             href="/docs/index.html"
             className="py-1 transition-colors hover:text-[#141413]"
           >
@@ -163,6 +169,13 @@ export function LandingNav({
                   {link.label}
                 </a>
               ))}
+              <a
+                href="/guides/"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-xl px-3 py-2.5 font-medium text-[#141413] hover:bg-[#F3F1EC]"
+              >
+                Study guides
+              </a>
               <a
                 href="/docs/index.html"
                 onClick={() => setMobileOpen(false)}
