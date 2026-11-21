@@ -72,30 +72,26 @@ export function PomodoroTimer() {
       : phase === 'break'
         ? cfg.breakMinutes
         : cfg.longBreakMinutes) * 60;
-  const total = Math.max(displayTotal, cfgTotal, remaining, 1);
+  const total = Math.max(displayTotal, remaining, 1);
   const progress = Math.min(1, Math.max(0, (total - remaining) / total));
   const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
   const ss = String(remaining % 60).padStart(2, '0');
   const timeText = `${mm}:${ss}`;
 
   const prevPhaseRef = useRef(phase);
-  const prevTotalRef = useRef(total);
+  const prevCfgTotalRef = useRef(cfgTotal);
 
-  // Sync remaining time when phase or default settings change while idle
+  // Sync remaining time only when phase or default settings change while idle
   useEffect(() => {
-    if (prevPhaseRef.current !== phase) {
-      prevPhaseRef.current = phase;
-      prevTotalRef.current = total;
-      setRemaining(total, total);
-      return;
+    const startedAt = usePomodoroStore.getState().startedAt;
+    const phaseChanged = prevPhaseRef.current !== phase;
+    const cfgChanged = prevCfgTotalRef.current !== cfgTotal;
+    prevPhaseRef.current = phase;
+    prevCfgTotalRef.current = cfgTotal;
+    if ((phaseChanged || cfgChanged) && !running && !startedAt && !alerting) {
+      setRemaining(cfgTotal, cfgTotal);
     }
-    if (prevTotalRef.current !== total) {
-      if (!running && remaining === prevTotalRef.current) {
-        setRemaining(total, total);
-      }
-      prevTotalRef.current = total;
-    }
-  }, [phase, total, running, remaining, setRemaining]);
+  }, [phase, cfgTotal, running, alerting, setRemaining]);
 
   // Auto-select the first active subject if none is selected
   useEffect(() => {

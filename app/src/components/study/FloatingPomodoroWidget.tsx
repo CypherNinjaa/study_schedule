@@ -52,6 +52,7 @@ export function FloatingPomodoroWidget() {
   const phase = usePomodoroStore((s) => s.phase);
   const running = usePomodoroStore((s) => s.running);
   const remaining = usePomodoroStore((s) => s.remaining);
+  const displayTotal = usePomodoroStore((s) => s.displayTotal);
   const completedFocus = usePomodoroStore((s) => s.completedFocus);
   const label = usePomodoroStore((s) => s.label);
   const subjectId = usePomodoroStore((s) => s.subjectId);
@@ -199,6 +200,17 @@ export function FloatingPomodoroWidget() {
         ? cfg.breakMinutes
         : cfg.longBreakMinutes) * 60;
 
+  const prevCfgTotalRef = useRef<number | null>(null);
+  useEffect(() => {
+    const startedAt = usePomodoroStore.getState().startedAt;
+    if (prevCfgTotalRef.current === null || prevCfgTotalRef.current !== cfgTotal) {
+      prevCfgTotalRef.current = cfgTotal;
+      if (!running && !startedAt && !alerting) {
+        usePomodoroStore.getState().setRemaining(cfgTotal, cfgTotal);
+      }
+    }
+  }, [cfgTotal, running, alerting]);
+
   const reset = () => {
     resetStore(cfgTotal);
   };
@@ -224,7 +236,7 @@ export function FloatingPomodoroWidget() {
   const ss = String(remaining % 60).padStart(2, '0');
   const subject = data.subjects.find((s) => s.id === subjectId);
 
-  const total = Math.max(cfgTotal, remaining, 1);
+  const total = Math.max(displayTotal, remaining, 1);
   const progress = Math.min(1, Math.max(0, (total - remaining) / total));
 
   let currentMilestone = WIDGET_MILESTONES[0];

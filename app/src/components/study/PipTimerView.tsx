@@ -168,7 +168,7 @@ export function PipTimerView({ onReturnToTab }: { onReturnToTab: () => void }) {
       : phase === 'break'
         ? cfg.breakMinutes
         : cfg.longBreakMinutes) * 60;
-  const total = Math.max(displayTotal, cfgTotal, remaining, 1);
+  const total = Math.max(displayTotal, remaining, 1);
   const progress = Math.min(1, Math.max(0, (total - remaining) / total));
 
   // Determine current active milestone

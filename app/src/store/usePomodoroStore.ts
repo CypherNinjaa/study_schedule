@@ -104,15 +104,14 @@ interface PomodoroStoreState {
   running: boolean;
   remaining: number;    // seconds left on the countdown
   /**
-   * The configured session length set when the round started.
-   * NEVER mutated by adjustMinutes — it always reflects the original
-   * commitment so that elapsed time can be computed accurately.
+   * The active session length in seconds (`elapsed + remaining`).
+   * Updated by reset, skip, setRemaining, and adjustMinutes so completed
+   * rounds log the actual studied duration.
    */
   scheduledTotal: number;
   /**
-   * Display total used only for the ring-progress animation.
-   * = Math.max(scheduledTotal, remaining) so the ring never goes backwards
-   * when the user adds extra time.
+   * Display total used for the ring-progress animation.
+   * Always >= scheduledTotal and remaining so progress stays monotonic.
    */
   displayTotal: number;
   completedFocus: number;
@@ -244,15 +243,16 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
   },
 
   adjustMinutes: (deltaMinutes) => {
-    const { remaining, running, deadline } = get();
+    const { remaining, scheduledTotal, running, deadline } = get();
     const nextSec = Math.max(10, remaining + deltaMinutes * 60);
+    const actualDeltaSec = nextSec - remaining;
+    const nextScheduled = Math.max(10, scheduledTotal + actualDeltaSec);
     const newDeadline =
-      running && deadline !== null ? deadline + deltaMinutes * 60 * 1000 : deadline;
-    // NOTE: scheduledTotal is intentionally NOT updated here.
-    // It always reflects the original session commitment so elapsed time is correct.
+      running && deadline !== null ? deadline + actualDeltaSec * 1000 : deadline;
     set({
       remaining: nextSec,
-      displayTotal: Math.max(get().scheduledTotal, nextSec),
+      scheduledTotal: nextScheduled,
+      displayTotal: Math.max(nextScheduled, nextSec),
       deadline: newDeadline,
     });
   },
@@ -321,7 +321,6 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
       method,
       startedAt,
       scheduledTotal,
-      displayTotal,
     } = get();
     if (!running || deadline === null) return;
 
@@ -331,8 +330,8 @@ export const usePomodoroStore = create<PomodoroStoreState>((set, get) => ({
     if (left === 0) {
       const endedAt = new Date().toISOString();
 
-      // Log the committed session duration when the countdown finishes.
-      const committedSeconds = Math.max(displayTotal, scheduledTotal, 60);
+      // Log the actual committed session duration (including any -/+ minute adjustments).
+      const committedSeconds = Math.max(scheduledTotal, 60);
       const minutes = Math.max(1, Math.round(committedSeconds / 60));
       const logDate = useDataStore.getState().activeDate || todayISO();
 
